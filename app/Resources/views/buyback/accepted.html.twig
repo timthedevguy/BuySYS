@@ -1,0 +1,43 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Thank you for your submission!</h4>
+</div>
+<div class="modal-body" >
+    <div class="buyback-results-container">
+        Please create a private 'Item Exchange' contract to AMREP (AMREP Research and Production) for the materials entered here.
+        <ol>
+            <li>Copy and Paste the 'Amount' to the 'I will receive' field in the contract</li>
+            <li>Copy and Paste the 'Auth Code' to the 'Comment' field, this <strong>MUST</strong> be present if you wish to get paid!</li>
+        </ol>
+        <table class="table table-striped">
+            <tr>
+                <th>Amount</th>
+                <td>{{total_value|number_format(0, '.', ',')}}</td>
+            </tr>
+            <tr>
+                <th>Auth Code</th>
+                <td>{{auth_code}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" id="buybackacceptclose" class="btn btn-warning" data-dismiss="modal">Close</button>
+</div>
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $("#buybackacceptclose").click(function(e) {
+
+            $('#estimate_modal').modal('hide');
+            $( "#estimate_modal_content" ).html("<div class='modal-loading'><i class='fa fa-refresh fa-spin'></i></div>");
+        });
+    });
+
+</script>
+
+{% endblock %}

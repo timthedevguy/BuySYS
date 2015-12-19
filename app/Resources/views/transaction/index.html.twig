@@ -1,0 +1,135 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3>0</h3>
+                <p>Outstanding Income</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-money"></i>
+            </div>
+            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+            <div class="small-box-footer"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="small-box bg-red">
+            <div class="inner">
+                <h3 id="oExpense">{{oExpense|number_format(0, '.', ',')}}</h3>
+                <p>Outstanding Expense</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-money"></i>
+            </div>
+            <!--<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>-->
+            <div class="small-box-footer"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3 id="cComplete">{{cComplete}}</h3>
+                <p>Contracts to Complete</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-file-o"></i>
+            </div>
+            <div class="small-box-footer"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="small-box bg-red">
+            <div class="inner">
+                <h3>0</h3>
+                <p>Contracts to Create</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-file-o"></i>
+            </div>
+            <div class="small-box-footer"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-file-o"></i> Transactions</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body no-padding">
+                <table class="table table-striped" id="transactions-table">
+                    <tr>
+                        <th>Date</th>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Gross</th>
+                        <th>Net</th>
+                        <th>Profit</th>
+                    </tr>
+                    {% for transaction in transactions %}
+                        <tr id="row-{{transaction.orderid}}">
+                            <td>{{transaction.created|date("m/d/Y H:i")}}</td>
+                            <td><a class="fake_link">{{transaction.orderid}}</a></td>
+                            <td>{{transaction.user.username}}</td>
+                            <td>{{transaction.gross|number_format(0, '.', ',')}}</td>
+                            <td>{{transaction.net|number_format(0, '.', ',')}}</td>
+                            <td>{{(transaction.gross - transaction.net)|number_format(0, '.', ',')}}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+
+                    </tr>
+                </table>
+            </div><!-- /.box-body -->
+            <!--<div class="box-footer">
+                The footer of the box
+            </div>--><!-- box-footer -->
+        </div><!-- /.box -->
+    </div>
+</div>
+
+<div class="modal fade" id="transaction_modal">
+  <div class="modal-dialog">
+    <div class="modal-content" id="transaction_modal_content">
+        <div class="modal-loading">
+            <i class="fa fa-refresh fa-spin"></i>
+        </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $(".fake_link").click(function(e)
+        {
+            processTransaction($(this).html());
+        });
+    });
+
+    function processTransaction($id)
+    {
+        $.post('{{ path('ajax_process_transaction') }}', {id: $id},
+            function(response)
+            {
+                $( "#transaction_modal_content" ).html( response );
+                $('#transaction_modal').modal({backdrop: "static"});
+            }
+        , "html");
+    }
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% form_theme form 'forms/my_bootstrap_layout.html.twig' %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Register{% endblock %}</title>
+
+        <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
+        {% block stylesheets %}{% endblock %}
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+    </head>
+    <body class="hold-transition register-page">
+
+    <div class="register-box">
+        <div class="register-logo">
+            <a href="../../index2.html"><b>Am</b>SYS</a>
+        </div>
+
+        {{ include('elements/flash.html.twig') }}
+
+        <div class="register-box-body">
+            <p class="login-box-msg">Register a new membership</p>
+            {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.email, {'icon': 'fa fa-envelope','attr': {'placeholder': 'Email'}}) }}
+                {{ form_row(form.plainPassword.first, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Password'}}) }}
+                {{ form_row(form.plainPassword.second, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Repeat Password'}}) }}
+                <hr>
+                <p style="text-align:center;">EVE API Key is used only to verify you own this Character and is not stored on this site.  Click <a href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=8388608">here</a> for assistance creating one.</p>
+                {{ form_row(form.username, {'icon': 'fa fa-user','attr': {'placeholder': 'Character Name'}}) }}
+                {{ form_row(form.api_key, {'icon': 'fa fa-key','attr': {'placeholder': 'API Key'}}) }}
+                {{ form_row(form.api_code, {'icon': 'fa fa-barcode','attr': {'placeholder': 'API Code'}}) }}
+                <div class="row">
+                    <div class="col-xs-8">
+                        <!--Empty on purpose-->
+                    </div><!-- /.col -->
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+                    </div><!-- /.col -->
+                </div>
+            {{ form_end(form) }}
+        </div><!-- /.form-box -->
+    </div><!-- /.register-box -->
+
+    <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
+    <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
+    {% block javascripts %}{% endblock %}
+
+    </body>
+</html>

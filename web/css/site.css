@@ -1,0 +1,103 @@
+#subsystem_status
+{
+	list-style: none;
+	padding-left: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+
+.user-panel
+{
+	position: relative;
+	width: 100%;
+	padding: 0px;
+	overflow: hidden;
+}
+
+#subsystem_status LI
+{
+	margin-left: 0px;
+	color: #B8C7CE;
+	padding: 5px 0 5px 15px;
+}
+
+.user-panel > .info-other
+{
+	/*padding: 5px 5px 5px 15px;*/
+	padding: 0px;
+	margin: 0px;
+	/*line-height: 1;*/
+	line-height: 1.4em;
+	/*position: absolute;*/
+	position: relative;
+	/*left: 55px;*/
+	left: 0px;
+}
+
+.sidebar-menu LI.status
+{
+	color: #B8C7CE;
+	padding: 5px 0px 5px 15px;
+}
+
+#subsystem_status .header
+{
+	padding: 10px 25px 10px 15px;
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow: clip;
+	color: #4B646F;
+	background: #1A2226;
+}
+#buyback_submits
+{
+	text-align: right;
+}
+
+#buyback_submits INPUT
+{
+	margin-left: 5px;
+}
+
+#buyback_instructions H3
+{
+	margin-top: 0;
+}
+
+.fixed_height_box {
+	min-height: 128px;
+}
+.modal-dialog
+{
+	width: 750px;
+}
+
+.images-table IMG
+{
+	margin-right: 10px;
+}
+
+TABLE.table.table-striped.buyback-results-table TD
+{
+	padding-top: 4px;
+	padding-bottom: 4px;
+	vertical-align: middle;
+}
+
+.buyback-results-container {
+
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.modal-loading {
+
+	font-size: 36px;
+	color: black;
+	text-align: center;
+}
+
+.fake_link, .fake-link {
+
+	cursor: pointer;
+}

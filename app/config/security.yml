@@ -1,0 +1,46 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/book/security.html
+security:
+
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+        db_provider:
+            entity:
+                class: AppBundle:UserEntity
+                property: email
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            anonymous: ~
+            form_login:
+                remember_me: true
+                login_path: /login
+                check_path: /login_check
+                default_target_path: homepage
+            logout:
+                path:   /logout
+                target: /
+            #remember_me:
+            #    key: "amsys_8222013"
+            #    lifetime: 604800 # 1 week in seconds
+            #    path: ~
+            #    domain: ~
+            #    always_remember_me: false
+
+            provider: db_provider
+
+    access_control:
+        - {path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - {path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - {path: ^/devlogin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - {path: ^/admin, roles: ROLE_ADMIN }
+        - {path: ^/, roles: [ROLE_USER, IS_AUTHENTICATED_REMEMBERED] }
+
+    encoders:
+        AppBundle\Entity\UserEntity:
+            algorithm: bcrypt

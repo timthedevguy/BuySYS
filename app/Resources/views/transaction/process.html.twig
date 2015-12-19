@@ -1,0 +1,105 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Processing Transaction</h4>
+    <!-- /.box-tools -->
+</div>
+<div class="modal-body" >
+    <div class="buyback-results-container">
+        <div>
+            {% if transaction.type == "P" %}
+                <div class="col-md-6">
+                        <p>This transaction type requires that a Contract be accepted from a player.  If no contract is present then DO NOT PAY THEM!</p>
+                        <p>The Contract details are to the right, verify they match before accepting.  The contents of the contract are listed below</p>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Order Id:</th>
+                            <td>{{ transaction.orderid }}</td>
+                        </tr>
+                        <tr>
+                            <th>Type:</th>
+                            <td><span class="label label-success">Accept Contract</span></td>
+                        </tr>
+                        <tr>
+                            <th>From:</th>
+                            <td>{{ transaction.user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Amount:</th>
+                            <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <table class="table table-striped images-table">
+                        <tr>
+                            <th style="width:50px;"></th>
+                            <th style="width:100px;">Quantity</th>
+                            <th>Item</th>
+                        </tr>
+                        {% for item in transaction.lineitems %}
+                            <tr>
+                                <td><input class="mark_off" type="checkbox"></td>
+                                <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                                <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" />{{ item.name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <p>By pushing Process you confirm that you have verified all data</p>
+    <button type="button" id="processAccept-button" class="btn btn-warning" data-dismiss="modal">Process</button>
+</div>
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $("#processAccept-button").click(function (e) {
+
+            $.post('{{path('ajax_close_transaction')}}', {id: "{{ transaction.orderid }}"},
+                function(response)
+                {
+                    $("#row-{{transaction.orderid}}").toggle("highlight", {color: "#dff0d8"}, 1000, function(e) {
+
+                        $tExpense = stringToNumber($("#oExpense").html());
+                        $tExpense = $tExpense - {{transaction.net}};
+
+                        $cComplete = stringToNumber($("#cComplete").html());
+                        $cComplete -= 1;
+
+                        $("#oExpense").toggle("puff", function(e) {
+                            $("#oExpense").html(numberToString($tExpense));
+                            $("#oExpense").toggle();
+                        });
+
+                        $("#cComplete").toggle("puff", function(e) {
+                            $("#cComplete").html($cComplete);
+                            $("#cComplete").toggle();
+                        });
+                    });
+                }
+            , "html");
+        });
+
+        $(".mark_off").click(function(e)
+        {
+            if($(this).prop('checked')) {
+
+                $(this).parent().parent().addClass("success");
+            } else {
+
+                $(this).parent().parent().removeClass("success");
+            }
+        });
+    });
+</script>
+
+{% endblock %}

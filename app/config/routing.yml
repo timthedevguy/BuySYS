@@ -1,0 +1,11 @@
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+logout:
+    path: /logout
+#quick_estimate:
+#  path:  /buyback/quick
+#  defaults: { _controller: AppBundle:BuyBack:quickEstimate }
+#accept_offer:
+#    path: /buyback/accept
+#    defaults: { _controller: AppBundle:BuyBack:acceptOffer }
