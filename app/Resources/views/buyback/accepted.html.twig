@@ -35,6 +35,14 @@
 
             $('#estimate_modal').modal('hide');
             $( "#estimate_modal_content" ).html("<div class='modal-loading'><i class='fa fa-refresh fa-spin'></i></div>");
+
+            $oSales = stringToNumber($("#oSales").html());
+            $oSales += 1;
+
+            $("#oSales").toggle("puff", function(e) {
+                $("#oSales").html(numberToString($oSales));
+                $("#oSales").toggle();
+            });
         });
     });
 
