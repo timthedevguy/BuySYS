@@ -230,7 +230,7 @@ class BuyBackController extends Controller
         //$em->persist($transaction);
         $em->flush();
 
-        $template = $this->render('buyback/accepted.html.twig', Array ( 'auth_code' => $transaction->getOrderId(), 'total_value' => $net ));
+        $template = $this->render('buyback/accepted.html.twig', Array ( 'auth_code' => $transaction->getOrderId(), 'total_value' => $net, 'transaction' => $transaction ));
         return $template;
     }
 }

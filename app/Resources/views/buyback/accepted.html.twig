@@ -43,6 +43,10 @@
                 $("#oSales").html(numberToString($oSales));
                 $("#oSales").toggle();
             });
+
+            $("#rSales TR:first").after('<tr><td>{{transaction.created|date("m/d/Y H:i")}}</td><td>{{transaction.orderid}}</td><td>{{transaction.net|number_format(0, '.', ',')}}</td></tr>');
+            $("#rSales TR:nth-child(2)").effect("highlight", {color: "#dff0d8"}, 1000);
+            $("#rSales TR:nth-child(2)").effect("pulsate", {times: 2});
         });
     });
 

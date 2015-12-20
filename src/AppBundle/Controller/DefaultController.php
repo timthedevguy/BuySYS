@@ -28,16 +28,19 @@ class DefaultController extends Controller
             ->where('t.user = :user')
             ->andWhere('t.is_complete = 0')
             ->andWhere('t.type = :type')
+            ->orderBy('t.created', 'DESC')
             ->setParameter('user', $this->getUser())
             ->setParameter('type', "P")
             ->getQuery();
 
         //dump($query->getResult());
 
-        $outstandingSales = count($query->getResult());
+        //$outstandingSales = count($query->getResult());
+        $oSales = $query->getResult();
+
 
         return $this->render('default/index.html.twig', array(
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(), 'mode' => 'USER',
-         'outstanding_sales' => $outstandingSales));
+         'oSales' => $oSales));
     }
 }
