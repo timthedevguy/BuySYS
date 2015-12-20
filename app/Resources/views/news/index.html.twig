@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-newspaper-o"></i> News</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body no-padding">
+                <table class="table table-striped" id="users-table">
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Author</th>
+                    </tr>
+                    {% for article in news %}
+                        <tr>
+                            <td>{{article.created}}</td>
+                            <td>{{article.subject}}</td>
+                            <td>{{article.author}}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div><!-- /.box-body -->
+            <!--<div class="box-footer">
+                The footer of the box
+            </div>--><!-- box-footer -->
+        </div><!-- /.box -->
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+    });
+
+</script>
+
+{% endblock %}
