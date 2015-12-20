@@ -17,8 +17,25 @@ class NewsEntity
      */
     protected $id;
 
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function __construct()
+    {
+        $this->createdOn = new \DateTime();
+    }
+
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="datetime")
      */
     protected $createdOn;
 

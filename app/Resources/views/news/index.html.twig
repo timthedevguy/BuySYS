@@ -7,19 +7,22 @@
         <div class="box">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-newspaper-o"></i> News</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" id="create_news_button"><i class="fa fa-plus"></i> Create Item</button>
+                  </div>
             </div><!-- /.box-header -->
             <div class="box-body no-padding">
-                <table class="table table-striped" id="users-table">
+                <table class="table table-striped" id="news-table">
                     <tr>
-                        <th>Date</th>
+                        <th style="width:150px;">Date</th>
                         <th>Subject</th>
-                        <th>Author</th>
+                        <th style="width:200px;">Author</th>
                     </tr>
-                    {% for article in news %}
+                    {% for item in news %}
                         <tr>
-                            <td>{{article.created}}</td>
-                            <td>{{article.subject}}</td>
-                            <td>{{article.author}}</td>
+                            <td>{{item.createdon|date("m/d/Y H:i")}}</td>
+                            <td>{{item.subject}}</td>
+                            <td>{{item.author}}</td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -31,6 +34,14 @@
     </div>
 </div>
 
+<div class="modal fade" id="news_modal">
+  <div class="modal-dialog">
+    <div class="modal-content" id="news_modal_content">
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {% endblock %}
 
 {% block javascripts %}
@@ -39,7 +50,23 @@
 
     $(document).ready(function (e) {
 
+        $("#create_news_button").click(function(e)
+        {
+            $('#news_modal').modal({backdrop: "static"});
+
+            $.get('{{path('ajax_create_news')}}',
+                function(response)
+                {
+                    $( "#news_modal_content" ).html( response );
+                }
+            , "html");
+        });
     });
+
+    function submitQuickEstimate()
+    {
+
+    }
 
 </script>
 
