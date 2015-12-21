@@ -101,3 +101,8 @@ TABLE.table.table-striped.buyback-results-table TD
 
 	cursor: pointer;
 }
+
+TD .btn-box-tool
+{
+	padding: 0px 5px;
+}

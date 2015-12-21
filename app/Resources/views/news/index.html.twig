@@ -17,12 +17,17 @@
                         <th style="width:150px;">Date</th>
                         <th>Subject</th>
                         <th style="width:200px;">Author</th>
+                        <td style="width:100px;">Actions</th>
                     </tr>
                     {% for item in news %}
-                        <tr>
+                        <tr data-i="{{item.id}}">
                             <td>{{item.createdon|date("m/d/Y H:i")}}</td>
                             <td>{{item.subject}}</td>
                             <td>{{item.author}}</td>
+                            <td>
+                                <button class="btn btn-box-tool edit_news_button" data-id="{{item.id}}"><i class="fa fa-pencil"></i></button>
+                                <button class="btn btn-box-tool delete_news_button" data-id="{{item.id}}"><i class="fa fa-times"></i></button>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -61,11 +66,36 @@
                 }
             , "html");
         });
+
+        $(".edit_news_button").click(function(e){
+
+            $('#news_modal').modal({backdrop: "static"});
+
+            $.get('{{path('ajax_edit_news')}}', {id: $(this).attr('data-id')},
+                function(response)
+                {
+                    $( "#news_modal_content" ).html( response );
+                }
+            , "html");
+        });
+
+        $(".delete_news_button").click(function(e){
+
+            $('#news_modal').modal({backdrop: "static"});
+
+            $.get('{{path('ajax_delete_news')}}', {id: $(this).attr('data-id')},
+                function(response)
+                {
+                    $( "#news_modal_content" ).html( response );
+                }
+            , "html");
+        });
     });
 
-    function submitQuickEstimate()
+    function deleteRow($id)
     {
-
+        console.log($id);
+        $("#news-table TR[data-i='"+ $id + "']").toggle("highlight", {color: "#f2dede"}, 1000)
     }
 
 </script>

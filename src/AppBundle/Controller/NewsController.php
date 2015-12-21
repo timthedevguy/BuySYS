@@ -52,7 +52,24 @@ class NewsController extends Controller
      */
     public function ajax_EditAction(Request $request)
     {
-        return $this->render('news/edit.html.twig');
+        if($request->getMethod() == 'POST') {
+
+            $id = $request->request->get('id');
+
+            $em = $this->getDoctrine('default')->getManager();
+            $item = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->find($id);
+
+            $item->setContent($request->request->get('content'));
+            $em->flush();
+
+            return new Response("OK");
+        }
+
+        $id = $request->query->get('id');
+
+        $item = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->find($id);
+
+        return $this->render('news/edit.html.twig', array('item' => $item));
     }
 
     /**
@@ -60,6 +77,22 @@ class NewsController extends Controller
      */
     public function ajax_DeleteAction(Request $request)
     {
-        return $this->render('news/delete.html.twig');
+        if($request->getMethod() == 'POST') {
+
+            $id = $request->request->get('id');
+
+            $em = $this->getDoctrine('default')->getManager();
+            $item = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->find($id);
+
+            $em->remove($item);
+            $em->flush();
+
+            return new Response("OK");
+        }
+
+        $id = $request->query->get('id');
+
+        return $this->render('elements/confirm.html.twig', array('modal' => '#news_modal', 'id' => $id, 'returnPath' => 'ajax_delete_news',
+        'functionToRun' => 'deleteRow', 'args' => $id));
     }
 }
