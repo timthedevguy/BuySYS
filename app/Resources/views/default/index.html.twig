@@ -44,21 +44,15 @@
                 <div class="box-body no-padding">
                     <table class="table table-striped">
                         <tr>
-                            <th style="width:70px;">Date</th>
+                            <th style="width:150px;">Date</th>
                             <th>Subject</th>
                         </tr>
-                        <tr>
-                            <td>11/1/2015</td>
-                            <td>New Site Coming!</td>
-                        </tr>
-                        <tr>
-                            <td>11/1/2015</td>
-                            <td>New Site Coming!</td>
-                        </tr>
-                        <tr>
-                            <td>11/1/2015</td>
-                            <td>New Site Coming!</td>
-                        </tr>
+                        {% for newsItem in news %}
+                            <tr>
+                                <td>{{newsItem.createdon|date("m/d/Y H:i")}}</td>
+                                <td><span class="fake_link news_item_link" data-i="{{newsItem.id}}">{{newsItem.subject}}</span></td>
+                            </tr>
+                        {% endfor %}
                     </table>
                 </div><!-- /.box-body -->
                 <!--<div class="box-footer">
@@ -172,6 +166,13 @@
         </div>
     </div>-->
 
+    <div class="modal fade" id="index_modal">
+      <div class="modal-dialog">
+        <div class="modal-content" id="index_modal_content">
+
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 
 {% endblock %}
@@ -181,6 +182,21 @@
 
 {% block javascripts %}
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
 
+        $(".news_item_link").click(function(e) {
+
+            $('#index_modal').modal({backdrop: "static"});
+
+            $.get('{{path('ajax_view_news')}}', {id: $(this).attr('data-i')},
+                function(response)
+                {
+                    $( "#index_modal_content" ).html( response );
+                }
+            , "html");
+        });
+    });
+</script>
 
 {% endblock %}

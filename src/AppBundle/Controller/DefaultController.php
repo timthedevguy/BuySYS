@@ -37,10 +37,11 @@ class DefaultController extends Controller
 
         //$outstandingSales = count($query->getResult());
         $oSales = $query->getResult();
+        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAll();
 
 
         return $this->render('default/index.html.twig', array(
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(), 'mode' => 'USER',
-         'oSales' => $oSales));
+         'oSales' => $oSales, 'news' => $news));
     }
 }

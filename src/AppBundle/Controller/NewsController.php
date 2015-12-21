@@ -95,4 +95,15 @@ class NewsController extends Controller
         return $this->render('elements/confirm.html.twig', array('modal' => '#news_modal', 'id' => $id, 'returnPath' => 'ajax_delete_news',
         'functionToRun' => 'deleteRow', 'args' => $id));
     }
+
+    /**
+     * @Route("/news/view", name="ajax_view_news")
+     */
+    public function ajax_ViewAction(Request $request)
+    {
+        $id = $request->query->get('id');
+        $item = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->find($id);
+
+        return $this->render('news/view.html.twig', array('item' => $item));
+    }
 }

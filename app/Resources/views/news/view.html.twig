@@ -1,0 +1,14 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{item.subject}}
+    <div class="box-tools pull-right">
+        <span class="label label-info">{{item.author}} on {{item.createdon|date("m/d/Y H:i")}}</span>
+    </div></h4>
+</div>
+<div class="modal-body" >
+    <div class="buyback-results-container">
+        {{item.content|raw}}
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-success" data-dismiss="modal">Done Reading</button>
+</div>
