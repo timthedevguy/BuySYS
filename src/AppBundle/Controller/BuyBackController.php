@@ -15,6 +15,7 @@ use AppBundle\Entity\LineItemEntity;
 use EveBundle\Entity\TypeEntity;
 use AppBundle\Entity\CacheEntity;
 use AppBundle\Entity\TransactionEntity;
+use AppBundle\Helper\MarketHelper;
 
 class BuyBackController extends Controller
 {
@@ -93,14 +94,15 @@ class BuyBackController extends Controller
         }
 
         // Find Cached Prices for Unique TypeIDs
-        $dirtyTypeIds = array_unique($typeids);
+        /*$dirtyTypeIds = array_unique($typeids);
         $em = $this->getDoctrine()->getManager('default');
         $query = $em->createQuery('SELECT c FROM AppBundle:CacheEntity c WHERE c.typeID IN (:types)')->setParameter('types', $dirtyTypeIds);
-        $cached = $query->getResult();
-        $priceLookup = array();
+        $cached = $query->getResult();*/
+        //$priceLookup = array();
+        $priceLookup = MarketHelper::GetMarketPrices($typeids, $this);
 
         // If a price is good then remove it from the Dirty List
-        foreach($cached as $cacheItem) {
+        /*foreach($cached as $cacheItem) {
 
             if(date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900)) {
 
@@ -142,7 +144,7 @@ class BuyBackController extends Controller
         foreach($cached as $cacheItem) {
 
             $priceLookup[$cacheItem->getTypeId()] = $cacheItem->getMarket();
-        }
+        }*/
 
         $totalValue = 0;
         $ajaxData = "[";
@@ -202,6 +204,7 @@ class BuyBackController extends Controller
             dump($item['typeid']);
             $lineItem = new LineItemEntity();
             $lineItem->setTypeId($item['typeid']);
+            $lineItem->setType($types->findOneByTypeID($item['typeid']));
             $lineItem->setQuantity($item['quantity']);
             $lineItem->setName( $types->findOneByTypeID($item['typeid'])->getTypeName() );
             $lineItem->setTax(15);
@@ -218,14 +221,14 @@ class BuyBackController extends Controller
                     break;
                 }
             }
-
+            dump($lineItem);
             $transaction->addLineItem($lineItem);
             $em->persist($lineItem);
         }
 
         $transaction->setGross($gross);
         $transaction->setNet($net);
-        //dump($transaction);
+        dump($transaction);
 
         //$em->persist($transaction);
         $em->flush();

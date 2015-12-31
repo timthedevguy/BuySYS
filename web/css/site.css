@@ -34,6 +34,11 @@
 	left: 0px;
 }
 
+.sidebar-mini.sidebar-collapse .main-sidebar .user-panel > .info-other
+{
+	display: none;
+}
+
 .sidebar-menu LI.status
 {
 	color: #B8C7CE;
@@ -90,19 +95,35 @@ TABLE.table.table-striped.buyback-results-table TD
 	overflow-y: auto;
 }
 
-.modal-loading {
-
+.modal-loading
+{
 	font-size: 36px;
 	color: black;
 	text-align: center;
 }
 
-.fake_link, .fake-link {
-
+.fake_link, .fake-link
+{
 	cursor: pointer;
 }
 
 TD .btn-box-tool
 {
 	padding: 0px 5px;
+}
+
+.nav-tabs
+{
+	border-bottom: 1px solid #DDD;
+	background-color: #EBEBEB;
+}
+.nav-tabs IMG
+{
+	width: 24px;
+	margin-bottom: 3px;
+	margin-right: 5px;
+}
+.nav-tabs [aria-expanded="true"]
+{
+	font-weight: 700;
 }
