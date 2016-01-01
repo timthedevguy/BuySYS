@@ -153,7 +153,6 @@ class BuyBackController extends Controller
             dump($item['typeid']);
             $lineItem = new LineItemEntity();
             $lineItem->setTypeId($item['typeid']);
-            $lineItem->setType($types->findOneByTypeID($item['typeid']));
             $lineItem->setQuantity($item['quantity']);
             $lineItem->setName( $types->findOneByTypeID($item['typeid'])->getTypeName() );
             $lineItem->setTax(15);
