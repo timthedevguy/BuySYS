@@ -246,6 +246,19 @@ class UserEntity implements AdvancedUserInterface, \Serializable
         return $this->email;
     }
 
+    public function getMaskedEmail()
+    {
+        $plainEmail = $this->email;
+        $maskedEmail = substr($plainEmail, 0, 3);
+
+        for($i=0;$i<6;$i++)
+        {
+            $maskedEmail .= "*";
+        }
+
+        return $maskedEmail . "@" . explode("@", $plainEmail)[1];
+    }
+
     /**
      * Set role
      *
