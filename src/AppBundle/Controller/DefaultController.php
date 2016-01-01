@@ -33,8 +33,6 @@ class DefaultController extends Controller
             ->setParameter('type', "P")
             ->getQuery();
 
-        //dump($query->getResult());
-
         //$outstandingSales = count($query->getResult());
         $oSales = $query->getResult();
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAll();

@@ -78,7 +78,7 @@ class BuyBackController extends Controller
 
                 // Get TYPE from Eve Database
                 $type = $types->findOneByTypeName($item[3]);
-                dump($type);
+
                 // Create & Populate our BuyBackItemModel
                 $lineItem = new BuyBackItemModel();
                 $lineItem->setTypeId($type->getTypeId());
@@ -146,11 +146,8 @@ class BuyBackController extends Controller
         $gross = 0;
         $net = 0;
 
-        dump($transaction);
-
         foreach($items as $item) {
 
-            dump($item['typeid']);
             $lineItem = new LineItemEntity();
             $lineItem->setTypeId($item['typeid']);
             $lineItem->setQuantity($item['quantity']);
@@ -169,14 +166,13 @@ class BuyBackController extends Controller
                     break;
                 }
             }
-            dump($lineItem);
+
             $transaction->addLineItem($lineItem);
             $em->persist($lineItem);
         }
 
         $transaction->setGross($gross);
         $transaction->setNet($net);
-        dump($transaction);
 
         //$em->persist($transaction);
         $em->flush();

@@ -73,7 +73,6 @@ class RegistrationController extends Controller
 
         } elseif ($form->isSubmitted()) {
 
-            dump($form->getErrors(true));
             $this->addFlash('error', 'Please correct the highlighted errors.');
         }
 

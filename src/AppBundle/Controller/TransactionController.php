@@ -71,8 +71,6 @@ class TransactionController extends Controller
         $em = $this->getDoctrine('default')->getManager();
         $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
-        dump($transaction);
-
         $transaction->setIsComplete(true);
         $em->flush();
 
