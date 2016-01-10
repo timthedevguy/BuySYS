@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Model\BuyBackModel;
 use AppBundle\Form\BuyBackType;
+use AppBundle\Helper\Helper;
+use AppBundle\Model\DefaultSettingsModel;
+use AppBundle\Entity\SettingEntity;
 
 class DefaultController extends Controller
 {
@@ -41,5 +44,37 @@ class DefaultController extends Controller
         return $this->render('default/index.html.twig', array(
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(), 'mode' => 'USER',
          'oSales' => $oSales, 'news' => $news));
+    }
+
+    /**
+     * @Route("/admin/settings", name="admin_core_settings")
+     */
+    public function settingsAction(Request $request)
+    {
+        $settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
+
+        if($request->getMethod() == 'POST') {
+
+            $em = $this->getDoctrine('default')->getManager();
+
+            $maintenanceMode = $settings->findOneByName('system_maintenance');
+            $maintenanceMode->setValue($request->request->get('maintenance_mode'));
+
+            try
+            {
+                $em->flush();
+                $this->addFlash('success', "Settings saved successfully!");
+            }
+            catch(Exception $e)
+            {
+                $this->addFlash('error', "Settings not saved!  Contact Lorvulk Munba.");
+            }
+        }
+
+        $coreSettings = new DefaultSettingsModel();
+        $coreSettings->setMaintenanceMode($settings->findOneByName('system_maintenance')->getValue());
+
+        return $this->render('default/settings.html.twig', array(
+            'page_name' => 'Core System', 'sub_text' => '', 'mode' => 'ADMIN', 'model' => $coreSettings));
     }
 }

@@ -79,17 +79,20 @@ class BuyBackController extends Controller
                 // Get TYPE from Eve Database
                 $type = $types->findOneByTypeName($item[3]);
 
-                // Create & Populate our BuyBackItemModel
-                $lineItem = new BuyBackItemModel();
-                $lineItem->setTypeId($type->getTypeId());
-                $lineItem->setQuantity(str_replace(',', '', $item[1]));
-                $lineItem->setName($type->getTypeName());
-                $lineItem->setVolume($type->getVolume());
+                if($type != null) {
 
-                $items[] = $lineItem;
+                    // Create & Populate our BuyBackItemModel
+                    $lineItem = new BuyBackItemModel();
+                    $lineItem->setTypeId($type->getTypeId());
+                    $lineItem->setQuantity(str_replace(',', '', $item[1]));
+                    $lineItem->setName($type->getTypeName());
+                    $lineItem->setVolume($type->getVolume());
 
-                // Build our list of TypeID's
-                $typeids[] = $type->getTypeId();
+                    $items[] = $lineItem;
+
+                    // Build our list of TypeID's
+                    $typeids[] = $type->getTypeId();
+                }
             }
         }
 
@@ -108,8 +111,15 @@ class BuyBackController extends Controller
 
         $ajaxData .= "]";
         $ajaxData = rtrim($ajaxData, ",");
+        dump($items);
+        if($items != null) {
 
-        $template = $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $totalValue, 'ajaxData' => $ajaxData ));
+            $template = $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $totalValue, 'ajaxData' => $ajaxData ));
+        } else {
+
+            $template = $this->render('buyback/novalid.html.twig');
+        }
+
         return $template;
     }
 
