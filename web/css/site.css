@@ -127,3 +127,23 @@ TD .btn-box-tool
 {
 	font-weight: 700;
 }
+
+.error-box
+{
+	width: 700px;
+	margin: 7% auto;
+}
+.error-page > .headline
+{
+	float: left;
+	font-size: 100px;
+	font-weight: 300;
+	margin-top: -22px;
+}
+.error-box-body
+{
+	background: #FFF;
+	padding: 20px;
+	border-top: 0;
+	color: #666;
+}

@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 use AppBundle\Form\ChangePasswordType;
 use AppBundle\Model\ChangePasswordModel;
+use AppBundle\Entity\SettingEntity;
 
 class SecurityController extends Controller
 {
@@ -15,25 +16,33 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
-        // Get User Agent string
-        $user_agent = $items = $request->server->get('HTTP_USER_AGENT');
+        $settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
 
-        // Check if this is the In Game Browser or not
-        if(!strpos($user_agent, 'EVE-IGB')) {
+        if($settings->findOneByName('system_maintenance')->getValue() == "0") {
 
-            $authenticationUtils = $this->get('security.authentication_utils');
+            // Get User Agent string
+            $user_agent = $items = $request->server->get('HTTP_USER_AGENT');
 
-            // get the login error if there is one
-            $error = $authenticationUtils->getLastAuthenticationError();
+            // Check if this is the In Game Browser or not
+            if(!strpos($user_agent, 'EVE-IGB')) {
 
-            // last username entered by the user
-            $lastUsername = $authenticationUtils->getLastUsername();
+                $authenticationUtils = $this->get('security.authentication_utils');
 
-            return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
+                // get the login error if there is one
+                $error = $authenticationUtils->getLastAuthenticationError();
+
+                // last username entered by the user
+                $lastUsername = $authenticationUtils->getLastUsername();
+
+                return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
+            } else {
+
+                // This is the IGB, display the error
+                return $this->render('security/igb_error.html.twig');
+            }
         } else {
 
-            // This is the IGB, display the error
-            return $this->render('security/igb_error.html.twig');
+            return $this->render('security/maintenance.html.twig');
         }
     }
 

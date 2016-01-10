@@ -52,6 +52,18 @@
             <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Contract Queue</span></a></li>
             <li class="{{(page_name == "Users" ? 'active' : '')}}"><a href="{{path('admin_users')}}"><i class="fa fa-users"></i> <span>Users</span></a></li>
             <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
+            <li class="header">SYSTEMS</li>
+            <li class="{{(page_name == "Core System" ? 'active' : '')}}"><a href="#"><i class="fa fa-codepen"></i> Core System</a>
+                <ul class="treeview-menu">
+                    <li class="{{(page_name == "Core System Settings" ? 'active' : '')}}"><a href="{{ path('admin_core_settings') }}"><i class="fa fa-cogs"></i> Settings</a></li>
+                </ul>
+            </li>
+            <li class="{{(page_name == "Buyback System" ? 'active' : '')}}"><a href="#"><i class="fa fa-balance-scale"></i> Material Buyback</a>
+                <ul class="treeview-menu">
+                    <li><a href="#"><i class="fa fa-cogs"></i> Settings</a></li>
+                    <li><a href="#">Exceptions</a></li>
+                </ul>
+            </li>
         {% endif %}
     </ul><!-- /.sidebar-menu -->
   </section>
