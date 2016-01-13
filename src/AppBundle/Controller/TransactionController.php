@@ -76,4 +76,25 @@ class TransactionController extends Controller
 
         return new Response('OK');
     }
+
+    /**
+     * @Route("/transaction/view", name="ajax_view_transaction")
+     */
+    public function ajax_ViewAction(Request $request)
+    {
+        // Handles the Transaction (IE Closes it)
+        $order_id = $request->query->get('id');
+        $order_type = $request->query->get('transaction_type');
+        dump($request);
+        if($order_type == "P") {
+
+            $em = $this->getDoctrine('default')->getManager();
+            $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+
+            $template = $this->render('transaction/view-p.html.twig', Array ( 'transaction' => $transaction ));
+            return $template;
+        }
+
+        return  new Response('ERROR');
+    }
 }

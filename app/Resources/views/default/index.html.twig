@@ -78,7 +78,7 @@
                         {% for sale in oSales %}
                             <tr>
                                 <td>{{sale.created|date("m/d/Y H:i")}}</td>
-                                <td>{{sale.orderid}}</td>
+                                <td><a class="fake_link" data-type="P">{{sale.orderid}}</a></td>
                                 <td>{{sale.net|number_format(0, '.', ',')}}</td>
                             </tr>
                         {% endfor %}
@@ -121,6 +121,7 @@
             </div>
         </div>-->
     </div>
+    <!--ORES
     <div class="row">
         <div class="col-md-12">
             <div class="nav-tabs-custom">
@@ -146,7 +147,7 @@
                     my dear friend, so absorbed in the exquisite sense of mere tranquil existence,
                     that I neglect my talents. I should be incapable of drawing a single stroke
                     at the present moment; and yet I feel that I never was a greater artist than now.
-                  </div><!-- /.tab-pane -->
+                  </div>
                   <div class="tab-pane" id="tab_1-2">
                     The European languages are members of the same family. Their separate existence is a myth.
                     For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
@@ -155,7 +156,7 @@
                     achieve this, it would be necessary to have uniform grammar, pronunciation and more common
                     words. If several languages coalesce, the grammar of the resulting language is more simple
                     and regular than that of the individual languages.
-                  </div><!-- /.tab-pane -->
+                  </div>
                   <div class="tab-pane" id="tab_1-3">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -164,7 +165,7 @@
                     remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
                     sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
                     like Aldus PageMaker including versions of Lorem Ipsum.
-                  </div><!-- /.tab-pane -->
+                  </div>
                   <div class="tab-pane" id="tab_1-4">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -173,7 +174,7 @@
                     remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
                     sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
                     like Aldus PageMaker including versions of Lorem Ipsum.
-                  </div><!-- /.tab-pane -->
+                  </div>
                   <div class="tab-pane" id="tab_1-5">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -182,7 +183,7 @@
                     remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
                     sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
                     like Aldus PageMaker including versions of Lorem Ipsum.
-                  </div><!-- /.tab-pane -->
+                  </div>
                   <div class="tab-pane" id="tab_1-6">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -191,7 +192,7 @@
                     remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
                     sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
                     like Aldus PageMaker including versions of Lorem Ipsum.
-                  </div><!-- /.tab-pane -->
+                  </div>
                   <div class="tab-pane" id="tab_1-7">
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                     Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -200,11 +201,11 @@
                     remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
                     sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
                     like Aldus PageMaker including versions of Lorem Ipsum.
-                  </div><!-- /.tab-pane -->
-                </div><!-- /.tab-content -->
+                  </div>
+                </div>
               </div>
         </div>
-    </div>
+    </div>-->
     <!--<div class="row">
         <div class="col-md-6">
             <div class="box">
@@ -273,6 +274,18 @@
             $('#index_modal').modal({backdrop: "static"});
 
             $.get('{{path('ajax_view_news')}}', {id: $(this).attr('data-i')},
+                function(response)
+                {
+                    $( "#index_modal_content" ).html( response );
+                }
+            , "html");
+        });
+
+        $(".fake_link[data-type='P']").click(function(e) {
+
+            $('#index_modal').modal({backdrop: "static"});
+
+            $.get('{{path('ajax_view_transaction')}}', {id: $(this).html(), transaction_type: $(this).attr("data-type")},
                 function(response)
                 {
                     $( "#index_modal_content" ).html( response );
