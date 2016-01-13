@@ -85,7 +85,7 @@ class TransactionController extends Controller
         // Handles the Transaction (IE Closes it)
         $order_id = $request->query->get('id');
         $order_type = $request->query->get('transaction_type');
-        dump($request);
+
         if($order_type == "P") {
 
             $em = $this->getDoctrine('default')->getManager();
