@@ -44,13 +44,13 @@ class RegistrationController extends Controller
                 if($hasMatch == false)
                 {
                     $this->addFlash('error', "Can't find " . $user->getUsername() . " with supplied API information.");
-                    return $this->redirectToRoute('user_registration');
+                    return $this->redirectToRoute('register');
                 }
 
             } catch (\Pheal\Exceptions\PhealException $e) {
 
                 $this->addFlash('error', 'Something has gone horribly wrong, please contact Lorvulk Munba in game');
-                return $this->redirectToRoute('user_registration');
+                return $this->redirectToRoute('register');
             }
 
             // 3) Encode the password (you could also do this via Doctrine listener)
