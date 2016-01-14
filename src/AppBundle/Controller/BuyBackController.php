@@ -111,7 +111,7 @@ class BuyBackController extends Controller
 
         $ajaxData .= "]";
         $ajaxData = rtrim($ajaxData, ",");
-        dump($items);
+
         if($items != null) {
 
             $template = $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $totalValue, 'ajaxData' => $ajaxData ));
