@@ -59,6 +59,7 @@ class BuyBackController extends Controller
                     if($item[1] == "") {
                         $lineItem->setQuantity(1);
                     } else {
+                        $lineItem->setQuantity(str_replace('.', '', $item[1]));
                         $lineItem->setQuantity(str_replace(',', '', $item[1]));
                     }
 
