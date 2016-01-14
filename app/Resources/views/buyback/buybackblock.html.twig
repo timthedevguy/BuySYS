@@ -4,7 +4,7 @@
     <div class="col-md-7">
         {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
         <div id="buyback_submits">
-            <input type="button" class="btn btn-danger " value="Clear">
+            <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
             <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Submit">
         </div>
     </div>
@@ -35,6 +35,11 @@
         {
             $('#estimate_modal').modal({backdrop: "static"});
             submitQuickEstimate();
+        });
+
+        $("#buyback_clear").click(function(e) {
+
+            $("#items").val('');
         });
     });
 
