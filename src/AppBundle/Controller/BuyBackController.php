@@ -60,9 +60,9 @@ class BuyBackController extends Controller
                         $lineItem->setQuantity(1);
                     } else {
                         $lineItem->setQuantity(str_replace('.', '', $item[1]));
-                        $lineItem->setQuantity(str_replace(',', '', $item[1]));
+                        $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
                     }
-
+                    dump($lineItem);
                     $lineItem->setName($type->getTypeName());
                     $lineItem->setVolume($type->getVolume());
 
