@@ -51,14 +51,14 @@ class MarketHelper
                 if(!$cacheItem) {
 
                     $cacheItem = new CacheEntity();
-                    $cacheItem->setTypeId($market_results["sell"]["forQuery"]["types"][0]);
-                    $cacheItem->setMarket($market_results["sell"]["fivePercent"]);
+                    $cacheItem->setTypeId($market_results["buy"]["forQuery"]["types"][0]);
+                    $cacheItem->setMarket($market_results["buy"]["fivePercent"]);
                     $cacheItem->setLastPull(new \DateTime("now"));
                     $em->persist($cacheItem);
                     $em->flush();
                 } else {
 
-                    $cacheItem->setMarket($market_results["sell"]["fivePercent"]);
+                    $cacheItem->setMarket($market_results["buy"]["fivePercent"]);
                     $cacheItem->setLastPull(new \DateTime("now"));
                     $em->flush();
                 }
