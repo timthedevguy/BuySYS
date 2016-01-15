@@ -37,8 +37,9 @@ class MarketHelper
 
         // If we have dirty cache pull new data
         if(count($dirtyTypeIds) > 0) {
+
             // Build EveCentral Query string
-            $queryString = "http://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $dirtyTypeIds) . "&usesystem=30002510";
+            $queryString = "http://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $dirtyTypeIds) . "&usesystem=30002187";
 
             $json = file_get_contents($queryString);
     		$json_array = json_decode($json, true);
