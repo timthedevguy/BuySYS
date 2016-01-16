@@ -9,7 +9,7 @@
     <h4 class="modal-title">Buyback Offer</h4>
 </div>
 <div class="modal-body" >
-    <h2 style="text-align: right; margin-top: 0px;">Total Value: <span class="text-green">{{total|number_format(0, '.', ',')}}</h2>
+    <h2 id="estimated_value" style="text-align: right; margin-top: 0px;height:40px;">Estimated Value: <span class="text-green">{{total|number_format(0, '.', ',')}}</h2>
     <div class="buyback-results-container">
         <table class="table table-striped images-table">
             <tr>
@@ -39,10 +39,23 @@
 <script type="text/javascript">
     $(document).ready(function (e) {
 
+        $totalValue="";
+
         $("#acceptOffer").click(function(e)
         {
             acceptOfferSubmit();
         });
+    });
+
+    $("#estimated_value").mouseenter(function(e) {
+
+        $totalValue = $(this).html();
+        $(this).html("Don't copy this!!!!");
+    });
+
+    $("#estimated_value").mouseout(function(e) {
+
+        $(this).html($totalValue);
     });
 
     function acceptOfferSubmit()

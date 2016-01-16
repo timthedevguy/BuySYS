@@ -3,11 +3,15 @@ namespace AppBundle\Helper;
 
 class Helper
 {
-    private static function initialize()
-    {
-    	if (self::$initialized)
-    		return;
+    private $doctrine;
 
-        //self::$greeting .= ' There!';
+    public function __construct($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
+
+    public function doSomething()
+    {
+        // Do something here
     }
 }
