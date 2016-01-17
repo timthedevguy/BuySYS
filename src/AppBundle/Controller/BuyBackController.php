@@ -16,9 +16,45 @@ use EveBundle\Entity\TypeEntity;
 use AppBundle\Entity\CacheEntity;
 use AppBundle\Entity\TransactionEntity;
 use AppBundle\Helper\MarketHelper;
+use AppBundle\Model\BuyBackSettingsModel;
 
 class BuyBackController extends Controller
 {
+    /**
+     * @Route("/admin/settings/buyback", name="admin_buyback_settings")
+     */
+    public function settingsAction(Request $request)
+    {
+        //$settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
+
+        if($request->getMethod() == 'POST') {
+
+            try
+            {
+                $this->get('helper')->setSetting("buyback_source_id", $request->request->get('source_id'));
+                $this->get("helper")->setSetting("buyback_source_type", $request->request->get('source_type'));
+                $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
+                $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
+
+                $this->addFlash('success', "Settings saved successfully!");
+            }
+            catch(Exception $e)
+            {
+                $this->addFlash('error', "Settings not saved!  Contact Lorvulk Munba.");
+            }
+        }
+
+        $buybacksettings = new BuyBackSettingsModel();
+
+        $buybacksettings->setSourceId($this->get("helper")->getSetting("buyback_source_id"));
+        $buybacksettings->setSourceType($this->get("helper")->getSetting("buyback_source_type"));
+        $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
+        $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
+
+        return $this->render('buyback/settings.html.twig', array(
+            'page_name' => 'Buyback System', 'sub_text' => 'Buyback Settings', 'mode' => 'ADMIN', 'model' => $buybacksettings));
+    }
+
     /**
      * @Route("/buyback/estimate", name="ajax_estimate_buyback")
      */
@@ -62,7 +98,7 @@ class BuyBackController extends Controller
                         $lineItem->setQuantity(str_replace('.', '', $item[1]));
                         $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
                     }
-                    
+
                     $lineItem->setName($type->getTypeName());
                     $lineItem->setVolume($type->getVolume());
 
