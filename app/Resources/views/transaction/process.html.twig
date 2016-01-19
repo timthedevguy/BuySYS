@@ -34,15 +34,17 @@
                 <div>
                     <table class="table table-striped images-table">
                         <tr>
-                            <th style="width:50px;"></th>
                             <th style="width:100px;">Quantity</th>
                             <th>Item</th>
+                            <th>Unit Price</th>
+                            <th>Net Price</th>
                         </tr>
                         {% for item in transaction.lineitems %}
                             <tr>
-                                <td><input class="mark_off" type="checkbox"></td>
                                 <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
                                 <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" />{{ item.name }}</td>
+                                <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                                <td>{{ item.netprice|number_format(0,'.',',') }}</td>
                             </tr>
                         {% endfor %}
                     </table>
