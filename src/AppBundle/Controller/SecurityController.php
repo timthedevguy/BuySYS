@@ -16,33 +16,46 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
-        $settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
+        // Get Maintenance Mode flag
+        // Note: If null is returned then no settings exists, proceed to
+        // generate them.
+        $isDown = $this->get("helper")->getSetting("system_maintenance");
 
-        if($settings->findOneByName('system_maintenance')->getValue() == "0") {
+        if($isDown != null) {
+            if($isDown == "0") {
 
-            // Get User Agent string
-            $user_agent = $items = $request->server->get('HTTP_USER_AGENT');
+                // Get User Agent string
+                $user_agent = $items = $request->server->get('HTTP_USER_AGENT');
 
-            // Check if this is the In Game Browser or not
-            if(!strpos($user_agent, 'EVE-IGB')) {
+                // Check if this is the In Game Browser or not
+                if(!strpos($user_agent, 'EVE-IGB')) {
 
-                $authenticationUtils = $this->get('security.authentication_utils');
+                    $authenticationUtils = $this->get('security.authentication_utils');
 
-                // get the login error if there is one
-                $error = $authenticationUtils->getLastAuthenticationError();
+                    // get the login error if there is one
+                    $error = $authenticationUtils->getLastAuthenticationError();
 
-                // last username entered by the user
-                $lastUsername = $authenticationUtils->getLastUsername();
+                    // last username entered by the user
+                    $lastUsername = $authenticationUtils->getLastUsername();
 
-                return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
+                    return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
+                } else {
+
+                    // This is the IGB, display the error
+                    return $this->render('security/igb_error.html.twig');
+                }
             } else {
 
-                // This is the IGB, display the error
-                return $this->render('security/igb_error.html.twig');
+                // In Maintenance Mode, display the message
+                return $this->render('security/maintenance.html.twig');
             }
         } else {
 
-            return $this->render('security/maintenance.html.twig');
+            // No settings exists, Generate them and then display the login
+            // page again.
+            $this->get("helper")->generateDefaultSettings();
+            $this->addFlash("success", 'Generated default settings, login to continue!');
+            return $this->redirectToRoute('login_route');
         }
     }
 
