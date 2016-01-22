@@ -40,7 +40,7 @@ class DefaultController extends Controller
         $oSales = $query->getResult();
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAll();
 
-
+        $this->get("market")->GetMarketPrice('1228');
         return $this->render('default/index.html.twig', array(
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(), 'mode' => 'USER',
          'oSales' => $oSales, 'news' => $news));
@@ -76,5 +76,16 @@ class DefaultController extends Controller
 
         return $this->render('default/settings.html.twig', array(
             'page_name' => 'Core System', 'sub_text' => '', 'mode' => 'ADMIN', 'model' => $coreSettings));
+    }
+
+    private function getHighSecOres() {
+
+        $highSecOres = array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453');
+
+        //$em = $this->getDoctrine()->getManager('evedata');
+        //$query = $em->createQuery('SELECT c FROM EveBundle:TypeEntity c WHERE c.typeID IN (:types)')->setParameter('types', $highSecOres);
+        //$types = $query->getResult();
+
+
     }
 }
