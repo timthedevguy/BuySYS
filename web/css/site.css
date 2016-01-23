@@ -147,3 +147,13 @@ TD .btn-box-tool
 	border-top: 0;
 	color: #666;
 }
+
+.images-table-small IMG
+{
+	margin-right: 10px;
+	width: 20px;
+}
+
+.color-col {
+	width: 20px;
+}

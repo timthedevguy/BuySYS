@@ -7,3 +7,6 @@ services:
     helper:
         class: AppBundle\Helper\Helper
         arguments: [@doctrine]
+    market:
+        class: AppBundle\Helper\Market
+        arguments: ['@doctrine', '@helper']

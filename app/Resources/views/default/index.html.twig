@@ -121,7 +121,7 @@
             </div>
         </div>-->
     </div>
-    <!--ORES
+
     <div class="row">
         <div class="col-md-12">
             <div class="nav-tabs-custom">
@@ -133,79 +133,272 @@
                     <li class=""><a href="#tab_1-5" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/16262_32.png"/>Ice</a></li>
                     <li class=""><a href="#tab_1-6" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/30372_32.png"/>Gas</a></li>
                     <li class=""><a href="#tab_1-7" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/34_32.png"/>Minerals</a></li>
-                    <li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>
+                    <!--<li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>-->
                 </ul>
                 <div class="tab-content">
                   <div class="tab-pane active" id="tab_1-1">
-                    <b>How to use:</b>
-                    <p>Exactly like the original bootstrap tabs except you should use
-                      the custom wrapper <code>.nav-tabs-custom</code> to achieve this style.</p>
-                    A wonderful serenity has taken possession of my entire soul,
-                    like these sweet mornings of spring which I enjoy with my whole heart.
-                    I am alone, and feel the charm of existence in this spot,
-                    which was created for the bliss of souls like mine. I am so happy,
-                    my dear friend, so absorbed in the exquisite sense of mere tranquil existence,
-                    that I neglect my talents. I should be incapable of drawing a single stroke
-                    at the present moment; and yet I feel that I never was a greater artist than now.
+                        <table class="table table-striped images-table-small">
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Volume
+                                </th>
+                                <th>
+                                    Unit Price
+                                </th>
+                                <th class="color-col"></th>
+                                <th>
+                                    Price /m3
+                                </th>
+                                <th>
+                                    Units /Can
+                                </th>
+                                <th>
+                                    Price /Can
+                                </th>
+                            </tr>
+
+                            {% for ore in highsecores %}
+                                <tr>
+                                    <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                    <td>{{ore.volume}}</td>
+                                    <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                    <td class="color-col" k="{{ore.color}}"></td>
+                                    <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                    <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                    <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                   </div>
                   <div class="tab-pane" id="tab_1-2">
-                    The European languages are members of the same family. Their separate existence is a myth.
-                    For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
-                    in their grammar, their pronunciation and their most common words. Everyone realizes why a
-                    new common language would be desirable: one could refuse to pay expensive translators. To
-                    achieve this, it would be necessary to have uniform grammar, pronunciation and more common
-                    words. If several languages coalesce, the grammar of the resulting language is more simple
-                    and regular than that of the individual languages.
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th>
+                                  Unit Price
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Price /m3
+                              </th>
+                              <th>
+                                  Units /Can
+                              </th>
+                              <th>
+                                  Price /Can
+                              </th>
+                          </tr>
+
+                          {% for ore in otherhighsecores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td>{{ore.volume}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
                   </div>
                   <div class="tab-pane" id="tab_1-3">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                    sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th>
+                                  Unit Price
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Price /m3
+                              </th>
+                              <th>
+                                  Units /Can
+                              </th>
+                              <th>
+                                  Price /Can
+                              </th>
+                          </tr>
+
+                          {% for ore in lowsecores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td>{{ore.volume}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
                   </div>
                   <div class="tab-pane" id="tab_1-4">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                    sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th>
+                                  Unit Price
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Price /m3
+                              </th>
+                              <th>
+                                  Units /Can
+                              </th>
+                              <th>
+                                  Price /Can
+                              </th>
+                          </tr>
+
+                          {% for ore in nullsecores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td>{{ore.volume}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
                   </div>
                   <div class="tab-pane" id="tab_1-5">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                    sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th>
+                                  Unit Price
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Price /m3
+                              </th>
+                              <th>
+                                  Units /Can
+                              </th>
+                              <th>
+                                  Price /Can
+                              </th>
+                          </tr>
+
+                          {% for ore in iceores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td>{{ore.volume}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
                   </div>
                   <div class="tab-pane" id="tab_1-6">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                    sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th>
+                                  Unit Price
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Price /m3
+                              </th>
+                              <th>
+                                  Units /Can
+                              </th>
+                              <th>
+                                  Price /Can
+                              </th>
+                          </tr>
+
+                          {% for ore in gasores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td>{{ore.volume}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
                   </div>
                   <div class="tab-pane" id="tab_1-7">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset
-                    sheets containing Lorem Ipsum passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th>
+                                  Unit Price
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Price /m3
+                              </th>
+                              <th>
+                                  Units /Can
+                              </th>
+                              <th>
+                                  Price /Can
+                              </th>
+                          </tr>
+
+                          {% for ore in mineralores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td>{{ore.volume}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
                   </div>
                 </div>
               </div>
         </div>
-    </div>-->
+    </div>
     <!--<div class="row">
         <div class="col-md-6">
             <div class="box">
@@ -267,7 +460,19 @@
 {% block javascripts %}
 
 <script type="text/javascript">
+
+    function blendColors(p) {
+        c0 = '#FF0000';
+        c1 = '#00CC00';
+        var f=parseInt(c0.slice(1),16),t=parseInt(c1.slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF,R2=t>>16,G2=t>>8&0x00FF,B2=t&0x0000FF;
+        return "#"+(0x1000000+(Math.round((R2-R1)*p)+R1)*0x10000+(Math.round((G2-G1)*p)+G1)*0x100+(Math.round((B2-B1)*p)+B1)).toString(16).slice(1);
+    }
+
     $(document).ready(function (e) {
+
+        $( ".color-col" ).each( function(index) {
+			$(this).css('background-color', blendColors($(this).attr('k')));
+		});
 
         $(".news_item_link").click(function(e) {
 
