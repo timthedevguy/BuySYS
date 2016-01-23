@@ -12,6 +12,8 @@ use AppBundle\Form\BuyBackType;
 use AppBundle\Helper\Helper;
 use AppBundle\Model\DefaultSettingsModel;
 use AppBundle\Entity\SettingEntity;
+use AppBundle\Model\OreReviewModel;
+use EveBundle\Entity\TypeEntity;
 
 class DefaultController extends Controller
 {
@@ -40,10 +42,18 @@ class DefaultController extends Controller
         $oSales = $query->getResult();
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAll();
 
+        $highSecOres = $this->getQuickReview(array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453'));
+        $otherHighSecOres = $this->getQuickReview(array('18','17455','17456','1227','17867','17868'));
+        $lowSecOres = $this->getQuickReview(array('1226','17448','17449','1231','17444','17445','21','17440','17441'));
+        $nullSecOres = $this->getQuickReview(array('22','17425','17426','1223','17428','17429','1225','17432','17433','1232','17436','17437','1229','17865','17866','11396','17869','17870','19','17466','17467'));
+        $iceOres = $this->getQuickReview(array('16264','17975','16265','17976','16262','17978','16263','17977','16267','16268','16266','16269'));
+        $gasOres = $this->getQuickReview(array('25268','28694','25279','28695','25275','28696','30375','30376','30377','30370','30378','30371','30372','30373','30374','25273','28697','25277','28698','25276','28699','25278','28700','25274','28701'));
+        $mineralOres = $this->getQuickReview(array('34','35','36','37','38','39','40','11399'));
 
         return $this->render('default/index.html.twig', array(
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(), 'mode' => 'USER',
-         'oSales' => $oSales, 'news' => $news));
+         'oSales' => $oSales, 'news' => $news, 'highsecores' => $highSecOres, 'otherhighsecores' => $otherHighSecOres, 'lowsecores' => $lowSecOres,
+         'nullsecores' => $nullSecOres, 'iceores' => $iceOres, 'gasores' => $gasOres, 'mineralores' => $mineralOres));
     }
 
     /**
@@ -77,4 +87,85 @@ class DefaultController extends Controller
         return $this->render('default/settings.html.twig', array(
             'page_name' => 'Core System', 'sub_text' => '', 'mode' => 'ADMIN', 'model' => $coreSettings));
     }
+
+    private function getQuickReview($typeIds) {
+
+        $results = array();
+        //$typeIds = array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453');
+
+        foreach($typeIds as $typeId) {
+
+            $tax = $this->get("helper")->getSetting("buyback_default_tax");
+            $marketPrice = $this->get("market")->GetMarketPrice($typeId)*((100-$tax)/100);
+
+            $eveType = $this->getDoctrine('evedata')->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeId);
+            $oreModel = new OreReviewModel();
+            $oreModel->setTypeId($typeId);
+            $oreModel->setName($eveType->getTypeName());
+            $oreModel->setVolume($eveType->getVolume());
+            $oreModel->setIskPer($marketPrice);
+            $oreModel->setIskPerM($marketPrice/$oreModel->getVolume());
+            $oreModel->setCanUnits(27000/$oreModel->getVolume());
+            $oreModel->setCanPrice(27000*$oreModel->getIskPerM());
+
+            $results[] = $oreModel;
+        }
+
+        //$em = $this->getDoctrine()->getManager('evedata');
+        //$query = $em->createQuery('SELECT c FROM EveBundle:TypeEntity c WHERE c.typeID IN (:types)')->setParameter('types', $highSecOres);
+        //$types = $query->getResult();
+        return $this->calculateBlends($results);
+    }
+
+    private function calculateBlends($source) {
+
+		// Setup impossible Low value and High value
+		$high = 0;
+		$low = 1000000000;
+		$results = array();
+        //'11396','17869','17870'
+		// Loop through items
+		foreach($source as $item) {
+
+            if($item->getTypeId() != '11396' & $item->getTypeId() != '17869' & $item->getTypeId() != '17870' & $item->getTypeId() != '16267') {
+
+    			// Get Valuation of 100 units of ore
+    			$value = floor($item->getIskPerM());
+
+    			// See if this is higher than our highest currently
+    			if($value > $high) {
+
+    				$high = $value;
+    			}
+
+    			// See if this is lower than our lowest currently
+    			if($value < $low) {
+
+    				$low = $value;
+    			}
+            }
+		}
+
+		// Now we have a min and max we can calculate the spread
+		$spread = $high - $low;
+
+		foreach($source as $item) {
+
+            if($item->getTypeId() != '11396' & $item->getTypeId() != '17869' & $item->getTypeId() != '17870' & $item->getTypeId() != '16267') {
+    			$value = floor($item->getIskPerM());
+
+    			// Calculate the percent by getting the spread of the unit
+    			// ie: it's value minus the min, then divide by the entire spread.
+    			$percent = ($value - $low) / $spread;
+
+    			//$results[$item->name] = $percent;
+                $item->setColor($percent);
+            } else {
+
+                $item->setColor('1');
+            }
+		}
+
+		return $source;
+	}
 }
