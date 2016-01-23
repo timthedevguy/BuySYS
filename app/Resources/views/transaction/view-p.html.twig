@@ -38,7 +38,7 @@
                     {% for item in transaction.lineitems %}
                         <tr>
                             <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
-                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" />{{ item.name }}</td>
+                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
                         </tr>
                     {% endfor %}
                 </table>
