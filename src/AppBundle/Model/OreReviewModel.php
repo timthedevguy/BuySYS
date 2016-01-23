@@ -3,6 +3,20 @@ namespace AppBundle\Model;
 
 class OreReviewModel {
 
+    protected $typeId;
+
+    public function setTypeId($typeId)
+    {
+        $this->typeId = $typeId;
+
+        return $this;
+    }
+
+    public function getTypeId()
+    {
+        return $this->typeId;
+    }
+    
     protected $name;
 
     public function setName($name)

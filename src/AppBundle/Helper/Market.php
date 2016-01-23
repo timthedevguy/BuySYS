@@ -70,5 +70,7 @@ class Market {
                 $em->flush();
     		}
         }
+
+        return $cacheEntity->getMarket();
     }
 }
