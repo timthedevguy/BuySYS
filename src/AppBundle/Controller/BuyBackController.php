@@ -227,4 +227,27 @@ class BuyBackController extends Controller
         $template = $this->render('buyback/accepted.html.twig', Array ( 'auth_code' => $transaction->getOrderId(), 'total_value' => $net, 'transaction' => $transaction ));
         return $template;
     }
+
+    /**
+     * @Route("/market/lookup", name="ajax_lookup_price")
+     */
+    public function ajax_LookupAction(Request $request) {
+
+        $typeId = $request->request->get('id');
+
+        // Get Settings
+        $bb_source_type = $this->get('helper')->getSetting("buyback_source_type");
+        $bb_source_stat = $this->get('helper')->getSetting("buyback_source_stat");
+
+        if(is_numeric($typeId)) {
+
+            $jsonData = $this->get('market')->GetEveCentralData($typeId);
+            $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
+
+            $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'data' => $jsonData,
+                                        'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID()));
+            return $template;
+        }
+
+    }
 }
