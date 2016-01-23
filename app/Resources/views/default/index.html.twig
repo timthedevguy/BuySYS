@@ -162,7 +162,7 @@
 
                             {% for ore in highsecores %}
                                 <tr>
-                                    <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                    <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                     <td>{{ore.volume}}</td>
                                     <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                     <td class="color-col" k="{{ore.color}}"></td>
@@ -199,7 +199,7 @@
 
                           {% for ore in otherhighsecores %}
                               <tr>
-                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
                                   <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
@@ -236,7 +236,7 @@
 
                           {% for ore in lowsecores %}
                               <tr>
-                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
                                   <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
@@ -273,7 +273,7 @@
 
                           {% for ore in nullsecores %}
                               <tr>
-                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
                                   <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
@@ -293,12 +293,9 @@
                               <th>
                                   Volume
                               </th>
-                              <th>
-                                  Unit Price
-                              </th>
                               <th class="color-col"></th>
                               <th>
-                                  Price /m3
+                                  Unit Price
                               </th>
                               <th>
                                   Units /Can
@@ -310,11 +307,10 @@
 
                           {% for ore in iceores %}
                               <tr>
-                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
-                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
-                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
                                   <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
                               </tr>
@@ -347,7 +343,7 @@
 
                           {% for ore in gasores %}
                               <tr>
-                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
                                   <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
@@ -384,7 +380,7 @@
 
                           {% for ore in mineralores %}
                               <tr>
-                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" />{{ore.name}}</td>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
                                   <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
@@ -469,6 +465,10 @@
     }
 
     $(document).ready(function (e) {
+
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
 
         $( ".color-col" ).each( function(index) {
 			$(this).css('background-color', blendColors($(this).attr('k')));
