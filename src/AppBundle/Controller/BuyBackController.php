@@ -83,7 +83,7 @@ class BuyBackController extends Controller
             if(count($item) > 1) {
 
                 // 6 Columns -> Means this is pasted from Inventory Screen
-                if(count($item) == 6) {
+                //if(count($item) == 6) {
 
                     // Get TYPE from Eve Database
                     $type = $types->findOneByTypeName($item[0]);
@@ -106,7 +106,7 @@ class BuyBackController extends Controller
 
                     // Build our list of TypeID's
                     $typeids[] = $type->getTypeId();
-                }
+                //}
             } else {
 
                 // Didn't contain tabs, so user typed it in?  Try to preg match it
