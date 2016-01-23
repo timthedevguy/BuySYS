@@ -54,6 +54,13 @@ class Market {
 
     public function GetEveCentralData($typeIds) {
 
+        if(!is_array($typeIds)) {
+
+            $tmp = $typeIds;
+            $typeIds = array();
+            $typeIds[] = $tmp;
+        }
+
         if(count($typeIds) > 0)
         {
             // Get Buyback System setting
