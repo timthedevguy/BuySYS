@@ -78,6 +78,88 @@ class Market {
         }
     }
 
+    public function GetMarketPrices($typeIds) {
+
+        // Get only Unique TypeIds
+        $dirtyTypeIds = array_unique($typeIds);
+
+        $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
+
+        // Get current cache entries
+        $em = $this->doctrine->getManager('default');
+        $query = $em->createQuery('SELECT c FROM AppBundle:CacheEntity c WHERE c.typeID IN (:types)')->setParameter('types', $dirtyTypeIds);
+        $cached = $query->getResult();
+        $results = array();
+
+        // If record isn't stale then remove it from the list to pull
+        foreach($cached as $cacheItem) {
+
+            if(date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900)) {
+
+                unset($dirtyTypeIds[array_search($cacheItem->getTypeID(), $dirtyTypeIds)]);
+            }
+        }
+
+        $dirtyTypeIds = array_values($dirtyTypeIds);
+
+        // If we have dirty cache pull new data
+        if(count($dirtyTypeIds) > 0)
+        {
+            // Get Settings
+            $bb_source_id = $this->helper->getSetting("buyback_source_id");
+            $bb_source_type = $this->helper->getSetting("buyback_source_type");
+            $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+
+            // Do this in batches of 20
+            for($i = 0;$i<=count($dirtyTypeIds);$i+=20) {
+
+            	$limit = $i+20;
+            	if($limit > count($dirtyTypeIds)) {$limit = count($dirtyTypeIds);}
+
+                $lookup = array();
+
+            	for($j=$i;$j<$limit;$j++) {
+
+            		$lookup[] = $dirtyTypeIds[$j];
+            	}
+
+                // Get 20 results from EveCentral
+                $json_array = $this->GetEveCentralData($lookup);
+
+                // Parse eve central data
+                foreach($json_array as $market_results)
+                {
+        			$cacheItem = $cache->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
+
+                    if(!$cacheItem)
+                    {
+                        $cacheItem = new CacheEntity();
+                        $cacheItem->setTypeId($market_results[$bb_source_type]["forQuery"]["types"][0]);
+                        $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                        $cacheItem->setLastPull(new \DateTime("now"));
+                        $em->persist($cacheItem);
+                        $em->flush();
+                    } else {
+
+                        $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                        $cacheItem->setLastPull(new \DateTime("now"));
+                        $em->flush();
+                    }
+
+                    //$cached[] = $cacheItem;
+                    $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+        		}
+            }
+        }
+
+        foreach($cached as $cacheItem)
+        {
+            $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+        }
+
+        return $results;
+    }
+
     public function GetMarketPrice($typeId) {
 
         $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
