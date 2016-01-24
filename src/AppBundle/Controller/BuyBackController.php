@@ -133,7 +133,8 @@ class BuyBackController extends Controller
             }
         }
 
-        $priceLookup = MarketHelper::GetMarketPrices($typeids, $this);
+        //$priceLookup = MarketHelper::GetMarketPrices($typeids, $this);
+        $priceLookup = $this->get('market')->GetMarketPrices($typeids);
 
         $totalValue = 0;
         $ajaxData = "[";

@@ -40,7 +40,7 @@ class DefaultController extends Controller
 
         //$outstandingSales = count($query->getResult());
         $oSales = $query->getResult();
-        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAll();
+        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         $highSecOres = $this->getQuickReview(array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453'));
         $otherHighSecOres = $this->getQuickReview(array('18','17455','17456','1227','17867','17868'));
