@@ -5,61 +5,63 @@
         font-weight: 700;
     }
 </style>
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title"><img src="https://image.eveonline.com/Type/{{typeid}}_32.png" />{{type_name}} Eve Central Data</h4>
-</div>
-<div class="modal-body" >
-    <div class="buyback-results-container">
-        <table class="table table-striped">
-            <tr>
-                <th>Type</th>
-                <th>Avg</th>
-                <th>WAvg</th>
-                <th>Var</th>
-                <th>Max</th>
-                <th>Min</th>
-                <th>StdDev</th>
-                <th>Median</th>
-                <th>5%</th>
-            </tr>
-            <tr class="r-buy">
-                <td><strong>Buy</strong></td>
-                <td class="c-avg">{{data.0.buy.avg|number_format(0, '.', ',')}}</td>
-                <td class="c-wavg">{{data.0.buy.wavg|number_format(0, '.', ',')}}</td>
-                <td class="c-variance">{{data.0.buy.variance|number_format(0, '.', ',')}}</td>
-                <td class="c-max">{{data.0.buy.max|number_format(0, '.', ',')}}</td>
-                <td class="c-min">{{data.0.buy.min|number_format(0, '.', ',')}}</td>
-                <td class="c-stdDev">{{data.0.buy.stdDev|number_format(0, '.', ',')}}</td>
-                <td class="c-median">{{data.0.buy.median|number_format(0, '.', ',')}}</td>
-                <td class="c-fivePercent">{{data.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
-            </tr>
-            <tr class="r-sell">
-                <td><strong>Sell</strong></td>
-                <td class="c-avg">{{data.0.sell.avg|number_format(0, '.', ',')}}</td>
-                <td class="c-wavg">{{data.0.sell.wavg|number_format(0, '.', ',')}}</td>
-                <td class="c-variance">{{data.0.sell.variance|number_format(0, '.', ',')}}</td>
-                <td class="c-max">{{data.0.sell.max|number_format(0, '.', ',')}}</td>
-                <td class="c-min">{{data.0.sell.min|number_format(0, '.', ',')}}</td>
-                <td class="c-stdDev">{{data.0.sell.stdDev|number_format(0, '.', ',')}}</td>
-                <td class="c-median">{{data.0.sell.median|number_format(0, '.', ',')}}</td>
-                <td class="c-fivePercent">{{data.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
-            </tr>
-            <tr class="r-all">
-                <td><strong>All</strong></td>
-                <td class="c-avg">{{data.0.all.avg|number_format(0, '.', ',')}}</td>
-                <td class="c-wavg">{{data.0.all.wavg|number_format(0, '.', ',')}}</td>
-                <td class="c-variance">{{data.0.all.variance|number_format(0, '.', ',')}}</td>
-                <td class="c-max">{{data.0.all.max|number_format(0, '.', ',')}}</td>
-                <td class="c-min">{{data.0.all.min|number_format(0, '.', ',')}}</td>
-                <td class="c-stdDev">{{data.0.all.stdDev|number_format(0, '.', ',')}}</td>
-                <td class="c-median">{{data.0.all.median|number_format(0, '.', ',')}}</td>
-                <td class="c-fivePercent">{{data.0.all.fivePercent|number_format(0, '.', ',')}}</td>
-            </tr>
-        </table>
-        <p>Green box denotes the price that is used in all market lookups/calculations and buybacks</p>
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><img src="https://image.eveonline.com/Type/{{typeid}}_32.png" />{{type_name}} Eve Central Data</h4>
     </div>
-</div>
-<div class="modal-footer">
-    <button type="button" id="buybackacceptclose" class="btn btn-warning" data-dismiss="modal">Close</button>
+    <div class="modal-body" >
+        <div class="buyback-results-container">
+            <table class="table table-striped">
+                <tr>
+                    <th>Type</th>
+                    <th>Avg</th>
+                    <th>WAvg</th>
+                    <th>Var</th>
+                    <th>Max</th>
+                    <th>Min</th>
+                    <th>StdDev</th>
+                    <th>Median</th>
+                    <th>5%</th>
+                </tr>
+                <tr class="r-buy">
+                    <td><strong>Buy</strong></td>
+                    <td class="c-avg">{{data.0.buy.avg|number_format(0, '.', ',')}}</td>
+                    <td class="c-wavg">{{data.0.buy.wavg|number_format(0, '.', ',')}}</td>
+                    <td class="c-variance">{{data.0.buy.variance|number_format(0, '.', ',')}}</td>
+                    <td class="c-max">{{data.0.buy.max|number_format(0, '.', ',')}}</td>
+                    <td class="c-min">{{data.0.buy.min|number_format(0, '.', ',')}}</td>
+                    <td class="c-stdDev">{{data.0.buy.stdDev|number_format(0, '.', ',')}}</td>
+                    <td class="c-median">{{data.0.buy.median|number_format(0, '.', ',')}}</td>
+                    <td class="c-fivePercent">{{data.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
+                </tr>
+                <tr class="r-sell">
+                    <td><strong>Sell</strong></td>
+                    <td class="c-avg">{{data.0.sell.avg|number_format(0, '.', ',')}}</td>
+                    <td class="c-wavg">{{data.0.sell.wavg|number_format(0, '.', ',')}}</td>
+                    <td class="c-variance">{{data.0.sell.variance|number_format(0, '.', ',')}}</td>
+                    <td class="c-max">{{data.0.sell.max|number_format(0, '.', ',')}}</td>
+                    <td class="c-min">{{data.0.sell.min|number_format(0, '.', ',')}}</td>
+                    <td class="c-stdDev">{{data.0.sell.stdDev|number_format(0, '.', ',')}}</td>
+                    <td class="c-median">{{data.0.sell.median|number_format(0, '.', ',')}}</td>
+                    <td class="c-fivePercent">{{data.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
+                </tr>
+                <tr class="r-all">
+                    <td><strong>All</strong></td>
+                    <td class="c-avg">{{data.0.all.avg|number_format(0, '.', ',')}}</td>
+                    <td class="c-wavg">{{data.0.all.wavg|number_format(0, '.', ',')}}</td>
+                    <td class="c-variance">{{data.0.all.variance|number_format(0, '.', ',')}}</td>
+                    <td class="c-max">{{data.0.all.max|number_format(0, '.', ',')}}</td>
+                    <td class="c-min">{{data.0.all.min|number_format(0, '.', ',')}}</td>
+                    <td class="c-stdDev">{{data.0.all.stdDev|number_format(0, '.', ',')}}</td>
+                    <td class="c-median">{{data.0.all.median|number_format(0, '.', ',')}}</td>
+                    <td class="c-fivePercent">{{data.0.all.fivePercent|number_format(0, '.', ',')}}</td>
+                </tr>
+            </table>
+            <p>Green box denotes the price that is used in all market lookups/calculations and buybacks</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="buybackacceptclose" class="btn btn-warning" data-dismiss="modal">Close</button>
+    </div>
 </div>

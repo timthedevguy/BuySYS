@@ -88,24 +88,31 @@ class BuyBackController extends Controller
                     // Get TYPE from Eve Database
                     $type = $types->findOneByTypeName($item[0]);
 
-                    // Create & Populate our BuyBackItemModel
-                    $lineItem = new BuyBackItemModel();
-                    $lineItem->setTypeId($type->getTypeId());
+                    if($type != null) {
 
-                    if($item[1] == "") {
-                        $lineItem->setQuantity(1);
+                        // Create & Populate our BuyBackItemModel
+                        $lineItem = new BuyBackItemModel();
+                        $lineItem->setTypeId($type->getTypeId());
+
+                        if($item[1] == "") {
+                            $lineItem->setQuantity(1);
+                        } else {
+                            $lineItem->setQuantity(str_replace('.', '', $item[1]));
+                            $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
+                        }
+
+                        $lineItem->setName($type->getTypeName());
+                        $lineItem->setVolume($type->getVolume());
+
+                        $items[] = $lineItem;
+
+                        // Build our list of TypeID's
+                        $typeids[] = $type->getTypeId();
                     } else {
-                        $lineItem->setQuantity(str_replace('.', '', $item[1]));
-                        $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
+
+                        $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "Item doesn't exist in Eve Database: ".$item[0]));
+                        return $template;
                     }
-
-                    $lineItem->setName($type->getTypeName());
-                    $lineItem->setVolume($type->getVolume());
-
-                    $items[] = $lineItem;
-
-                    // Build our list of TypeID's
-                    $typeids[] = $type->getTypeId();
                 //}
             } else {
 
@@ -135,6 +142,12 @@ class BuyBackController extends Controller
 
         //$priceLookup = MarketHelper::GetMarketPrices($typeids, $this);
         $priceLookup = $this->get('market')->GetMarketPrices($typeids);
+
+        if(!is_array($priceLookup)) {
+
+            $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
+            return $template;
+        }
 
         $totalValue = 0;
         $ajaxData = "[";

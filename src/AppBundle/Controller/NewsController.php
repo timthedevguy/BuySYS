@@ -15,7 +15,7 @@ class NewsController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAll();
+        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         return $this->render('news/index.html.twig', array(
             'page_name' => 'News', 'sub_text' => '', 'mode' => 'ADMIN', 'news' => $news
