@@ -370,18 +370,9 @@
                               <th>
                                   Volume
                               </th>
-                              <th>
-                                  Unit Price
-                              </th>
                               <th class="color-col"></th>
                               <th>
-                                  Price /m3
-                              </th>
-                              <th>
-                                  Units /Can
-                              </th>
-                              <th>
-                                  Price /Can
+                                  Unit Price
                               </th>
                           </tr>
 
@@ -389,11 +380,8 @@
                               <tr>
                                   <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
                                   <td>{{ore.volume}}</td>
-                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                                   <td class="color-col" k="{{ore.color}}"></td>
-                                  <td><strong>{{ore.iskperm|number_format(0, '.', ',')}}</strong></td>
-                                  <td>{{ore.canunits|number_format(0, '.', ',')}}</td>
-                                  <td>{{ore.canprice|number_format(0, '.', ',')}}</td>
+                                  <td>{{ore.iskper|number_format(0, '.', ',')}}</td>
                               </tr>
                           {% endfor %}
                       </table>
