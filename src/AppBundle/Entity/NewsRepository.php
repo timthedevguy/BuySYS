@@ -13,4 +13,12 @@ class NewsRepository extends EntityRepository {
             )
             ->getResult();
     }
+
+    public function findAllAfterDate($date) {
+
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT p FROM AppBundle:NewsEntity p WHERE p.createdOn > :target'
+            )->setParameter('target', $date)->getResult();
+    }
 }

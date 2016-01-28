@@ -1,0 +1,118 @@
+<aside class="control-sidebar control-sidebar-dark">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-newspaper-o"></i></a></li>
+    <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-road"></i></a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <!-- Home tab content -->
+    <div class="tab-pane active" id="control-sidebar-home-tab">
+
+
+    </div><!-- /.tab-pane -->
+
+    <div class="tab-pane" id="control-sidebar-settings-tab">
+        <h3 class="control-sidebar-heading">To Do</h3>
+        <ul class="control-sidebar-menu">
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Mining Ops
+                    <span class="label label-warning pull-right">2%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-warning" style="width: 2%"></div>
+                </div>
+                </a>
+            </li>
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Exceptions
+                    <span class="label label-danger pull-right">0%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-danger" style="width: 0%"></div>
+                </div>
+                </a>
+            </li>
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Material Sales
+                    <span class="label label-danger pull-right">0%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-danger" style="width: 0%"></div>
+                </div>
+                </a>
+            </li>
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Ship Sales
+                    <span class="label label-danger pull-right">0%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-danger" style="width: 0%"></div>
+                </div>
+                </a>
+            </li>
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Raffles
+                    <span class="label label-danger pull-right">0%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-danger" style="width: 0%"></div>
+                </div>
+                </a>
+            </li>
+        </ul><!-- /.control-sidebar-menu -->
+        <h3 class="control-sidebar-heading">Completed</h3>
+        <ul class="control-sidebar-menu">
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Material Buy Back
+                    <span class="label label-success pull-right">100%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-success" style="width: 100%"></div>
+                </div>
+                </a>
+            </li>
+            <li>
+                <a>
+                <h4 class="control-sidebar-subheading">
+                    Users / Registration
+                    <span class="label label-success pull-right">100%</span>
+                </h4>
+                <div class="progress progress-xxs">
+                    <div class="progress-bar progress-bar-success" style="width: 100%"></div>
+                </div>
+                </a>
+            </li>
+        </ul>
+    </div><!-- /.tab-pane -->
+  </div>
+</aside><!-- /.control-sidebar -->
+<!-- Add the sidebar's background. This div must be placed
+     immediately after the control sidebar -->
+<div class="control-sidebar-bg"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $.get('{{path('ajax_all_news')}}', {},
+            function(response)
+            {
+                $( "#control-sidebar-home-tab" ).html( response );
+            }
+        , "html");
+
+    });
+</script>

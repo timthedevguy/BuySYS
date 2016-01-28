@@ -1,0 +1,33 @@
+<h3 class="control-sidebar-heading">Site News</h3>
+<ul class="control-sidebar-menu">
+    {% for item in items %}
+        <li>
+            <a class="fake_link sidebar_news_item" data-i="{{item.id}}">
+                <i class="menu-icon fa fa-newspaper-o bg-black"></i>
+                <div class="menu-info">
+                    <h4 class="control-sidebar-subheading">{{item.subject}}</h4>
+                    <p>By {{item.author}} on {{item.createdOn|date("m/d/Y H:i")}}</p>
+                </div>
+            </a>
+        </li>
+    {% endfor %}
+</ul><!-- /.control-sidebar-menu -->
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $(".sidebar_news_item").click(function(e) {
+
+            $('#index_modal').modal({backdrop: "static"});
+
+            $.get('{{path('ajax_view_news')}}', {id: $(this).attr('data-i')},
+                function(response)
+                {
+                    $( "#index_modal_content" ).html( response );
+                }
+            , "html");
+        });
+
+    });
+</script>

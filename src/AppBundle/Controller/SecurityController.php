@@ -22,6 +22,7 @@ class SecurityController extends Controller
         $isDown = $this->get("helper")->getSetting("system_maintenance");
 
         if($isDown != null) {
+
             if($isDown == "0") {
 
                 // Get User Agent string

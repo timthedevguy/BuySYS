@@ -8,6 +8,9 @@
     <ul class="nav navbar-nav">
       <!-- Messages: style can be found in dropdown.less-->
       <!-- Notifications Menu -->
+      <li class="dropdown notifications-menu" id="notifications_menu">
+
+      </li>
       <!-- Tasks Menu -->
       <!-- User Account Menu -->
       <li class="dropdown user user-menu">
@@ -50,6 +53,28 @@
         </ul>
       </li>
       <!-- Control Sidebar Toggle Button -->
+      <li>
+        <a href="#" data-toggle="control-sidebar"><i class="fa fa-info-circle"></i></a>
+        </li>
     </ul>
   </div>
 </nav>
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $.get('{{path('ajax_latest_news')}}', {},
+            function(response)
+            {
+                $( "#notifications_menu" ).html( response );
+                //$('#buyback_quick_modal').modal({backdrop: "static"});
+            }
+        , "html");
+    });
+
+</script>
+
+{% endblock %}
