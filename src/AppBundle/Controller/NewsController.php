@@ -129,7 +129,7 @@ class NewsController extends Controller
     public function ajax_AllAction(Request $request)
     {
         $news = $this->getDoctrine()->getRepository('AppBundle:NewsEntity', 'default')->findAllOrderedByDate();
-        dump($news);
+        
         $template = $this->render('elements/navControlTab1.html.twig', Array ( 'items' => $news ));
         return $template;
     }
