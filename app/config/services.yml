@@ -10,3 +10,7 @@ services:
     market:
         class: AppBundle\Helper\Market
         arguments: ['@doctrine', '@helper']
+    authentication_handler:
+        class: AppBundle\Helper\AuthenticationHandler
+        calls:
+            - [ setContainer, [ @service_container ] ]

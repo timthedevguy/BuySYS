@@ -106,4 +106,31 @@ class NewsController extends Controller
 
         return $this->render('news/view.html.twig', array('item' => $item));
     }
+
+    /**
+     * @Route("/news/latest", name="ajax_latest_news")
+     */
+    public function ajax_LatestAction(Request $request)
+    {
+        $news = $this->getDoctrine()->getRepository('AppBundle:NewsEntity', 'default')->findAllAfterDate($this->getUser()->getLastLogin());
+
+        if(count($news) != 0) {
+
+            $template = $this->render('elements/notificationMenu.html.twig', Array ( 'items' => $news, 'total' => count($news)));
+            return $template;
+        }
+
+        return new Response('');
+    }
+
+    /**
+     * @Route("/news/all", name="ajax_all_news")
+     */
+    public function ajax_AllAction(Request $request)
+    {
+        $news = $this->getDoctrine()->getRepository('AppBundle:NewsEntity', 'default')->findAllOrderedByDate();
+        dump($news);
+        $template = $this->render('elements/navControlTab1.html.twig', Array ( 'items' => $news ));
+        return $template;
+    }
 }

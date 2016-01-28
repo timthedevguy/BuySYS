@@ -61,6 +61,23 @@ class UserEntity implements AdvancedUserInterface, \Serializable
          return $this->characterId;
      }
 
+     /**
+      * @ORM\Column(type="datetime")
+      */
+     protected $lastLogin;
+
+     public function setLastLogin($lastLogin)
+     {
+         $this->lastLogin = $lastLogin;
+
+         return $this;
+     }
+
+     public function getLastLogin()
+     {
+         return $this->lastLogin;
+     }
+
     /**
      * @Assert\NotBlank()
      * @Assert\Length(max = 4096)
