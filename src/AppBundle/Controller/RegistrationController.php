@@ -59,6 +59,7 @@ class RegistrationController extends Controller
             $user->setPassword($password);
             $user->setRole("ROLE_USER");
             $user->setIsActive(true);
+            $user->setLastLogin(new \DateTime());
 
             // 4) save the User!
             $em = $this->getDoctrine()->getEntityManager('default');
