@@ -133,6 +133,7 @@
                     <li class=""><a href="#tab_1-5" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/16262_32.png"/>Ice</a></li>
                     <li class=""><a href="#tab_1-6" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/30372_32.png"/>Gas</a></li>
                     <li class=""><a href="#tab_1-7" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/34_32.png"/>Minerals</a></li>
+                    <li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2267_32.png"/>Planetary Interaction</a></li>
                     <!--<li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>-->
                 </ul>
                 <div class="tab-content">
@@ -385,6 +386,129 @@
                               </tr>
                           {% endfor %}
                       </table>
+                  </div>
+                  <div class="tab-pane" id="tab_1-8">
+                        <p>These prices are updated every 15 minutes and already include the Corp Tax.</p>
+                        <h3>P0 Materials</h3>
+                      <table class="table table-striped images-table-small">
+                          <tr>
+                              <th>
+                                  Name
+                              </th>
+                              <th>
+                                  Volume
+                              </th>
+                              <th class="color-col"></th>
+                              <th>
+                                  Unit Price
+                              </th>
+                          </tr>
+
+                          {% for ore in p0ores %}
+                              <tr>
+                                  <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
+                                  <td>{{ore.volume}}</td>
+                                  <td class="color-col" k="{{ore.color}}"></td>
+                                  <td>{{ore.iskper|number_format(2, '.', ',')}}</td>
+                              </tr>
+                          {% endfor %}
+                      </table>
+                      <h3>P1 Materials</h3>
+                    <table class="table table-striped images-table-small">
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Volume
+                            </th>
+                            <th class="color-col"></th>
+                            <th>
+                                Unit Price
+                            </th>
+                        </tr>
+
+                        {% for ore in p1ores %}
+                            <tr>
+                                <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
+                                <td>{{ore.volume}}</td>
+                                <td class="color-col" k="{{ore.color}}"></td>
+                                <td>{{ore.iskper|number_format(2, '.', ',')}}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <h3>P2 Materials</h3>
+                  <table class="table table-striped images-table-small">
+                      <tr>
+                          <th>
+                              Name
+                          </th>
+                          <th>
+                              Volume
+                          </th>
+                          <th class="color-col"></th>
+                          <th>
+                              Unit Price
+                          </th>
+                      </tr>
+
+                      {% for ore in p2ores %}
+                          <tr>
+                              <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
+                              <td>{{ore.volume}}</td>
+                              <td class="color-col" k="{{ore.color}}"></td>
+                              <td>{{ore.iskper|number_format(2, '.', ',')}}</td>
+                          </tr>
+                      {% endfor %}
+                  </table>
+                  <h3>P3 Materials</h3>
+                <table class="table table-striped images-table-small">
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Volume
+                        </th>
+                        <th class="color-col"></th>
+                        <th>
+                            Unit Price
+                        </th>
+                    </tr>
+
+                    {% for ore in p3ores %}
+                        <tr>
+                            <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
+                            <td>{{ore.volume}}</td>
+                            <td class="color-col" k="{{ore.color}}"></td>
+                            <td>{{ore.iskper|number_format(2, '.', ',')}}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <h3>P4 Materials</h3>
+              <table class="table table-striped images-table-small">
+                  <tr>
+                      <th>
+                          Name
+                      </th>
+                      <th>
+                          Volume
+                      </th>
+                      <th class="color-col"></th>
+                      <th>
+                          Unit Price
+                      </th>
+                  </tr>
+
+                  {% for ore in p4ores %}
+                      <tr>
+                          <td><img src="https://image.eveonline.com/Type/{{ore.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ore.typeid}}">{{ore.name}}</span></td>
+                          <td>{{ore.volume}}</td>
+                          <td class="color-col" k="{{ore.color}}"></td>
+                          <td>{{ore.iskper|number_format(2, '.', ',')}}</td>
+                      </tr>
+                  {% endfor %}
+              </table>
                   </div>
                 </div>
               </div>
