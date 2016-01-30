@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="EveBundle\Entity\TypeRepository")
  * @ORM\Table(name="invTypes")
  */
 class TypeEntity

@@ -247,13 +247,13 @@ class BuyBackController extends Controller
      */
     public function ajax_LookupAction(Request $request) {
 
-        $typeId = $request->request->get('id');
+        if(is_numeric($request->request->get('id'))) {
 
-        // Get Settings
-        $bb_source_type = $this->get('helper')->getSetting("buyback_source_type");
-        $bb_source_stat = $this->get('helper')->getSetting("buyback_source_stat");
+            $typeId = $request->request->get('id');
 
-        if(is_numeric($typeId)) {
+            // Get Settings
+            $bb_source_type = $this->get('helper')->getSetting("buyback_source_type");
+            $bb_source_stat = $this->get('helper')->getSetting("buyback_source_stat");
 
             $jsonData = $this->get('market')->GetEveCentralData($typeId);
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
@@ -261,7 +261,16 @@ class BuyBackController extends Controller
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'data' => $jsonData,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID()));
             return $template;
-        }
+        } else {
 
+            // Get item name searched for
+            $name = $request->request->get('id');
+
+            // Get all matching types
+            $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findAllLikeName($name);
+
+            $template = $this->render('elements/searchResultsByType.html.twig', Array ( 'items' => $types ));
+            return $template;
+        }
     }
 }

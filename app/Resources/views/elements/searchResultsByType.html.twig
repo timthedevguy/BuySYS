@@ -1,0 +1,45 @@
+
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search Results</h4>
+    </div>
+    <div class="modal-body" >
+        <div class="buyback-results-container">
+            <table class="table table-striped images-table">
+                <tr>
+                    <th>TypeId</th>
+                    <th>Name</th>
+                </tr>
+                {% for item in items %}
+                    <tr class="item-row fake_link" data-i="{{item.typeid}}">
+                        <td>{{item.typeid}}</td>
+                        <td><img src="https://image.eveonline.com/Type/{{item.typeid}}_32.png" style="max-width:16px;"/> {{item.typename}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="buybackacceptclose" class="btn btn-warning" data-dismiss="modal">Close</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $(".item-row").click(function(e) {
+
+            $('#base_modal').modal({backdrop: "static"});
+
+            $.post('{{path('ajax_lookup_price')}}', {id: $(this).attr('data-i')},
+                function(response)
+                {
+                    $( "#base_modal_content" ).html( response );
+                }
+            , "html");
+        });
+    });
+
+</script>
