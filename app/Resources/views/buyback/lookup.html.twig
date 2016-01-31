@@ -1,5 +1,5 @@
 <style>
-    TR.r-{{source_type}} TD.c-{{source_stat}}
+    TABLE.s{{source_system}} TR.r-{{source_type}} TD.c-{{source_stat}}
     {
         background-color: #B0EEB0;
         font-weight: 700;
@@ -12,52 +12,259 @@
     </div>
     <div class="modal-body" >
         <div class="buyback-results-container">
-            <table class="table table-striped">
-                <tr>
-                    <th>Type</th>
-                    <th>Avg</th>
-                    <th>WAvg</th>
-                    <th>Var</th>
-                    <th>Max</th>
-                    <th>Min</th>
-                    <th>StdDev</th>
-                    <th>Median</th>
-                    <th>5%</th>
-                </tr>
-                <tr class="r-buy">
-                    <td><strong>Buy</strong></td>
-                    <td class="c-avg">{{data.0.buy.avg|number_format(0, '.', ',')}}</td>
-                    <td class="c-wavg">{{data.0.buy.wavg|number_format(0, '.', ',')}}</td>
-                    <td class="c-variance">{{data.0.buy.variance|number_format(0, '.', ',')}}</td>
-                    <td class="c-max">{{data.0.buy.max|number_format(0, '.', ',')}}</td>
-                    <td class="c-min">{{data.0.buy.min|number_format(0, '.', ',')}}</td>
-                    <td class="c-stdDev">{{data.0.buy.stdDev|number_format(0, '.', ',')}}</td>
-                    <td class="c-median">{{data.0.buy.median|number_format(0, '.', ',')}}</td>
-                    <td class="c-fivePercent">{{data.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
-                </tr>
-                <tr class="r-sell">
-                    <td><strong>Sell</strong></td>
-                    <td class="c-avg">{{data.0.sell.avg|number_format(0, '.', ',')}}</td>
-                    <td class="c-wavg">{{data.0.sell.wavg|number_format(0, '.', ',')}}</td>
-                    <td class="c-variance">{{data.0.sell.variance|number_format(0, '.', ',')}}</td>
-                    <td class="c-max">{{data.0.sell.max|number_format(0, '.', ',')}}</td>
-                    <td class="c-min">{{data.0.sell.min|number_format(0, '.', ',')}}</td>
-                    <td class="c-stdDev">{{data.0.sell.stdDev|number_format(0, '.', ',')}}</td>
-                    <td class="c-median">{{data.0.sell.median|number_format(0, '.', ',')}}</td>
-                    <td class="c-fivePercent">{{data.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
-                </tr>
-                <tr class="r-all">
-                    <td><strong>All</strong></td>
-                    <td class="c-avg">{{data.0.all.avg|number_format(0, '.', ',')}}</td>
-                    <td class="c-wavg">{{data.0.all.wavg|number_format(0, '.', ',')}}</td>
-                    <td class="c-variance">{{data.0.all.variance|number_format(0, '.', ',')}}</td>
-                    <td class="c-max">{{data.0.all.max|number_format(0, '.', ',')}}</td>
-                    <td class="c-min">{{data.0.all.min|number_format(0, '.', ',')}}</td>
-                    <td class="c-stdDev">{{data.0.all.stdDev|number_format(0, '.', ',')}}</td>
-                    <td class="c-median">{{data.0.all.median|number_format(0, '.', ',')}}</td>
-                    <td class="c-fivePercent">{{data.0.all.fivePercent|number_format(0, '.', ',')}}</td>
-                </tr>
-            </table>
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab_2-1" data-toggle="tab" aria-expanded="true">Amarr</a></li>
+                    <li class=""><a href="#tab_2-2" data-toggle="tab" aria-expanded="false">Jita</a></li>
+                    <li class=""><a href="#tab_2-3" data-toggle="tab" aria-expanded="false">Dodixie</a></li>
+                    <li class=""><a href="#tab_2-4" data-toggle="tab" aria-expanded="false">Rens</a></li>
+                    <li class=""><a href="#tab_2-5" data-toggle="tab" aria-expanded="false">Hek</a></li>
+                    <!--<li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>-->
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab_2-1">
+                        <table class="table table-striped s30002187">
+                            <tr>
+                                <th>Type</th>
+                                <th>Avg</th>
+                                <th>WAvg</th>
+                                <th>Var</th>
+                                <th>Max</th>
+                                <th>Min</th>
+                                <th>StdDev</th>
+                                <th>Median</th>
+                                <th>5%</th>
+                            </tr>
+                            <tr class="r-buy">
+                                <td><strong>Buy</strong></td>
+                                <td class="c-avg">{{amarr.0.buy.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{amarr.0.buy.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{amarr.0.buy.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{amarr.0.buy.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{amarr.0.buy.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{amarr.0.buy.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{amarr.0.buy.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{amarr.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-sell">
+                                <td><strong>Sell</strong></td>
+                                <td class="c-avg">{{amarr.0.sell.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{amarr.0.sell.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{amarr.0.sell.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{amarr.0.sell.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{amarr.0.sell.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{amarr.0.sell.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{amarr.0.sell.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{amarr.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-all">
+                                <td><strong>All</strong></td>
+                                <td class="c-avg">{{amarr.0.all.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{amarr.0.all.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{amarr.0.all.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{amarr.0.all.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{amarr.0.all.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{amarr.0.all.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{amarr.0.all.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{amarr.0.all.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tab_2-2">
+                        <table class="table table-striped s30000142">
+                            <tr>
+                                <th>Type</th>
+                                <th>Avg</th>
+                                <th>WAvg</th>
+                                <th>Var</th>
+                                <th>Max</th>
+                                <th>Min</th>
+                                <th>StdDev</th>
+                                <th>Median</th>
+                                <th>5%</th>
+                            </tr>
+                            <tr class="r-buy">
+                                <td><strong>Buy</strong></td>
+                                <td class="c-avg">{{jita.0.buy.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{jita.0.buy.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{jita.0.buy.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{jita.0.buy.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{jita.0.buy.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{jita.0.buy.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{jita.0.buy.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{jita.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-sell">
+                                <td><strong>Sell</strong></td>
+                                <td class="c-avg">{{jita.0.sell.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{jita.0.sell.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{jita.0.sell.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{jita.0.sell.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{jita.0.sell.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{jita.0.sell.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{jita.0.sell.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{jita.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-all">
+                                <td><strong>All</strong></td>
+                                <td class="c-avg">{{jita.0.all.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{jita.0.all.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{jita.0.all.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{jita.0.all.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{jita.0.all.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{jita.0.all.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{jita.0.all.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{jita.0.all.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tab_2-3">
+                        <table class="table table-striped s30002659">
+                            <tr>
+                                <th>Type</th>
+                                <th>Avg</th>
+                                <th>WAvg</th>
+                                <th>Var</th>
+                                <th>Max</th>
+                                <th>Min</th>
+                                <th>StdDev</th>
+                                <th>Median</th>
+                                <th>5%</th>
+                            </tr>
+                            <tr class="r-buy">
+                                <td><strong>Buy</strong></td>
+                                <td class="c-avg">{{dodixie.0.buy.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{dodixie.0.buy.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{dodixie.0.buy.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{dodixie.0.buy.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{dodixie.0.buy.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{dodixie.0.buy.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{dodixie.0.buy.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{dodixie.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-sell">
+                                <td><strong>Sell</strong></td>
+                                <td class="c-avg">{{dodixie.0.sell.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{dodixie.0.sell.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{dodixie.0.sell.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{dodixie.0.sell.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{dodixie.0.sell.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{dodixie.0.sell.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{dodixie.0.sell.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{dodixie.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-all">
+                                <td><strong>All</strong></td>
+                                <td class="c-avg">{{dodixie.0.all.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{dodixie.0.all.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{dodixie.0.all.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{dodixie.0.all.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{dodixie.0.all.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{dodixie.0.all.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{dodixie.0.all.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{dodixie.0.all.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tab_2-4">
+                        <table class="table table-striped s30002510">
+                            <tr>
+                                <th>Type</th>
+                                <th>Avg</th>
+                                <th>WAvg</th>
+                                <th>Var</th>
+                                <th>Max</th>
+                                <th>Min</th>
+                                <th>StdDev</th>
+                                <th>Median</th>
+                                <th>5%</th>
+                            </tr>
+                            <tr class="r-buy">
+                                <td><strong>Buy</strong></td>
+                                <td class="c-avg">{{rens.0.buy.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{rens.0.buy.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{rens.0.buy.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{rens.0.buy.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{rens.0.buy.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{rens.0.buy.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{rens.0.buy.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{rens.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-sell">
+                                <td><strong>Sell</strong></td>
+                                <td class="c-avg">{{rens.0.sell.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{rens.0.sell.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{rens.0.sell.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{rens.0.sell.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{rens.0.sell.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{rens.0.sell.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{rens.0.sell.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{rens.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-all">
+                                <td><strong>All</strong></td>
+                                <td class="c-avg">{{rens.0.all.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{rens.0.all.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{rens.0.all.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{rens.0.all.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{rens.0.all.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{rens.0.all.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{rens.0.all.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{rens.0.all.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tab_2-5">
+                        <table class="table table-striped s30002053">
+                            <tr>
+                                <th>Type</th>
+                                <th>Avg</th>
+                                <th>WAvg</th>
+                                <th>Var</th>
+                                <th>Max</th>
+                                <th>Min</th>
+                                <th>StdDev</th>
+                                <th>Median</th>
+                                <th>5%</th>
+                            </tr>
+                            <tr class="r-buy">
+                                <td><strong>Buy</strong></td>
+                                <td class="c-avg">{{hek.0.buy.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{hek.0.buy.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{hek.0.buy.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{hek.0.buy.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{hek.0.buy.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{hek.0.buy.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{hek.0.buy.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{hek.0.buy.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-sell">
+                                <td><strong>Sell</strong></td>
+                                <td class="c-avg">{{hek.0.sell.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{hek.0.sell.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{hek.0.sell.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{hek.0.sell.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{hek.0.sell.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{hek.0.sell.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{hek.0.sell.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{hek.0.sell.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                            <tr class="r-all">
+                                <td><strong>All</strong></td>
+                                <td class="c-avg">{{hek.0.all.avg|number_format(0, '.', ',')}}</td>
+                                <td class="c-wavg">{{hek.0.all.wavg|number_format(0, '.', ',')}}</td>
+                                <td class="c-variance">{{hek.0.all.variance|number_format(0, '.', ',')}}</td>
+                                <td class="c-max">{{hek.0.all.max|number_format(0, '.', ',')}}</td>
+                                <td class="c-min">{{hek.0.all.min|number_format(0, '.', ',')}}</td>
+                                <td class="c-stdDev">{{hek.0.all.stdDev|number_format(0, '.', ',')}}</td>
+                                <td class="c-median">{{hek.0.all.median|number_format(0, '.', ',')}}</td>
+                                <td class="c-fivePercent">{{hek.0.all.fivePercent|number_format(0, '.', ',')}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <p>Green box denotes the price that is used in all market lookups/calculations and buybacks</p>
         </div>
     </div>

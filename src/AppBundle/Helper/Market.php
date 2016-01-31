@@ -52,7 +52,7 @@ class Market {
         }
     }
 
-    public function GetEveCentralData($typeIds) {
+    public function GetEveCentralData($typeIds, $bb_source_id = "0") {
 
         if(!is_array($typeIds)) {
 
@@ -64,7 +64,9 @@ class Market {
         if(count($typeIds) > 0)
         {
             // Get Buyback System setting
-            $bb_source_id = $this->helper->getSetting("buyback_source_id");
+            if($bb_source_id == 0) {
+                $bb_source_id = $this->helper->getSetting("buyback_source_id");
+            }
 
             // Build EveCentral Query string
             $queryString = "http://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $typeIds) . "&usesystem=" . $bb_source_id;
