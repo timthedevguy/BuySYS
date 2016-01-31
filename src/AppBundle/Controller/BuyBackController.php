@@ -254,12 +254,18 @@ class BuyBackController extends Controller
             // Get Settings
             $bb_source_type = $this->get('helper')->getSetting("buyback_source_type");
             $bb_source_stat = $this->get('helper')->getSetting("buyback_source_stat");
+            $bb_source_id =  $this->get('helper')->getSetting("buyback_source_id");
 
-            $jsonData = $this->get('market')->GetEveCentralData($typeId);
+            $amarrData = $this->get('market')->GetEveCentralData($typeId, $bb_source_id);
+            $jitaData = $this->get('market')->GetEveCentralData($typeId, "30000142");
+            $dodixieData = $this->get('market')->GetEveCentralData($typeId, "30002659");
+            $rensData = $this->get('market')->GetEveCentralData($typeId, "30002510");
+            $hekData = $this->get('market')->GetEveCentralData($typeId, "30002053");
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
 
-            $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'data' => $jsonData,
-                                        'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID()));
+            $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
+                                        'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
+                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData));
             return $template;
         } else {
 
