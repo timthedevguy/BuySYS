@@ -37,16 +37,14 @@
 
   <!-- sidebar: style can be found in sidebar.less -->
   <section class="sidebar">
-    {% if app.user.role == 'ROLE_ADMIN' %}
-        <div class="sidebar-form">
-            <div class="input-group">
-                <input type="text" id="search-input" name="q" class="form-control" placeholder="Search...">
-                <span class="input-group-btn">
-                    <button name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-                </span>
-            </div>
+    <div class="sidebar-form">
+        <div class="input-group">
+            <input type="text" id="search-input" name="q" class="form-control" placeholder="Search...">
+            <span class="input-group-btn">
+                <button name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
         </div>
-    {% endif %}
+    </div>
     <!-- Sidebar user panel (optional) -->
     <!--<div class="user-panel">
         <div class="info-other">
