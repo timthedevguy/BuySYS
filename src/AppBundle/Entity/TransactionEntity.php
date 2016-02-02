@@ -84,6 +84,23 @@ class TransactionEntity
     }
 
     /**
+     * @ORM\Column(type="string", length=25)
+     */
+    protected $status;
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
      * @ORM\Column(type="boolean")
      */
     protected $is_complete;
@@ -125,6 +142,7 @@ class TransactionEntity
     public function __construct()
     {
         $this->lineitems = new ArrayCollection();
+        $this->setStatus = "Pending";
     }
 
 
