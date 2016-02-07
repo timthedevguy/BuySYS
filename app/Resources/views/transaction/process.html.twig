@@ -18,6 +18,10 @@
                             <td>{{ transaction.orderid }}</td>
                         </tr>
                         <tr>
+                            <th>Status:</th>
+                            <td>{{ transaction.status }}</td>
+                        </tr>
+                        <tr>
                             <th>Type:</th>
                             <td><span class="label label-success">Accept Contract</span></td>
                         </tr>
@@ -40,7 +44,7 @@
                             <th>Net Price</th>
                         </tr>
                         {% for item in transaction.lineitems %}
-                            <tr>
+                            <tr class="mark_off">
                                 <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
                                 <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
                                 <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
@@ -93,12 +97,12 @@
 
         $(".mark_off").click(function(e)
         {
-            if($(this).prop('checked')) {
+            if(!$(this).hasClass('success')) {
 
-                $(this).parent().parent().addClass("success");
+                $(this).addClass("success");
             } else {
 
-                $(this).parent().parent().removeClass("success");
+                $(this).removeClass("success");
             }
         });
     });
