@@ -202,6 +202,7 @@ class BuyBackController extends Controller
         $transaction->setGross(0);
         $transaction->setNet(0);
         $transaction->setCreated(new \DateTime("now"));
+        $transaction->setStatus("Pending");
         $em->persist($transaction);
 
         $gross = 0;
