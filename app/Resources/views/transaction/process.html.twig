@@ -58,8 +58,12 @@
     </div>
 </div>
 <div class="modal-footer">
-    <p>By pushing Process you confirm that you have verified all data</p>
-    <button type="button" id="processAccept-button" class="btn btn-warning" data-dismiss="modal">Process</button>
+    {% if not transaction.iscomplete %}
+        <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Decline</button>
+        <button type="button" id="processAccept-button" class="btn btn-success" data-dismiss="modal">Accept and Process</button>
+    {% else %}
+        <button type="button" id="processClose-button" class="btn btn-default" data-dismiss="modal">Close</button>
+    {% endif %}
 </div>
 
 {% block javascripts %}
@@ -73,23 +77,55 @@
             $.post('{{path('ajax_close_transaction')}}', {id: "{{ transaction.orderid }}"},
                 function(response)
                 {
-                    $("#row-{{transaction.orderid}}").toggle("highlight", {color: "#dff0d8"}, 1000, function(e) {
+                    $("#row-{{transaction.orderid}}").removeClass('success');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").addClass('label-grey');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html('Complete');
 
-                        $tExpense = stringToNumber($("#oExpense").html());
-                        $tExpense = $tExpense - {{transaction.net}};
+                    $tExpense = stringToNumber($("#oExpense").html());
+                    $tExpense = $tExpense - {{transaction.net}};
 
-                        $cComplete = stringToNumber($("#cComplete").html());
-                        $cComplete -= 1;
+                    $cComplete = stringToNumber($("#cComplete").html());
+                    $cComplete -= 1;
 
-                        $("#oExpense").toggle("puff", function(e) {
-                            $("#oExpense").html(numberToString($tExpense));
-                            $("#oExpense").toggle();
-                        });
+                    $("#oExpense").toggle("puff", function(e) {
+                        $("#oExpense").html(numberToString($tExpense));
+                        $("#oExpense").toggle();
+                    });
 
-                        $("#cComplete").toggle("puff", function(e) {
-                            $("#cComplete").html($cComplete);
-                            $("#cComplete").toggle();
-                        });
+                    $("#cComplete").toggle("puff", function(e) {
+                        $("#cComplete").html($cComplete);
+                        $("#cComplete").toggle();
+                    });
+                }
+            , "html");
+        });
+
+        $("#processDecline-button").click(function (e) {
+
+            $.post('{{path('ajax_decline_transaction')}}', {id: "{{ transaction.orderid }}"},
+                function(response)
+                {
+                    $("#row-{{transaction.orderid}}").removeClass('success');
+                    $("#row-{{transaction.orderid}}").addClass('danger');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").addClass('label-danger');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html('Cancelled');
+
+                    $tExpense = stringToNumber($("#oExpense").html());
+                    $tExpense = $tExpense - {{transaction.net}};
+
+                    $cComplete = stringToNumber($("#cComplete").html());
+                    $cComplete -= 1;
+
+                    $("#oExpense").toggle("puff", function(e) {
+                        $("#oExpense").html(numberToString($tExpense));
+                        $("#oExpense").toggle();
+                    });
+
+                    $("#cComplete").toggle("puff", function(e) {
+                        $("#cComplete").html($cComplete);
+                        $("#cComplete").toggle();
                     });
                 }
             , "html");

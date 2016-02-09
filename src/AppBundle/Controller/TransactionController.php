@@ -21,7 +21,7 @@ class TransactionController extends Controller
             ->orderBy('t.created', 'DESC')
             ->getQuery();
 
-        $allTransactions = $query->getResult();
+        $allTransactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllOrderedByDate();
 
         $oIncome = 0;
         $oExpense = 0;
@@ -30,7 +30,7 @@ class TransactionController extends Controller
 
         foreach($allTransactions as $transaction) {
 
-            if($transaction->getType() == "P") {
+            if($transaction->getType() == "P" & $transaction->getStatus() == "Pending") {
 
                 $oExpense += $transaction->getNet();
                 $cComplete += 1;
@@ -72,6 +72,27 @@ class TransactionController extends Controller
         $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
         $transaction->setIsComplete(true);
+        $transaction->setStatus("Complete");
+        $em->flush();
+
+        return new Response('OK');
+    }
+
+    /**
+     * @Route("/admin/transaction/decline", name="ajax_decline_transaction")
+     */
+    public function ajax_DeclineAction(Request $request)
+    {
+        // Handles the Transaction (IE Closes it)
+        $order_id = $request->request->get('id');
+
+        //$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
+        //$transaction = $transactions->findOneByOrderId($order_id);
+        $em = $this->getDoctrine('default')->getManager();
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+
+        $transaction->setIsComplete(true);
+        $transaction->setStatus("Cancelled");
         $em->flush();
 
         return new Response('OK');

@@ -8,7 +8,7 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-newspaper-o"></i> News</h3>
                 <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" id="create_news_button"><i class="fa fa-plus"></i> Create Item</button>
+                    <button class="btn btn-xs btn-success" id="create_news_button"><i class="fa fa-plus"></i> Create Item</button>
                   </div>
             </div><!-- /.box-header -->
             <div class="box-body no-padding">
@@ -25,8 +25,10 @@
                             <td>{{item.subject}}</td>
                             <td>{{item.author}}</td>
                             <td>
-                                <button class="btn btn-box-tool edit_news_button" data-id="{{item.id}}"><i class="fa fa-pencil"></i></button>
-                                <button class="btn btn-box-tool delete_news_button" data-id="{{item.id}}"><i class="fa fa-times"></i></button>
+                                <div class="btn-group">
+                                    <button type="button" data-id="{{item.id}}" class="btn btn-info btn-xs edit_news_button">Edit</button>
+                                    <button type="button" data-id="{{item.id}}" class="btn btn-danger btn-xs delete_news_button">Delete</button>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

@@ -157,3 +157,13 @@ TD .btn-box-tool
 .color-col {
 	width: 20px;
 }
+
+TD .label
+{
+	margin-top: 3px;
+}
+
+.label-grey
+{
+	background-color: #B1B1B1;
+}

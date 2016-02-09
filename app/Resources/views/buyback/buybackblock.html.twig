@@ -1,18 +1,12 @@
 {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
 {{ form_start(form) }}
-<div class="row">
-    <div class="col-md-7">
-        {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
-        <div id="buyback_submits">
-            <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
-            <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Submit">
-        </div>
+    {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
+    <div id="buyback_submits">
+        <input type="button" id="buyback_help" class="btn btn-info pull-left" value="Help">
+        <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
+        <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
     </div>
-    <div class="col-md-5" id="buyback_instructions">
-        <h3>How to use</h3>
-        <p>Copy and paste items from EVE Online to the box on the left.  You can paste from the Inventory screen IF you have it set to table.</p>
-    </div>
-</div>
+
 {{ form_end(form) }}
 
 <div class="modal fade" id="estimate_modal">

@@ -28,7 +28,7 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         // Get count of outstanding transactions
-        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
+        /*$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
         $query = $transactions->createQueryBuilder('t')
             ->where('t.user = :user')
             ->andWhere('t.is_complete = 0')
@@ -36,10 +36,10 @@ class DefaultController extends Controller
             ->orderBy('t.created', 'DESC')
             ->setParameter('user', $this->getUser())
             ->setParameter('type', "P")
-            ->getQuery();
+            ->getQuery();*/
 
         //$outstandingSales = count($query->getResult());
-        $oSales = $query->getResult();
+        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser()); //$query->getResult();
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         $highSecOres = $this->getQuickReview(array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453'));

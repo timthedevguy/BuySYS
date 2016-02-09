@@ -8,7 +8,7 @@ use AppBundle\Entity\LineItemEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\TransactionRepository")
  * @ORM\Table(name="transactions")
  */
 class TransactionEntity
