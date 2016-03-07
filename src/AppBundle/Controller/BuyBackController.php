@@ -153,8 +153,8 @@ class BuyBackController extends Controller
         $ajaxData = "[";
 
         foreach($items as $lineItem) {
-
-            $value = ((int)$lineItem->getQuantity() * $priceLookup[$lineItem->getTypeId()]) * .85;
+            //$taxAmount = ;
+            $value = ((int)$lineItem->getQuantity() * ($priceLookup[$lineItem->getTypeId()] * ((100 - $this->get("helper")->getSetting("buyback_default_tax"))/100)));
             $totalValue += $value;
             $lineItem->setValue($value);
             $ajaxData .= "{ typeid:" . $lineItem->getTypeId() . ", quantity:" . $lineItem->getQuantity() . "},";
