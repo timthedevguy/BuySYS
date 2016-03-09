@@ -24,7 +24,15 @@
                     </div>--><!-- /.box-tools -->
                 </div><!-- /.box-header -->
                 <div class="box-body">
-                    {{ include('buyback/buybackblock.html.twig') }}
+                    {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
+                    {{ form_start(form) }}
+                        {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
+                        <div id="buyback_submits">
+                            <input type="button" id="buyback_help" class="btn btn-info pull-left" value="Help">
+                            <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
+                            <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
+                        </div>
+                    {{ form_end(form) }}
                 </div><!-- /.box-body -->
                 <!--<div class="box-footer">
                     The footer of the box
@@ -53,7 +61,7 @@
                     <h3 class="box-title"><i class="fa fa-balance-scale"></i> Outstanding Material Sales</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body">
-                    <table class="table table-striped data-table" id="rSales">
+                    <table class="table table-striped" id="rSales">
                         <thead>
                         <tr>
                             <th>Date</th>
@@ -614,6 +622,17 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div class="modal fade" id="estimate_modal">
+      <div class="modal-dialog" id="estimate_modal_content">
+        <div class="modal-content">
+            <div class="modal-loading">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
 
 {% endblock %}
 
@@ -631,6 +650,17 @@
         return "#"+(0x1000000+(Math.round((R2-R1)*p)+R1)*0x10000+(Math.round((G2-G1)*p)+G1)*0x100+(Math.round((B2-B1)*p)+B1)).toString(16).slice(1);
     }
 
+    function submitQuickEstimate()
+    {
+        $.post('{{path('ajax_estimate_buyback')}}', {items: $("#items").val()},
+            function(response)
+            {
+                $( "#estimate_modal_content" ).html( response );
+                //$('#buyback_quick_modal').modal({backdrop: "static"});
+            }
+        , "html");
+    }
+
     $(document).ready(function (e) {
 
         $(function () {
@@ -643,6 +673,10 @@
 
         $('.data-table').DataTable();
 
+        $('#rSales').DataTable({
+            "order": [[ 1, "desc" ]]
+        });
+
         $(".news_item_link").click(function(e) {
 
             $('#index_modal').modal({backdrop: "static"});
@@ -653,6 +687,17 @@
                     $( "#index_modal_content" ).html( response );
                 }
             , "html");
+        });
+
+        $("#buyback_quick_submit").click(function(e)
+        {
+            $('#estimate_modal').modal({backdrop: "static"});
+            submitQuickEstimate();
+        });
+
+        $("#buyback_clear").click(function(e) {
+
+            $("#items").val('');
         });
 
         $(".fake_link[data-type='P']").click(function(e) {
