@@ -34,7 +34,7 @@ class RegistrationController extends Controller
                 // Check results to see if we find a match
                 foreach($result->characters as $character)
                 {
-                    if($character->name == $user->getUsername())
+                    if(strtolower($character->name) == strtolower($user->getUsername()))
                     {
                         $hasMatch = true;
                         $user->setCharacterId($character->characterID);
