@@ -6,13 +6,19 @@
 <div class="modal-body" >
     <div class="buyback-results-container">
         <div>
-            {% if transaction.type == "P" %}
+            {% if transaction.type == "P" or transaction.type == "PS" %}
                 <div class="col-md-6">
                         <p>This transaction type requires that a Contract be accepted from a player.  If no contract is present then DO NOT PAY THEM!</p>
                         <p>The Contract details are to the right, verify they match before accepting.  The contents of the contract are listed below</p>
                 </div>
                 <div class="col-md-6">
                     <table class="table table-striped">
+                        {% if shares == 1 %}
+                            <tr>
+                                <th>Shares</th>
+                                <td><span class="label label-warning">{{share_value}} Shares</span></td>
+                            </tr>
+                        {% endif %}
                         <tr>
                             <th>Order Id:</th>
                             <td>{{ transaction.orderid }}</td>

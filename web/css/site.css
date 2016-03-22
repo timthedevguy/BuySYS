@@ -54,6 +54,7 @@
 	color: #4B646F;
 	background: #1A2226;
 }
+
 #buyback_submits
 {
 	text-align: right;
@@ -69,9 +70,11 @@
 	margin-top: 0;
 }
 
-.fixed_height_box {
+.fixed_height_box
+{
 	min-height: 128px;
 }
+
 .modal-dialog
 {
 	width: 750px;
@@ -89,8 +92,8 @@ TABLE.table.table-striped.buyback-results-table TD
 	vertical-align: middle;
 }
 
-.buyback-results-container {
-
+.buyback-results-container
+{
 	max-height: 300px;
 	overflow-y: auto;
 }
@@ -117,12 +120,14 @@ TD .btn-box-tool
 	border-bottom: 1px solid #DDD;
 	background-color: #EBEBEB;
 }
+
 .nav-tabs IMG
 {
 	width: 24px;
 	margin-bottom: 3px;
 	margin-right: 5px;
 }
+
 .nav-tabs [aria-expanded="true"]
 {
 	font-weight: 700;
@@ -133,6 +138,7 @@ TD .btn-box-tool
 	width: 700px;
 	margin: 7% auto;
 }
+
 .error-page > .headline
 {
 	float: left;
@@ -140,6 +146,7 @@ TD .btn-box-tool
 	font-weight: 300;
 	margin-top: -22px;
 }
+
 .error-box-body
 {
 	background: #FFF;
@@ -154,7 +161,8 @@ TD .btn-box-tool
 	width: 20px;
 }
 
-.color-col {
+.color-col
+{
 	width: 20px;
 }
 
@@ -166,4 +174,17 @@ TD .label
 .label-grey
 {
 	background-color: #B1B1B1;
+}
+
+.btn
+{
+	border-radius: 0px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	border: 1px solid transparent;
+}
+
+.skin-blue .sidebar-form
+{
+	border-radius: 0px;
 }

@@ -11,6 +11,12 @@
                 <li>Copy and Paste the 'Auth Code' to the 'Comment' field, this <strong>MUST</strong> be present if you wish to get paid!</li>
             </ol>
             <table class="table table-striped">
+                {% if shares == 1 %}
+                    <tr>
+                        <th>Shares</th>
+                        <td>{{share_value|number_format(0, '.', ',')}}</td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <th>Amount</th>
                     <td>{{total_value|number_format(0, '.', ',')}}</td>

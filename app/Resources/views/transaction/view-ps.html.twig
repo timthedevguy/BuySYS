@@ -1,0 +1,63 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Transaction Details</h4>
+    <!-- /.box-tools -->
+</div>
+<div class="modal-body" >
+    <div class="buyback-results-container">
+        <div>
+            <div class="col-md-6">
+                    <p><span class="label label-warning">THIS CONTRACT HAS SHARES!!!!!</span>  This transaction required a contract from you (the player) to AMREP (the corp).</p>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Shares</th>
+                        <td><span class="label label-warning">{{shares}} Shares</span></td>
+                    </tr>
+                    <tr>
+                        <th>Order Id:</th>
+                        <td>{{ transaction.orderid }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>{{ transaction.status }}</td>
+                    </tr>
+                    <tr>
+                        <th>Type:</th>
+                        <td><span class="label label-success">Material Sale</span></td>
+                    </tr>
+                    <tr>
+                        <th>From:</th>
+                        <td>{{ transaction.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Amount:</th>
+                        <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <table class="table table-striped images-table">
+                    <tr>
+                        <th style="width:100px;">Quantity</th>
+                        <th>Item</th>
+                    </tr>
+                    {% for item in transaction.lineitems %}
+                        <tr>
+                            <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" id="viewtransaction-button" class="btn btn-warning" data-dismiss="modal">Ok</button>
+</div>
+
+{% block javascripts %}
+
+{% endblock %}

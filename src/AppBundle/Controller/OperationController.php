@@ -14,7 +14,7 @@ class OperationController extends Controller
     public function indexAction(Request $request)
     {
         return $this->render('operations/index.html.twig', array(
-            'page_name' => 'Mining Op', 'sub_text' => 'Operations', 'mode' => 'USER'
+            'page_name' => 'Corp Operations', 'sub_text' => 'Upcoming Events', 'mode' => 'USER'
         ));
     }
 }

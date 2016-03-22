@@ -181,6 +181,7 @@ class BuyBackController extends Controller
 
         // Get our list of Items
         $items = $request->request->get('items');
+        $shares = $request->request->get('shares');
 
         // Generate list of unique items to pull from cache
         $typeids = Array();
@@ -196,7 +197,13 @@ class BuyBackController extends Controller
 
         $transaction = new TransactionEntity();
         $transaction->setUser($this->getUser());
-        $transaction->setType("P");
+
+        if($shares == 1) {
+            $transaction->setType("PS");
+        } else {
+            $transaction->setType("P");
+        }
+
         $transaction->setIsComplete(false);
         $transaction->setOrderId($transaction->getType() . uniqid());
         $transaction->setGross(0);
@@ -233,13 +240,22 @@ class BuyBackController extends Controller
             $em->persist($lineItem);
         }
 
+        $share_value = 0;
+
+        if($shares == 1) {
+
+            $share_value = floor($net/1000000);
+            $net = $net - ($share_value * 1000000);
+        }
+
         $transaction->setGross($gross);
         $transaction->setNet($net);
 
         //$em->persist($transaction);
         $em->flush();
 
-        $template = $this->render('buyback/accepted.html.twig', Array ( 'auth_code' => $transaction->getOrderId(), 'total_value' => $net, 'transaction' => $transaction ));
+        $template = $this->render('buyback/accepted.html.twig', Array ( 'auth_code' => $transaction->getOrderId(), 'total_value' => $net,
+        'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value ));
         return $template;
     }
 
