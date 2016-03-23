@@ -62,7 +62,7 @@ class TransactionController extends Controller
             $tmpNet = $transaction->getGross() * ((100-$tax)/100);
             $share_value = floor($tmpNet/1000000);
         }
-        
+
         $template = $this->render('transaction/process.html.twig', Array ( 'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value ));
         return $template;
     }
@@ -127,9 +127,16 @@ class TransactionController extends Controller
 
             $em = $this->getDoctrine('default')->getManager();
             $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
-            $shares = floor($transaction.getGross()/1000000);
+            $tax = $this->get("helper")->getSetting("buyback_default_tax");
+            
+            if($transaction->getType() == "PS") {
 
-            $template = $this->render('transaction/view-ps.html.twig', Array ( 'transaction' => $transaction, 'shares' => $shares ));
+                $shares = 1;
+                $tmpNet = $transaction->getGross() * ((100-$tax)/100);
+                $share_value = floor($tmpNet/1000000);
+            }
+
+            $template = $this->render('transaction/view-ps.html.twig', Array ( 'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value ));
             return $template;
         }
 

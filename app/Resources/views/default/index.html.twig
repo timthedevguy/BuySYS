@@ -73,7 +73,7 @@
                         {% for sale in oSales %}
                             <tr>
                                 <td>{{sale.created|date("m/d/Y H:i")}}</td>
-                                <td><a class="fake_link" data-type="P">{{sale.orderid}}</a></td>
+                                <td><a class="fake_link" data-type="{{sale.type}}">{{sale.orderid}}</a></td>
                                 <td>{{sale.net|number_format(0, '.', ',')}}</td>
                             </tr>
                         {% endfor %}
@@ -674,7 +674,7 @@
         $('.data-table').DataTable();
 
         $('#rSales').DataTable({
-            "order": [[ 1, "desc" ]]
+            "order": [[ 0, "desc" ]]
         });
 
         $(".news_item_link").click(function(e) {
@@ -700,7 +700,7 @@
             $("#items").val('');
         });
 
-        $(".fake_link[data-type='P']").click(function(e) {
+        $(".fake_link[data-type='P'],.fake_link[data-type='PS']").click(function(e) {
 
             $('#index_modal').modal({backdrop: "static"});
 

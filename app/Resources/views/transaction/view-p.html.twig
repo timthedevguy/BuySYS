@@ -38,11 +38,16 @@
                     <tr>
                         <th style="width:100px;">Quantity</th>
                         <th>Item</th>
+                        <th>Unit Price</th>
+                        <th>Net Price</th>
                     </tr>
                     {% for item in transaction.lineitems %}
                         <tr>
                             <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
                             <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                            {% set unit_price = item.marketprice * ((100-item.tax)/100) %}
+                            <td>{{ unit_price|number_format(2,'.',',') }}</td>
+                            <td>{{ item.netprice|number_format(2,'.',',') }}</td>
                         </tr>
                     {% endfor %}
                 </table>
