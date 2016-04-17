@@ -42,6 +42,9 @@ security:
         - {path: ^/admin, roles: ROLE_ADMIN }
         - {path: ^/, roles: [ROLE_USER, IS_AUTHENTICATED_REMEMBERED] }
 
+    role_hierarchy:
+        ROLE_OFFICER:   ROLE_USER
+
     encoders:
         AppBundle\Entity\UserEntity:
             algorithm: bcrypt

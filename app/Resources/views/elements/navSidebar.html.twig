@@ -77,8 +77,8 @@
             <li class="header">OPERATIONS</li>
             <!-- Optionally, you can add icons to the links -->
             <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>Dashboard</span></a></li>
-            <!--<li><a href="#"><i class="fa fa-balance-scale"></i> <span>Sell Materials</span></a></li>
-            <li><a href="#"><i class="fa fa-shopping-cart"></i> <span>Buy Materials</span></a></li>
+            <li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>
+            <!--<li><a href="#"><i class="fa fa-shopping-cart"></i> <span>Buy Materials</span></a></li>
             <li><a href="#"><i class="fa fa-shield"></i> <span>Buy Ships</span></a></li>
             <li><a href="#"><i class="fa fa-ticket"></i> <span>Raffles</span></a></li>-->
         {% endif %}

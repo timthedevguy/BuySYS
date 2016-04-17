@@ -9,12 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 class OperationController extends Controller
 {
     /**
-     * @Route("/operations/mining", name="operations_mining")
+     * @Route("/operations", name="upcoming_fleet_ops")
      */
     public function indexAction(Request $request)
     {
         return $this->render('operations/index.html.twig', array(
-            'page_name' => 'Corp Operations', 'sub_text' => 'Upcoming Events', 'mode' => 'USER'
+            'page_name' => 'Upcoming Fleet Ops', 'sub_text' => 'Alliance/Corp sponsered fleet operations', 'mode' => 'USER'
         ));
     }
 }
