@@ -5,10 +5,13 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class AuthenticationHandler extends ContainerAware implements AuthenticationSuccessHandlerInterface
+class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
         $token->getUser()->setLastLogin(new \DateTime());
