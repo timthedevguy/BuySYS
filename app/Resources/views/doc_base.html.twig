@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <title>{% block title %}Allied Industries Online Documentation{% endblock %}</title>
+
+        <link rel="stylesheet" href="{{ asset('/css/docs.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/doc_style.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
+
+        {% block stylesheets %}{% endblock %}
+
+        <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
+        <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
+        <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('/js/icheck.min.js') }}"></script>
+        <script src="{{ asset('/js/doc.js') }}"></script>
+        <script src="{{ asset('/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <script type="text/javascript">
+
+            function stringToNumber($str) {
+
+                return Number($str.toString().replace(/,/g,''));
+            }
+
+            function numberToString($num) {
+
+                return $num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+        </script>
+    </head>
+    <body class="wy-body-for-nav" role="document" cz-shortcut-listen="true">
+        <div class="wy-grid-for-nav">
+            <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+                <div class="wy-side-scroll">
+                    <div class="wy-side-nav-search">
+                        <a href="{{path('pages')}}" class="icon icon-home"> Allied Industries Online Documentation</a>
+                        <!--<div role="search">
+                            <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+                                <input type="text" name="q" placeholder="Search docs">
+                                <input type="hidden" name="check_keywords" value="yes">
+                                <input type="hidden" name="area" value="default">
+                            </form>
+                        </div>-->
+                    </div>
+                    <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                        <ul>
+                            {% for tmpChapter in toc %}
+                                {% if chapter_slug == tmpChapter.slug %}
+                                    <li class="toctree-l1 current"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a>
+                                        <ul class="current">
+                                            {% for topic in tmpChapter.Topics %}
+                                                {% if topic_slug == topic.Slug %}
+                                                    <li class="toctree-l2 current"><a class="current reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
+                                                {% else %}
+                                                    <li class="toctree-l2"><a class="reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% else %}
+                                    <li class="toctree-l1"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        {% block tableofcontents %}{% endblock %}
+                        <!--<ul >
+                            <li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Guidelines and References</a></li>
+                            <li class="toctree-l1"><a class="reference internal" href="../formulas/index.html">Formulas</a></li>
+                            <li class="toctree-l1 current"><a class="reference internal" href="index.html"><span class="toctree-expand"></span>Single Sign-On (SS0)</a>
+                                <ul class="current">
+                                    <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="authentication.html">Authentication Flow</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="refreshtokens.html">Refresh Tokens</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="implicitflow.html">SSO For Browser Apps</a></li>
+                                    <li class="toctree-l2 current"><a class="current reference internal" href="">Non-Browser Apps</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="obtaincharacterid.html">Obtaining Character ID</a></li>
+                                </ul>
+                            </li>
+                            <li class="toctree-l1"><a class="reference internal" href="{{path('pages_test')}}">CREST</a>
+                                <ul>
+                                    <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="authentication.html">Authentication Flow</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="refreshtokens.html">Refresh Tokens</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="implicitflow.html">SSO For Browser Apps</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="">Non-Browser Apps</a></li>
+                                    <li class="toctree-l2"><a class="reference internal" href="obtaincharacterid.html">Obtaining Character ID</a></li>
+                                </ul>
+                            </li>
+                            <li class="toctree-l1"><a class="reference internal" href="../xmlapi/index.html">XML API</a></li>
+                            <li class="toctree-l1"><a class="reference internal" href="../sde/index.html">Static Data Export</a></li>
+                            <li class="toctree-l1"><a class="reference internal" href="../dogma/index.html">Dogma</a></li>
+                            <li class="toctree-l1"><a class="reference internal" href="../imageserver/index.html">Image Server</a></li>
+                        </ul>-->
+                    </div>
+                    <!--<div class="wy-menu rst-pro" style="display: block;">
+                        <div class="rst-pro-about">
+                            <a href="http://docs.readthedocs.org/en/latest/sponsors.html#sponsorship-information">
+                                <i class="fa fa-info-circle"></i>
+                            </a>
+                        </div>
+                        <a class="rst-pro-image-wrapper" href="//readthedocs.org/sustainability/click/5/V2jnuEHt1cxI/" target="_blank">
+                            <img class="rst-pro-image" src="//readthedocs.org/sustainability/view/5/V2jnuEHt1cxI/">
+                        </a>
+                        <span>Build the future of communications at <a class="rst-pro-link" href="//readthedocs.org/sustainability/click/5/V2jnuEHt1cxI/" target="_blank">Twilio SIGNAL conference 2016</a>.</span>
+                    </div>-->
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="rst-pro-wrapper">
+                            <div class="rst-pro-admin">
+                                <h5>Chapters</h5>
+                                <ul>
+                                    <li><a href="#" class="btn success"><i class="fa fa-plus" aria-hidden="true"></i> New Chapter</a></li>
+                                    <li><a href="#" class="btn warning"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Chapter</a></li>
+                                    <li><a href="#" class="btn danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete Chapter</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </nav>
+
+            <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+                <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+                    <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+                    <a href="../index.html">EVE Online Third-Party Developer Documentation</a>
+                </nav>
+                <div class="wy-nav-content">
+                    <div class="rst-content">
+                        {% block body %}{% endblock %}
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    {% block javascripts %}{% endblock %}
+
+    <div class="modal fade" id="base_modal">
+        <div class="modal-dialog">
+            <div class="modal-content" id="base_modal_content">
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    </body>
+</html>

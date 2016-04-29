@@ -56,7 +56,7 @@ class DefaultController extends Controller
         $p4Ores = $this->getQuickReview(array('2867','2868','2869','2870','2871','2872','2875','2876'));
 
         return $this->render('default/index.html.twig', array(
-            'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(), 'mode' => 'USER',
+            'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(),
          'oSales' => $oSales, 'news' => $news, 'highsecores' => $highSecOres, 'otherhighsecores' => $otherHighSecOres, 'lowsecores' => $lowSecOres,
          'nullsecores' => $nullSecOres, 'iceores' => $iceOres, 'gasores' => $gasOres, 'mineralores' => $mineralOres, 'p0ores' => $p0Ores,
          'p1ores' => $p1Ores, 'p2ores' => $p2Ores, 'p3ores' => $p3Ores, 'p4ores' => $p4Ores));
@@ -91,7 +91,7 @@ class DefaultController extends Controller
         $coreSettings->setMaintenanceMode($settings->findOneByName('system_maintenance')->getValue());
 
         return $this->render('default/settings.html.twig', array(
-            'page_name' => 'Core System', 'sub_text' => '', 'mode' => 'ADMIN', 'model' => $coreSettings));
+            'page_name' => 'Settings', 'sub_text' => 'Core Settings', 'model' => $coreSettings));
     }
 
     private function getQuickReview($typeIds) {

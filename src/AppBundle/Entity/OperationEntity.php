@@ -5,10 +5,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\OperationRepository")
  * @ORM\Table(name="operations")
  */
-class Entity
+class OperationEntity
 {
     /**
      * @ORM\Id()
@@ -100,17 +100,17 @@ class Entity
     /**
      * @ORM\Column(type="datetime")
      */
-    protected $date;
+    protected $opDate;
 
-    public function setDate($date)
+    public function setOpDate($opDate)
     {
-        $this->date = $date;
+        $this->opDate = $opDate;
 
         return $this;
     }
 
-    public function getDate()
+    public function getOpDate()
     {
-        return $this->date;
+        return $this->opDate;
     }
 }

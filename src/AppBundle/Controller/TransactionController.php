@@ -38,7 +38,7 @@ class TransactionController extends Controller
         }
 
         return $this->render('transaction/index.html.twig', array(
-            'page_name' => 'Contract Queue', 'sub_text' => 'Transactions', 'mode' => 'ADMIN', 'transactions' => $allTransactions, 'oExpense' => $oExpense, 'cComplete' => $cComplete
+            'page_name' => 'Contract Queue', 'sub_text' => 'Transactions', 'transactions' => $allTransactions, 'oExpense' => $oExpense, 'cComplete' => $cComplete
         ));
     }
 
@@ -128,7 +128,7 @@ class TransactionController extends Controller
             $em = $this->getDoctrine('default')->getManager();
             $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
             $tax = $this->get("helper")->getSetting("buyback_default_tax");
-            
+
             if($transaction->getType() == "PS") {
 
                 $shares = 1;

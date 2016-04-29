@@ -52,7 +52,7 @@ class BuyBackController extends Controller
         $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
 
         return $this->render('buyback/settings.html.twig', array(
-            'page_name' => 'Buyback System', 'sub_text' => 'Buyback Settings', 'mode' => 'ADMIN', 'model' => $buybacksettings));
+            'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
     }
 
     /**

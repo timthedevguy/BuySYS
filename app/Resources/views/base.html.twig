@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="{{ asset('/css/blue.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap3-wysihtml5.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/dataTables.bootstrap.css') }}" />
+
         {% block stylesheets %}{% endblock %}
 
         <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
@@ -72,15 +73,6 @@
                     {{page_name}}
                     <small>{{sub_text}}</small>
                 </h1>
-                <ol class="breadcrumb">
-                    {% if app.user.role == 'ROLE_ADMIN' %}
-                        {% if mode == 'USER' %}
-                            <li><a href="{{path('admin_dashboard')}}"><i class="fa fa-dashboard"></i> Switch to Admin Dashboard</a></li>
-                        {% else %}
-                            <li><a href="{{path('homepage')}}"><i class="fa fa-dashboard"></i> Switch to User Dashboard</a></li>
-                        {% endif %}
-                    {% endif %}
-                </ol>
             </section>
 
             <!-- Main content -->

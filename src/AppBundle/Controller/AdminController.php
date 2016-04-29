@@ -25,7 +25,7 @@ class AdminController extends Controller
         $tTransactions = count($query->getResult());
 
         return $this->render('admin/index.html.twig', array(
-            'page_name' => 'Admin Dashboard', 'sub_text' => 'Admin Dashboard', 'mode' => 'ADMIN', 'tUsers' => $tUsers, 'tTransactions' => $tTransactions
+            'page_name' => 'Admin Dashboard', 'sub_text' => 'Admin Dashboard', 'tUsers' => $tUsers, 'tTransactions' => $tTransactions
         ));
     }
 }

@@ -16,7 +16,7 @@ class UserController extends Controller
         $users = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->findAll();
 
         return $this->render('users/index.html.twig', array(
-            'page_name' => 'Users', 'sub_text' => '', 'mode' => 'ADMIN', 'users' => $users
+            'page_name' => 'Users', 'sub_text' => '', 'users' => $users
         ));
     }
 

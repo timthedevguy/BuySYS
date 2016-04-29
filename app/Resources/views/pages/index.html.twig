@@ -1,0 +1,30 @@
+{% extends 'doc_base.html.twig' %}
+
+{% block body %}
+    <div role="main" class="document" itemscope="itemscope">
+        <div role="navigation" aria-label="breadcrumbs navigation">
+            <hr>
+        </div>
+        <div itemprop="articleBody">
+            <h1>{{chapter.Title}}</h1>
+            <p>Chapter Contents</p>
+            <div class="toctree-wrapper compound">
+                <ul>
+                    {% for topic in chapter.Topics %}
+                        <li class="toctree-l1"><a href="">{{topic.Title}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <hr>
+        <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+            <a href="obtaincharacterid.html" class="btn btn-neutral float-right" title="Obtaining Character ID" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+            <a href="implicitflow.html" class="btn btn-neutral" title="SSO For Browser Apps" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        </div>
+        <div role="contentinfo">
+            <p>© Copyright 2016, Allied Industries.</p>
+        </div>
+    </footer>
+{% endblock %}
