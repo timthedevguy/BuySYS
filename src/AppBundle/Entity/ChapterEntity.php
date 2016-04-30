@@ -175,7 +175,6 @@ class ChapterEntity
         {
             if($topic->getTopicNumber() == $topicNumber)
             {
-                dump($topic);
                 $i++;
             }
         }
