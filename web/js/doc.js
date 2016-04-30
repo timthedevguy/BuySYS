@@ -145,9 +145,3 @@ function ThemeNav () {
 
     return nav;
 };
-
-module.exports.ThemeNav = ThemeNav();
-
-if (typeof(window) != 'undefined') {
-    window.SphinxRtdTheme = { StickyNav: module.exports.ThemeNav };
-}

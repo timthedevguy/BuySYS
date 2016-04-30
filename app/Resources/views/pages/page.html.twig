@@ -9,7 +9,7 @@
                     <ul class="current">
                         {% for topic in tmpChapter.Topics %}
                             {% if topic_slug == topic.Slug %}
-                                <li class="toctree-l2 current"><a class="current reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
+                                <li class="toctree-l2 current"><a class="current reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a><ul></ul></li>
                             {% else %}
                                 <li class="toctree-l2"><a class="reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
                             {% endif %}
@@ -53,4 +53,22 @@
             <p>© Copyright 2016, Allied Industries.</p>
         </div>
     </footer>
+{% endblock %}
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $("div[itemprop='articleBody'] H2").each(function() {
+
+            $(".toctree-l2.current UL").append('<li class="toctree-l3"><a class="reference internal" href="#' +  $(this).html() + '">' +  $(this).html() + '</a></li>')
+            $(this).wrapInner('<a name="' + $(this).html() + '"/>');
+        });
+
+    });
+
+</script>
+
 {% endblock %}
