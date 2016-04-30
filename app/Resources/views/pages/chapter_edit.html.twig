@@ -1,5 +1,15 @@
 {% extends 'doc_base.html.twig' %}
 
+{% block tableofcontents %}
+
+    <ul>
+        {% for tmpChapter in toc %}
+            <li class="toctree-l1"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}"><span class="chapterid">{{tmpChapter.ChapterNumber}}</span> {{tmpChapter.Title}}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+
 {% block body %}
     <div role="navigation" aria-label="breadcrumbs navigation">
         <hr>

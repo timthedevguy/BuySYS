@@ -1,5 +1,25 @@
 {% extends 'doc_base.html.twig' %}
 
+{% block tableofcontents %}
+
+    <ul>
+        {% for tmpChapter in toc %}
+            {% if chapter_slug == tmpChapter.slug %}
+                <li class="toctree-l1 current"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a>
+                    <ul class="current">
+                        {% for topic in tmpChapter.Topics %}
+                            <li class="toctree-l2"><a class="reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}"><span class="topicid">{{topic.TopicNumber}}</span>{{topic.Title}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% else %}
+                <li class="toctree-l1"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+
 {% block body %}
     <div role="navigation" aria-label="breadcrumbs navigation">
         <hr>

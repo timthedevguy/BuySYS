@@ -25,23 +25,15 @@
 {% endblock %}
 
 {% block body %}
+    <div role="navigation" aria-label="breadcrumbs navigation">
+        <hr>
+    </div>
     <div role="main" class="document" itemscope="itemscope">
-        <div role="navigation" aria-label="breadcrumbs navigation">
-            {% if is_granted('ROLE_EDITOR') %}
-                <a href="{{path('new_topic', {'id':chapter.Id})}}" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> New Topic</a>
-            {% endif %}
-            <hr>
-        </div>
         <div itemprop="articleBody">
-            <h1>{{chapter.Title}}</h1>
-            <p>Chapter Contents</p>
-            <div class="toctree-wrapper compound">
-                <ul>
-                    {% for topic in chapter.Topics %}
-                        <li class="toctree-l1"><a href="{{ path('pages', {'chapter_slug': chapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <h1>Are you sure?  <small>This action cannot be undone.</small></h1>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
         </div>
     </div>
     <footer>

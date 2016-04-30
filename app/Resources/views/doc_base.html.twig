@@ -56,25 +56,6 @@
                         </div>-->
                     </div>
                     <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-                        <ul>
-                            {% for tmpChapter in toc %}
-                                {% if chapter_slug == tmpChapter.slug %}
-                                    <li class="toctree-l1 current"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a>
-                                        <ul class="current">
-                                            {% for topic in tmpChapter.Topics %}
-                                                {% if topic_slug == topic.Slug %}
-                                                    <li class="toctree-l2 current"><a class="current reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
-                                                {% else %}
-                                                    <li class="toctree-l2"><a class="reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-                                {% else %}
-                                    <li class="toctree-l1"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
                         {% block tableofcontents %}{% endblock %}
                         <!--<ul >
                             <li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Guidelines and References</a></li>
@@ -116,7 +97,7 @@
                         </a>
                         <span>Build the future of communications at <a class="rst-pro-link" href="//readthedocs.org/sustainability/click/5/V2jnuEHt1cxI/" target="_blank">Twilio SIGNAL conference 2016</a>.</span>
                     </div>-->
-                    {% if is_granted('ROLE_ADMIN') %}
+                    {% if is_granted('ROLE_EDITOR') %}
                         <div class="rst-pro-wrapper">
                             <div class="rst-pro-admin">
                                 <h5>Chapters</h5>

@@ -1,5 +1,29 @@
 {% extends 'doc_base.html.twig' %}
 
+{% block tableofcontents %}
+
+    <ul>
+        {% for tmpChapter in toc %}
+            {% if chapter_slug == tmpChapter.slug %}
+                <li class="toctree-l1 current"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a>
+                    <ul class="current">
+                        {% for topic in tmpChapter.Topics %}
+                            {% if topic_slug == topic.Slug %}
+                                <li class="toctree-l2 current"><a class="current reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
+                            {% else %}
+                                <li class="toctree-l2"><a class="reference internal" href="{{ path('pages', {'chapter_slug': tmpChapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% else %}
+                <li class="toctree-l1"><a class="reference internal" href="{{path('pages', {'chapter_slug': tmpChapter.Slug})}}">{{tmpChapter.Title}}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+
 {% block body %}
 <div class="article_not_found">
     <h1>Topic not found.</h1>

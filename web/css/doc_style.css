@@ -28,11 +28,39 @@
 	-webkit-box-shadow: 0px 0px 7px 0px #A9A9A9;
 	box-shadow: 0px 0px 7px 0px #A9A9A9;
 }
-.btn.warning
+SPAN.chapterid
 {
-	background-color: #E0B115;
+	display: block;
+	/*width: 14px;*/
+	float: left;
+	padding-left: 4px;
+	padding-right: 5px;
+	margin-right: 5px;
+	background-color: white;
+	color: black;
+	/*+border-radius: 3px;*/
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 700;
 }
-.btn.danger
+SPAN.topicid
 {
-	background-color: #D71E1E;
+	display: block;
+	/*width: 14px;*/
+	float: left;
+	padding-left: 4px;
+	padding-right: 5px;
+	margin-right: 5px;
+	background-color: black;
+	color: white;
+	/*+border-radius: 3px;*/
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 700;
 }

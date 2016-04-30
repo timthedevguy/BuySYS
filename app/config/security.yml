@@ -43,8 +43,8 @@ security:
         - {path: ^/, roles: [ROLE_USER, IS_AUTHENTICATED_REMEMBERED] }
 
     role_hierarchy:
-        ROLE_ADMIN: ROLE_OFFICER
-        ROLE_OFFICER:   ROLE_USER
+        ROLE_ADMIN: ROLE_OFFICER, ROLE_EDITOR
+        ROLE_OFFICER:   ROLE_USER, ROLE_EDITOR
 
     encoders:
         AppBundle\Entity\UserEntity:

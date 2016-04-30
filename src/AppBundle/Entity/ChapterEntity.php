@@ -10,6 +10,7 @@ use AppBundle\Entity\TopicEntity;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="chapters")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\ChapterRepository")
  */
 class ChapterEntity
 {
@@ -153,9 +154,64 @@ class ChapterEntity
         return $this;
     }
 
+    public function findTopic($topicNumber)
+    {
+        foreach($this->getTopics() as $topic)
+        {
+            if($topic->getTopicNumber() == $topicNumber)
+            {
+                return $topic;
+            }
+        }
+
+        return null;
+    }
+
+    public function countTopics($topicNumber)
+    {
+        $i = 0;
+
+        foreach($this->getTopics() as $topic)
+        {
+            if($topic->getTopicNumber() == $topicNumber)
+            {
+                dump($topic);
+                $i++;
+            }
+        }
+
+        return $i;
+    }
+
     public function removeTopic(TopicEntity $topic)
     {
         $this->topics->removeElement($topic);
+    }
+
+    public function nextTopic($topic)
+    {
+        $i = $this->getTopics()->indexOf($topic);
+        $i++;
+
+        if($i < $this->getTopics()->count())
+        {
+            return $this->getTopics()->get($i);
+        }
+
+        return null;
+    }
+
+    public function previousTopic($topic)
+    {
+        $i = $this->getTopics()->indexOf($topic);
+        $i--;
+
+        if($i >= 0 & $i != $this->getTopics()->count())
+        {
+            return $this->getTopics()->get($i);
+        }
+
+        return null;
     }
 
     public function getTopics()
