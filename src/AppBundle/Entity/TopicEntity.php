@@ -34,6 +34,23 @@ class TopicEntity
     }
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    protected $topicNumber;
+
+    public function setTopicNumber($topicNumber)
+    {
+        $this->topicNumber = $topicNumber;
+
+        return $this;
+    }
+
+    public function getTopicNumber()
+    {
+        return $this->topicNumber;
+    }
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     protected $slug;
@@ -136,7 +153,7 @@ class TopicEntity
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="ChapterEntity", inversedBy="Topics")
+     * @ORM\ManyToOne(targetEntity="ChapterEntity", inversedBy="topics")
      * @ORM\JoinColumn(name="chapter_id", referencedColumnName="id")
      */
     protected $chapter;

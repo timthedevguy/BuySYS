@@ -11,7 +11,7 @@
             <div class="toctree-wrapper compound">
                 <ul>
                     {% for topic in chapter.Topics %}
-                        <li class="toctree-l1"><a href="">{{topic.Title}}</a></li>
+                        <li class="toctree-l1"><a href="{{ path('pages', {'chapter_slug': chapter.Slug, 'topic_slug': topic.Slug}) }}">{{topic.Title}}</a></li>
                     {% endfor %}
                 </ul>
             </div>

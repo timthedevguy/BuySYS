@@ -9,7 +9,7 @@ class TopicRepository extends EntityRepository {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT t FROM AppBundle:TopicEntity t WHERE t.chapter = (:chapterid) AND t.slug = (:slug)'
+                'SELECT t FROM AppBundle:TopicEntity t WHERE t.chapter = (:chapterid) AND t.slug = (:slug) ORDER BY t.topicNumber ASC'
             )->setParameter('chapterid', $chapter_id)->setParameter('slug', $topic_slug)->getResult();
     }
 }

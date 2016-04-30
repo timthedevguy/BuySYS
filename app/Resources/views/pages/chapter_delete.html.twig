@@ -1,0 +1,21 @@
+{% extends 'doc_base.html.twig' %}
+
+{% block body %}
+    <div role="navigation" aria-label="breadcrumbs navigation">
+        <hr>
+    </div>
+    <div role="main" class="document" itemscope="itemscope">
+        <div itemprop="articleBody">
+            <h1>Are you sure?</h1>
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+    <footer>
+        <hr>
+        <div role="contentinfo">
+            <p>© Copyright 2016, Allied Industries.</p>
+        </div>
+    </footer>
+{% endblock %}

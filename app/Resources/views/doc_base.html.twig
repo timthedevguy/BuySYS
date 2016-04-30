@@ -5,9 +5,11 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <title>{% block title %}Allied Industries Online Documentation{% endblock %}</title>
 
+        <link rel="stylesheet" href="{{ asset('/css/docs_bootstrap.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/docs.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/doc_style.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
+
 
         {% block stylesheets %}{% endblock %}
 
@@ -17,6 +19,7 @@
         <script src="{{ asset('/js/icheck.min.js') }}"></script>
         <script src="{{ asset('/js/doc.js') }}"></script>
         <script src="{{ asset('/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
+        <script src="{{ asset('/js/ckeditor.js') }}"></script>
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -86,7 +89,7 @@
                                     <li class="toctree-l2"><a class="reference internal" href="obtaincharacterid.html">Obtaining Character ID</a></li>
                                 </ul>
                             </li>
-                            <li class="toctree-l1"><a class="reference internal" href="{{path('pages_test')}}">CREST</a>
+                            <li class="toctree-l1"><a class="reference internal" href="">CREST</a>
                                 <ul>
                                     <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
                                     <li class="toctree-l2"><a class="reference internal" href="authentication.html">Authentication Flow</a></li>
@@ -118,9 +121,11 @@
                             <div class="rst-pro-admin">
                                 <h5>Chapters</h5>
                                 <ul>
-                                    <li><a href="#" class="btn success"><i class="fa fa-plus" aria-hidden="true"></i> New Chapter</a></li>
-                                    <li><a href="#" class="btn warning"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Chapter</a></li>
-                                    <li><a href="#" class="btn danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete Chapter</a></li>
+                                    <li><a href="{{path('new_chapter')}}" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> New Chapter</a></li>
+                                    {% if chapter != null %}
+                                        <li><a href="{{path('edit_chapter', {'id':chapter.Id})}}" class="btn btn-warning"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Chapter</a></li>
+                                        <li><a href="{{path('delete_chapter', {'id':chapter.Id})}}" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> Delete Chapter</a></li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         </div>

@@ -1,0 +1,46 @@
+{% extends 'doc_base.html.twig' %}
+
+{% block body %}
+    <div role="navigation" aria-label="breadcrumbs navigation">
+        <hr>
+    </div>
+    <div role="main" class="document" itemscope="itemscope">
+        <div itemprop="articleBody">
+            <h1>Create New Chapter</h1>
+            {{ form_start(form) }}
+
+                <div class="form-group">
+                    {{ form_label(form.chapternumber) }}
+                    {{ form_errors(form.chapternumber) }}
+                    {{ form_widget(form.chapternumber) }}
+                    <span id="helpBlock">This is a numeric field representing the placement of the chapter in the Table of Contents on the left.  If assigned the
+                    same number as an existing item then this item will be inserted at the index listed and other items will be moved down.</span>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.slug) }}
+                    {{ form_errors(form.slug) }}
+                    {{ form_widget(form.slug) }}
+                    <span id="helpBlock">This is a string field representing the unique text id of this Chapter.  This should be unique to the entire Table
+                        of Contents on the left and should not contain spaces!</span>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.title) }}
+                    {{ form_errors(form.title) }}
+                    {{ form_widget(form.title) }}
+                    <span id="helpBlock">This is a string field for the Title that will show up in the Table of Contents on the left.</span>
+                </div>
+
+                <div>
+                    {{ form_widget(form.save) }}
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+    <footer>
+        <hr>
+        <div role="contentinfo">
+            <p>© Copyright 2016, Allied Industries.</p>
+        </div>
+    </footer>
+{% endblock %}

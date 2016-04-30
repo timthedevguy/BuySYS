@@ -2,12 +2,17 @@
 
 {% block body %}
     <div role="navigation" aria-label="breadcrumbs navigation">
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{path('new_topic', {'id':chapter.Id})}}" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> New Topic</a>
+            <a href="{{path('edit_topic', {'id':topic.Id})}}" class="btn btn-warning"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Topic</a>
+            <a href="{{path('new_topic', {'id':topic.Id})}}" class="btn btn-danger pull-right"><i class="fa fa-trash" aria-hidden="true"></i> Delete Topic</a>
+        {% endif %}
         <hr>
     </div>
     <div role="main" class="document" itemscope="itemscope">
         <div itemprop="articleBody">
             <h1>{{topic.Title}}</h1>
-            {{topic.Content}}
+            {{topic.Content|raw}}
         </div>
     </div>
     <footer>

@@ -13,10 +13,6 @@ use AppBundle\Entity\TopicEntity;
  */
 class ChapterEntity
 {
-    public function __construct()
-    {
-        $this->topics = new ArrayCollection();
-    }
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")
@@ -140,12 +136,18 @@ class ChapterEntity
 
     /**
      * @ORM\OneToMany(targetEntity="TopicEntity", mappedBy="chapter")
+     * @ORM\OrderBy({"topicNumber" = "asc"})
      */
     protected $topics;
 
+    public function __construct()
+    {
+        $this->topics = new ArrayCollection();
+    }
+
     public function addTopic(TopicEntity $topic)
     {
-        $topic->setChatper($this);
+        $topic->setChapter($this);
         $this->topics[] = $topic;
 
         return $this;
