@@ -42,6 +42,58 @@ CKEDITOR.stylesSet.add( 'default', [
 			border: '1px solid #ccc'
 		}
 	},
+	{
+		name: 'Alert Success',
+		element: 'div',
+		styles: {
+			'padding': '15px',
+		    'margin-bottom': '20px',
+		    'border': '1px solid transparent',
+		    'border-radius': '4px',
+			'background-color': '#dff0d8',
+		    'border-color': '#d6e9c6',
+		    'color': '#3c763d'
+		}
+	},
+	{
+		name: 'Alert Warning',
+		element: 'div',
+		styles: {
+			'padding': '15px',
+		    'margin-bottom': '20px',
+		    'border': '1px solid transparent',
+		    'border-radius': '4px',
+			'background-color': '#fcf8e3',
+		    'border-color': '#faebcc',
+		    'color': '#8a6d3b'
+		}
+	},
+	{
+		name: 'Alert Info',
+		element: 'div',
+		styles: {
+			'padding': '15px',
+		    'margin-bottom': '20px',
+		    'border': '1px solid transparent',
+		    'border-radius': '4px',
+			'background-color': '#d9edf7',
+		    'border-color': '#bce8f1',
+		    'color': '#31708f'
+		}
+	},
+	{
+		name: 'Alert Danger',
+		element: 'div',
+		styles: {
+			'padding': '15px',
+		    'margin-bottom': '20px',
+		    'border': '1px solid transparent',
+		    'border-radius': '4px',
+			'background-color': '#f2dede',
+		    'border-color': '#ebccd1',
+		    'color': '#a94442'
+		}
+	},
 
 	/* Inline Styles */
 
@@ -108,4 +160,3 @@ CKEDITOR.stylesSet.add( 'default', [
 	{ name: 'Borderless Table',		element: 'table',	styles: { 'border-style': 'hidden', 'background-color': '#E6E6FA' } },
 	{ name: 'Square Bulleted List',	element: 'ul',		styles: { 'list-style-type': 'square' } }
 ]);
-
