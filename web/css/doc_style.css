@@ -64,3 +64,15 @@ SPAN.topicid
 	font-size: 11px;
 	font-weight: 700;
 }
+.rst-content .document UL
+{
+	list-style: disc;
+	margin-left: 20px;
+	margin-bottom: 24px;
+	line-height: 24px;
+}
+.rst-content .document UL LI
+{
+	list-style: disc;
+	margin-left: 20px;
+}
