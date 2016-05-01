@@ -28,7 +28,7 @@
                     {{ form_start(form) }}
                         {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
                         <div id="buyback_submits">
-                            <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Selling Items">Help</a>
+                            <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Selling Items" target="_new">Help</a>
                             <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
                             <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
                         </div>
