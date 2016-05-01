@@ -32,6 +32,7 @@ CKEDITOR.stylesSet.add( 'default', [
 	*/
 
 	{ name: 'Italic Title',		element: 'h2', styles: { 'font-style': 'italic' } },
+	{ name: 'Eve Item', 		element: 'span', styles: { 'padding-left': '5px', 'padding-right':'5px', 'padding-bottom':'2px', 'background-color':'#E9E9E9', 'border':'1px solid #C5C4C4'} },
 	{ name: 'Subtitle',			element: 'h3', styles: { 'color': '#aaa', 'font-style': 'italic' } },
 	{
 		name: 'Special Container',

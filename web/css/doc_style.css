@@ -76,3 +76,13 @@ SPAN.topicid
 	list-style: disc;
 	margin-left: 20px;
 }
+SPAN.pre
+{
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 2px;
+	background-color: #E9E9E9;
+	border: 1px solid #C5C4C4;
+	/*font-family: 'Courier';*/
+	/*font-size: 15px;*/
+}
