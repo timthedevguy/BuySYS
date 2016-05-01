@@ -48,7 +48,7 @@ CKEDITOR.stylesSet.add( 'default', [
 		styles: {
 			'padding': '15px',
 		    'margin-bottom': '20px',
-		    'border': '1px solid transparent',
+		    'border': '1px solid #d6e9c6',
 		    'border-radius': '4px',
 			'background-color': '#dff0d8',
 		    'border-color': '#d6e9c6',
@@ -61,7 +61,7 @@ CKEDITOR.stylesSet.add( 'default', [
 		styles: {
 			'padding': '15px',
 		    'margin-bottom': '20px',
-		    'border': '1px solid transparent',
+		    'border': '1px solid #faebcc',
 		    'border-radius': '4px',
 			'background-color': '#fcf8e3',
 		    'border-color': '#faebcc',
@@ -74,7 +74,7 @@ CKEDITOR.stylesSet.add( 'default', [
 		styles: {
 			'padding': '15px',
 		    'margin-bottom': '20px',
-		    'border': '1px solid transparent',
+		    'border': '1px solid #bce8f1',
 		    'border-radius': '4px',
 			'background-color': '#d9edf7',
 		    'border-color': '#bce8f1',
@@ -87,7 +87,7 @@ CKEDITOR.stylesSet.add( 'default', [
 		styles: {
 			'padding': '15px',
 		    'margin-bottom': '20px',
-		    'border': '1px solid transparent',
+		    'border': '1px solid #ebccd1',
 		    'border-radius': '4px',
 			'background-color': '#f2dede',
 		    'border-color': '#ebccd1',
