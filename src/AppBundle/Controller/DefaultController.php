@@ -26,7 +26,7 @@ class DefaultController extends Controller
         $form = $this->createForm(new BuyBackType(), $bb);
 
         $form->handleRequest($request);
-
+        $eveCentralOK = $this->get("market")->IsEveCentralAlive();
         // Get count of outstanding transactions
         /*$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
         $query = $transactions->createQueryBuilder('t')
@@ -59,7 +59,7 @@ class DefaultController extends Controller
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(),
          'oSales' => $oSales, 'news' => $news, 'highsecores' => $highSecOres, 'otherhighsecores' => $otherHighSecOres, 'lowsecores' => $lowSecOres,
          'nullsecores' => $nullSecOres, 'iceores' => $iceOres, 'gasores' => $gasOres, 'mineralores' => $mineralOres, 'p0ores' => $p0Ores,
-         'p1ores' => $p1Ores, 'p2ores' => $p2Ores, 'p3ores' => $p3Ores, 'p4ores' => $p4Ores));
+         'p1ores' => $p1Ores, 'p2ores' => $p2Ores, 'p3ores' => $p3Ores, 'p4ores' => $p4Ores, 'eveCentralOK' => $eveCentralOK ));
     }
 
     /**

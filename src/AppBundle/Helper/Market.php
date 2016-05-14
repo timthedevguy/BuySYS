@@ -225,6 +225,18 @@ class Market {
         return $cacheEntity->getMarket();
     }
 
+    public function IsEveCentralAlive()
+    {
+        $header_check = get_headers("http://api.eve-central.com/api/marketstat?typeid=34");
+
+        if(explode(' ', $header_check[0])[1] == '200')
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public function GetCacheMarketPrice($typeId) {
 
         $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
