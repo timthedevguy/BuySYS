@@ -102,7 +102,7 @@ class DefaultController extends Controller
         foreach($typeIds as $typeId) {
 
             $tax = $this->get("helper")->getSetting("buyback_default_tax");
-            $marketPrice = $this->get("market")->GetMarketPrice($typeId)*((100-$tax)/100);
+            $marketPrice = $this->get("market")->GetCacheMarketPrice($typeId)*((100-$tax)/100);
 
             $eveType = $this->getDoctrine('evedata')->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeId);
             $oreModel = new OreReviewModel();
