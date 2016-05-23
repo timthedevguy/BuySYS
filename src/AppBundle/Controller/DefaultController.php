@@ -26,23 +26,12 @@ class DefaultController extends Controller
         $form = $this->createForm(new BuyBackType(), $bb);
 
         $form->handleRequest($request);
-        $eveCentralOK = $this->get("market")->IsEveCentralAlive();
-        // Get count of outstanding transactions
-        /*$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        $query = $transactions->createQueryBuilder('t')
-            ->where('t.user = :user')
-            ->andWhere('t.is_complete = 0')
-            ->andWhere('t.type = :type')
-            ->orderBy('t.created', 'DESC')
-            ->setParameter('user', $this->getUser())
-            ->setParameter('type', "P")
-            ->getQuery();*/
+        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
 
-        //$outstandingSales = count($query->getResult());
         $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser()); //$query->getResult();
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
-        $highSecOres = $this->getQuickReview(array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453'));
+        /*$highSecOres = $this->getQuickReview(array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453'));
         $otherHighSecOres = $this->getQuickReview(array('18','17455','17456','1227','17867','17868'));
         $lowSecOres = $this->getQuickReview(array('1226','17448','17449','1231','17444','17445','21','17440','17441'));
         $nullSecOres = $this->getQuickReview(array('22','17425','17426','1223','17428','17429','1225','17432','17433','1232','17436','17437','1229','17865','17866','11396','17869','17870','19','17466','17467'));
@@ -53,13 +42,11 @@ class DefaultController extends Controller
         $p1Ores = $this->getQuickReview(array('2393','2396','3779','2401','2390','2397','2392','3683','2389','2399','2395','2398','9828','2400','3645'));
         $p2Ores = $this->getQuickReview(array('2329','3828','9836','9832','44','3693','15317','3725','3689','2327','9842','2463','2317','2321','3695','9830','3697','9838','2312','3691','2319','9840','3775','2328'));
         $p3Ores = $this->getQuickReview(array('2358','2345','2344','2367','17392','2348','9834','2366','2361','17898','2360','2354','2352','9846','9848','2351','2349','2346','12836','17136','28974'));
-        $p4Ores = $this->getQuickReview(array('2867','2868','2869','2870','2871','2872','2875','2876'));
+        $p4Ores = $this->getQuickReview(array('2867','2868','2869','2870','2871','2872','2875','2876'));*/
 
         return $this->render('default/index.html.twig', array(
             'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(),
-         'oSales' => $oSales, 'news' => $news, 'highsecores' => $highSecOres, 'otherhighsecores' => $otherHighSecOres, 'lowsecores' => $lowSecOres,
-         'nullsecores' => $nullSecOres, 'iceores' => $iceOres, 'gasores' => $gasOres, 'mineralores' => $mineralOres, 'p0ores' => $p0Ores,
-         'p1ores' => $p1Ores, 'p2ores' => $p2Ores, 'p3ores' => $p3Ores, 'p4ores' => $p4Ores, 'eveCentralOK' => $eveCentralOK ));
+         'oSales' => $oSales, 'news' => $news, 'eveCentralOK' => $eveCentralOK ));
     }
 
     /**

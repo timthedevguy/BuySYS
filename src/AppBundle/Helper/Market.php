@@ -26,13 +26,13 @@ class Market {
         $bb_source_type = $this->helper->getSetting("buyback_source_type");
         $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
 
-        foreach($jsonData as $jsonItem) {
-
+        foreach($jsonData as $jsonItem)
+        {
             // Query DB for matching CacheEntity
             $cacheItem = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
 
-            if(!$cacheItem) {
-
+            if(!$cacheItem)
+            {
                 // Item is null, lets create it
                 $cacheItem = new CacheEntity();
                 $cacheItem->setTypeId($jsonItem[$bb_source_type]["forQuery"]["types"][0]);

@@ -16,7 +16,20 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Co
     {
         $token->getUser()->setLastLogin(new \DateTime());
         $this->container->get('doctrine')->getEntityManager()->flush();
+        dump($request);
+        dump($token);
 
-        return new RedirectResponse($this->container->get('router')->generate('homepage'));
+        $key = '_security.main.target_path';
+
+        // try to redirect to the last page, or fallback to the homepage
+        if ($this->container->get('session')->has($key)) {
+          $url = $this->container->get('session')->get($key);
+          $this->container->get('session')->remove($key);
+        } else {
+          $url = $this->container->get('router')->generate('homepage');
+        }
+
+        return new RedirectResponse($url);
+        //return new RedirectResponse($this->container->get('router')->generate('homepage'));
     }
 }

@@ -49,42 +49,55 @@ class AutoUpdateCommand extends ContainerAwareCommand
         // Get Market Helper
         $market = $this->getContainer()->get('market');
         $logger = $this->getContainer()->get('logger');
-        // Begin Updating the Cache
-        $logger->info('Auto Updating High Sec Ores');
-        $output->writeln('Auto Updating High Sec Ores');
-        $market->UpdateCache($highSecOres);
-        $logger->info('Auto Updating Other High Sec Ores');
-        $output->writeln('Auto Updating Other High Sec Ores');
-        $market->UpdateCache($otherHighSecOres);
-        $logger->info('Auto Updating Low Sec Ores');
-        $output->writeln('Auto Updating Low Sec Ores');
-        $market->UpdateCache($lowSecOres);
-        $logger->info('Auto Updating Null Sec Ores');
-        $output->writeln('Auto Updating Null Sec Ores');
-        $market->UpdateCache($nullSecOres);
-        $logger->info('Auto Updating Ice');
-        $output->writeln('Auto Updating Ice');
-        $market->UpdateCache($iceOres);
-        $logger->info('Auto Updating Gas');
-        $output->writeln('Auto Updating Gas');
-        $market->UpdateCache($gasOres);
-        $logger->info('Auto Updating Minerals');
-        $output->writeln('Auto Updating Minerals');
-        $market->UpdateCache($mineralOres);
-        $logger->info('Auto Updating P0');
-        $output->writeln('Auto Updating P0');
-        $market->UpdateCache($p0Ores);
-        $logger->info('Auto Updating P1');
-        $output->writeln('Auto Updating P1');
-        $market->UpdateCache($p1Ores);
-        $logger->info('Auto Updating P2');
-        $output->writeln('Auto Updating P2');
-        $market->UpdateCache($p2Ores);
-        $logger->info('Auto Updating P3');
-        $output->writeln('Auto Updating P3');
-        $market->UpdateCache($p3Ores);
-        $logger->info('Auto Updating P4');
-        $output->writeln('Auto Updating P4');
-        $market->UpdateCache($p4Ores);
+        $helper = $this->getContainer()->get('helper');
+
+        $eveCentralOK = $market->IsEveCentralAlive();
+        $helper->setSetting("eveCentralOK", $eveCentralOK);
+
+        if($eveCentralOK == true)
+        {
+            $output->writeln("Eve-Central is online!");
+            // Begin Updating the Cache
+            $logger->info('Auto Updating High Sec Ores');
+            $output->writeln('Auto Updating High Sec Ores');
+            $market->UpdateCache($highSecOres);
+            $logger->info('Auto Updating Other High Sec Ores');
+            $output->writeln('Auto Updating Other High Sec Ores');
+            $market->UpdateCache($otherHighSecOres);
+            $logger->info('Auto Updating Low Sec Ores');
+            $output->writeln('Auto Updating Low Sec Ores');
+            $market->UpdateCache($lowSecOres);
+            $logger->info('Auto Updating Null Sec Ores');
+            $output->writeln('Auto Updating Null Sec Ores');
+            $market->UpdateCache($nullSecOres);
+            $logger->info('Auto Updating Ice');
+            $output->writeln('Auto Updating Ice');
+            $market->UpdateCache($iceOres);
+            $logger->info('Auto Updating Gas');
+            $output->writeln('Auto Updating Gas');
+            $market->UpdateCache($gasOres);
+            $logger->info('Auto Updating Minerals');
+            $output->writeln('Auto Updating Minerals');
+            $market->UpdateCache($mineralOres);
+            $logger->info('Auto Updating P0');
+            $output->writeln('Auto Updating P0');
+            $market->UpdateCache($p0Ores);
+            $logger->info('Auto Updating P1');
+            $output->writeln('Auto Updating P1');
+            $market->UpdateCache($p1Ores);
+            $logger->info('Auto Updating P2');
+            $output->writeln('Auto Updating P2');
+            $market->UpdateCache($p2Ores);
+            $logger->info('Auto Updating P3');
+            $output->writeln('Auto Updating P3');
+            $market->UpdateCache($p3Ores);
+            $logger->info('Auto Updating P4');
+            $output->writeln('Auto Updating P4');
+            $market->UpdateCache($p4Ores);
+        }
+        else
+        {
+            $output->writeln("Eve-Central is offline!");
+        }
     }
 }
