@@ -16,8 +16,6 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Co
     {
         $token->getUser()->setLastLogin(new \DateTime());
         $this->container->get('doctrine')->getEntityManager()->flush();
-        dump($request);
-        dump($token);
 
         $key = '_security.main.target_path';
 
