@@ -30,15 +30,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        {% if total > 1000000 %}
-        <div id="share-check" class="pull-left">
-            <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
-                <label data-toggle="tooltip" data-placement="bottom" title="Gives you shares instead of isk (1m isk == 1 share)">
-                    <input type="checkbox" id="give_me_shares_base" > Give me shares please!
-                </label>
-            </div>
-        </div>
-        {% endif %}
         <input type="hidden" id="give_me_shares" name="give_me_shares" value="0"/>
         <button type="button" class="btn btn-danger" data-dismiss="modal">Decline</button>
         <button type="button" id="acceptOffer" class="btn btn-success">Accept</button>
