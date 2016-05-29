@@ -32,7 +32,7 @@
                 {{ form_row(form.plainPassword.first, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Password'}}) }}
                 {{ form_row(form.plainPassword.second, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Repeat Password'}}) }}
                 <hr>
-                <p style="text-align:center;">EVE API Key is used only to verify you own this Character and is not stored on this site.  Click <a href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=8388608">here</a> for assistance creating one.</p>
+                <p style="text-align:center;">EVE API Key is used only to verify you own this Character and is not stored on this site.  Click <a href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=8388608">here</a> for assistance creating one.  Once registered this key can be deleted from your EVE Account.</p>
                 {{ form_row(form.username, {'icon': 'fa fa-user','attr': {'placeholder': 'Character Name'}}) }}
                 {{ form_row(form.api_key, {'icon': 'fa fa-key','attr': {'placeholder': 'API Key'}}) }}
                 {{ form_row(form.api_code, {'icon': 'fa fa-barcode','attr': {'placeholder': 'API Code'}}) }}
@@ -41,6 +41,7 @@
                         <!--Empty on purpose-->
                     </div><!-- /.col -->
                     <div class="col-xs-4">
+                        <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Registering" target="_new">Help</a>
                         <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
                     </div><!-- /.col -->
                 </div>

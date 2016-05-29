@@ -68,7 +68,7 @@ class RegistrationController extends Controller
 
             // ... do any other work - like send them an email, etc
             // maybe set a "flash" success message for the user
-            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.');
+            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.  You can now delete the API key used to register if you wish.');
 
             return $this->redirectToRoute('login_route');
 
