@@ -14,6 +14,10 @@ use AppBundle\Entity\ChapterEntity;
  */
 class TopicEntity
 {
+    public function __construct()
+    {
+        $this->isPublic = false;
+    }
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")

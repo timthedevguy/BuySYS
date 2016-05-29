@@ -88,7 +88,10 @@ class PagesController extends Controller
         $form = $this->createFormBuilder($topic)
             ->add('slug', TextType::class)
             ->add('title', TextType::class)
-            ->add('isPublic', CheckboxType::class)
+            ->add('isPublic', CheckboxType::class, array(
+                'label'    => 'Make this topic available to the public?',
+                'required' => false,
+            ))
             ->add('content', TextareaType::class, array('attr' => array('id' => 'fckedit')))
             ->add('save', SubmitType::class, array('label' => 'Create Topic'))
             ->getForm();
@@ -172,7 +175,10 @@ class PagesController extends Controller
             ->add('topicnumber', TextType::class, array('label'  => 'Topic Number'))
             ->add('slug', TextType::class)
             ->add('title', TextType::class)
-            ->add('isPublic', CheckboxType::class)
+            ->add('isPublic', CheckboxType::class, array(
+                'label'    => 'Make this topic available to the public?',
+                'required' => false,
+            ))
             ->add('content', TextareaType::class)
             ->add('save', SubmitType::class, array('label' => 'Save Topic'))
             ->getForm();
