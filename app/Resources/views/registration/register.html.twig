@@ -38,10 +38,9 @@
                 {{ form_row(form.api_code, {'icon': 'fa fa-barcode','attr': {'placeholder': 'API Code'}}) }}
                 <div class="row">
                     <div class="col-xs-8">
-                        <!--Empty on purpose-->
+                        <a class="btn btn-info btn-flat pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Registering" target="_new">Help</a>
                     </div><!-- /.col -->
                     <div class="col-xs-4">
-                        <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Registering" target="_new">Help</a>
                         <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
                     </div><!-- /.col -->
                 </div>
