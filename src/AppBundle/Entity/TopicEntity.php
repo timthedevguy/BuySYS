@@ -34,6 +34,23 @@ class TopicEntity
     }
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $isPublic;
+
+    public function setIsPublic($isPublic)
+    {
+        $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    public function getIsPublic()
+    {
+        return $this->isPublic;
+    }
+
+    /**
      * @ORM\Column(type="integer")
      */
     protected $topicNumber;

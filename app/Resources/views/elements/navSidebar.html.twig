@@ -96,7 +96,10 @@
                 </li>
             </ul>
         </li>
-        <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>
+        {% if is_granted('ROLE_MEMBER') %}
+            <li class='header'>MEMBER MENU</li>
+            <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>
+        {% endif %}
 
         {% if is_granted('ROLE_ADMIN') %}
             <li class="header">ADMIN MENU</li>

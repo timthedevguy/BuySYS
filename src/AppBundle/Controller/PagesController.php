@@ -7,8 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 use AppBundle\Entity\ChapterEntity;
 use AppBundle\Entity\TopicEntity;
@@ -86,6 +88,7 @@ class PagesController extends Controller
         $form = $this->createFormBuilder($topic)
             ->add('slug', TextType::class)
             ->add('title', TextType::class)
+            ->add('isPublic', CheckboxType::class)
             ->add('content', TextareaType::class, array('attr' => array('id' => 'fckedit')))
             ->add('save', SubmitType::class, array('label' => 'Create Topic'))
             ->getForm();
@@ -169,6 +172,7 @@ class PagesController extends Controller
             ->add('topicnumber', TextType::class, array('label'  => 'Topic Number'))
             ->add('slug', TextType::class)
             ->add('title', TextType::class)
+            ->add('isPublic', CheckboxType::class)
             ->add('content', TextareaType::class)
             ->add('save', SubmitType::class, array('label' => 'Save Topic'))
             ->getForm();
@@ -275,13 +279,13 @@ class PagesController extends Controller
      */
     public function showAction(Request $request, $chapter_slug, $topic_slug)
     {
+        $template = 'pages/page.html.twig';
         $chapters = $this->getDoctrine()->getRepository('AppBundle:ChapterEntity', 'default');
         $chapter = $chapters->findOneBySlug($chapter_slug);
 
         if($chapter == null)
         {
-            return $this->render('pages/chapter_error.html.twig', array(
-                'page_name' => 'test', 'sub_text' => 'Alliance/Corp sponsered fleet operations', 'toc' => $chapters->findAll(),
+            return $this->render('pages/chapter_error.html.twig', array('toc' => $chapters->findAll(),
                  'chapter_slug' => $chapter_slug, 'chapter' => null));
         }
 
@@ -291,22 +295,32 @@ class PagesController extends Controller
         if($topic == null & $topic_slug != "")
         {
             return $this->render('pages/topic_error.html.twig', array(
-                'page_name' => 'test', 'sub_text' => 'Alliance/Corp sponsered fleet operations', 'toc' => $chapters->findAll(),
-                'chapter_slug' => $chapter_slug, 'topic_slug' => $topic_slug, 'chapter' => $chapter));
+                'toc' => $chapters->findAll(), 'chapter_slug' => $chapter_slug, 'topic_slug' => $topic_slug, 'chapter' => $chapter));
         }
         elseif($topic_slug == "")
         {
-            return $this->render('pages/index.html.twig', array(
-                'page_name' => 'test', 'sub_text' => 'Alliance/Corp sponsered fleet operations', 'toc' => $chapters->findAll(),
+            if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY'))
+            {
+                throw $this->createAccessDeniedException();
+            }
+
+            return $this->render('pages/index.html.twig', array('toc' => $chapters->findAll(),
                 'chapter_slug' => $chapter_slug, 'topic_slug' => $topic_slug, 'chapter' => $chapter));
         }
 
         $topic = $topic[0];
 
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY'))
+        {
+            $template = 'pages/page_public.html.twig';
 
+            if($topic->getIsPublic() == false)
+            {
+                throw $this->createAccessDeniedException();
+            }
+        }
 
-        return $this->render('pages/page.html.twig', array(
-            'page_name' => 'test', 'sub_text' => 'Alliance/Corp sponsered fleet operations', 'toc' => $chapters->findAll(),
+        return $this->render($template, array('toc' => $chapters->findAll(),
              'chapter_slug' => $chapter->getSlug(), 'topic_slug' => $topic_slug, 'chapter' => $chapter, 'topic' => $topic,
             'nexttopic' => $chapter->nextTopic($topic), 'prevtopic' => $chapter->previousTopic($topic)));
     }
