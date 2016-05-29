@@ -25,7 +25,7 @@
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     {% if eveCentralOK == true %}
-                    {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
+                        {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
                         {{ form_start(form) }}
                             {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
                             <div id="buyback_submits">
@@ -35,10 +35,10 @@
                             </div>
                         {{ form_end(form) }}
                     {% else %}
-                    <div class="alert alert-danger alert-dismissable">
-                        <h4><i class="icon fa fa-ban"></i> EveCentral is Down!</h4>
-                        The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down Amsys will not accept buyback contracts.
-                     </div>
+                        <div class="alert alert-danger alert-dismissable">
+                            <h4><i class="icon fa fa-ban"></i> EveCentral is Down!</h4>
+                            The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down Amsys will not accept buyback contracts.
+                         </div>
                     {% endif %}
                 </div><!-- /.box-body -->
                 <!--<div class="box-footer">
