@@ -68,7 +68,7 @@ class BuyBackController extends Controller
         $cache = $this->getDoctrine()->getRepository('AppBundle:CacheEntity', 'default');
         $items = array();
         $typeids = array();
-
+        
         // Build our Item List and TypeID List
         foreach(explode("\n", $buyback->getItems()) as $line) {
 

@@ -207,7 +207,7 @@
 
     function submitQuickEstimate()
     {
-        $.post('{{path('ajax_estimate_buyback')}}', {items: $("#items").val()},
+        $.post('{{path('ajax_estimate_buyback')}}', {'buy_back_form[items]': $("#buy_back_form_items").val()},
             function(response)
             {
                 $( "#estimate_modal_content" ).html( response );
