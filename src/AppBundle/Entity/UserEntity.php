@@ -124,6 +124,23 @@ class UserEntity implements AdvancedUserInterface, \Serializable
         return $this->api_code;
     }
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $resetCode;
+
+    public function setResetCode($resetCode)
+    {
+        $this->resetCode = $resetCode;
+
+        return $this;
+    }
+
+    public function getResetCode()
+    {
+        return $this->resetCode;
+    }
+
     public function _construct() {
 
         $this->isActive = true;

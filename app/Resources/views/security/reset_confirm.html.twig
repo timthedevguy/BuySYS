@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Login{% endblock %}</title>
+        <title>{% block title %}Password Reset{% endblock %}</title>
 
         <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
@@ -28,32 +28,31 @@
                 <b>Am</b>SYS</a>
             </div>
 
-            {% if error %}
-                <div class="callout callout-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
             {{ include('elements/flash.html.twig') }}
 
             <!-- /.login-logo -->
             <div class="login-box-body">
-                <p class="login-box-msg">Sign in to start your session</p>
-                <form action="{{ path('login_check') }}" method="post">
-
+                <p class="login-box-msg">Reset your password by entering reset code from email and specifiying a new password.</p>
+                <form action="{{ path('confirm_password_reset') }}" method="post">
+                    {{ form_row(form._token) }}
                     <div class="form-group has-feedback">
-                        <input class="form-control" placeholder="Email" id="username" type="text" value="{{ last_username }}" name="_username">
+                        {{ form_widget(form.reset_code, {'attr': {'class': 'form-control', 'placeholder': 'Reset Code'}}) }}
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
                     <div class="form-group has-feedback">
-                        <input class="form-control" placeholder="Password" type="password" id="password" name="_password">
+                        {{ form_widget(form.new_password.first, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        {{ form_widget(form.new_password.second, {'attr': {'class': 'form-control', 'placeholder': 'Repeat Password'}}) }}
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     </div>
                     <div class="row">
-                        <div class="col-xs-8">
-                            <a class="btn btn-success pull-left btn-flat" style="margin-right:5px;" href="{{ path('register') }}">Register</a>
-                            <a class="btn btn-warning pull-left btn-flat" href="{{ path('reset_password') }}">Reset Password</a>
+                        <div class="col-xs-6">
+
                         </div>
-                        <!-- /.col -->
-                        <div class="col-xs-4">
-                            <button class="btn btn-primary btn-block btn-flat" type="submit">Sign In</button>
+                        <div class="col-xs-6">
+                            <button class="btn btn-primary btn-block btn-flat" type="submit">Set Password</button>
                         </div>
                         <!-- /.col -->
                     </div>
@@ -64,18 +63,5 @@
       </div>
       <!-- /.login-box -->
         {% block body %}{% endblock %}
-
-        <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
-        <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('/js/icheck.min.js') }}"></script>
-        <script>
-            $(function () {
-                $('input').iCheck({
-                    checkboxClass: 'icheckbox_square-blue',
-                    radioClass: 'iradio_square-blue',
-                    increaseArea: '20%' // optional
-                });
-            });
-        </script>
     </body>
 </html>

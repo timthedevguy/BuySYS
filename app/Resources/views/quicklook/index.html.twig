@@ -5,6 +5,12 @@
     <div class="col-md-12">
         <div class="box">
             <div class="box-body">
+                {% if eveCentralOK == false %}
+                    <div class="alert alert-danger">
+                        <h4><i class="icon fa fa-ban"></i> EveCentral is Down!</h4>
+                        The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down Amsys will not accept buyback contracts.
+                    </div>
+                {% endif %}
                 <table class="table table-striped images-table-small data-table">
                     <thead>
                         <tr>

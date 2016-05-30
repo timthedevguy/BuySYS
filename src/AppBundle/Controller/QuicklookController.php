@@ -19,6 +19,7 @@ class QuicklookController extends Controller
         $results = Array();
         $subText = "";
         $hideCan = false;
+        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
 
         switch($ore_type) {
             case "high":
@@ -88,7 +89,7 @@ class QuicklookController extends Controller
                 break;
         }
         return $this->render('quicklook/index.html.twig', array(
-            'page_name' => 'Quicklook', 'sub_text' => $subText, 'results' => $results, 'hideCan' => $hideCan ));
+            'page_name' => 'Quicklook', 'sub_text' => $subText, 'results' => $results, 'hideCan' => $hideCan, 'eveCentralOK' => $eveCentralOK ));
         // Logic
     }
 

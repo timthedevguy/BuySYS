@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Time;
 
-use AppBundle\Form\BuyBackType;
+use AppBundle\Form\BuyBackForm;
 use AppBundle\Model\BuyBackModel;
 use AppBundle\Model\BuyBackItemModel;
 use AppBundle\Entity\LineItemEntity;
@@ -61,7 +61,7 @@ class BuyBackController extends Controller
     public function ajax_EstimateAction(Request $request) {
 
         $buyback = new BuyBackModel();
-        $form = $this->createForm(new BuyBackType(), $buyback);
+        $form = $this->createForm(BuyBackForm::class, $buyback);
         $form->handleRequest($request);
 
         $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
