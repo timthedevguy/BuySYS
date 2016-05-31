@@ -249,7 +249,7 @@ class SecurityController extends Controller
                 $message = \Swift_Message::newInstance()
                 ->setSubject('AmSYS Password Reset Request')
                 ->setFrom('amsys@alliedindustries-eve.com')
-                ->setTo('binary.god@gmail.com')
+                ->setTo($user->getEmail())
                 ->setBody(
                     $this->renderView(
                         // app/Resources/views/Emails/registration.html.twig
