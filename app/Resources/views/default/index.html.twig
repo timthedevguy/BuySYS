@@ -24,6 +24,9 @@
                     </div>--><!-- /.box-tools -->
                 </div><!-- /.box-header -->
                 <div class="box-body">
+                    <div class="alert alert-error alert-dismissable" id="more-than-200" style="display:none;">
+                        <h4 style="margin-bottom:0px;"><i class="icon fa fa-times"></i> Contracts are limited to 200 items or less!</h4>
+                    </div>
                     {% if eveCentralOK == true %}
                         {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
                         {{ form_start(form) }}
@@ -253,6 +256,20 @@
         $("#buyback_clear").click(function(e) {
 
             $("#buy_back_form_items").val('');
+        });
+
+        $("#buy_back_form_items").bind("paste", function(e) {
+
+            var pData = e.originalEvent.clipboardData.getData('text');
+            var numberOfLineBreaks = (pData.match(/\n/g)||[]).length;
+
+            if(numberOfLineBreaks > 200) {
+
+                $("#more-than-200").css("display", "block");
+                e.preventDefault();
+            } else {
+                $("#more-than-200").css("display", "none");
+            }
         });
 
         $(".fake_link[data-type='P'],.fake_link[data-type='PS']").click(function(e) {
