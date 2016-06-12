@@ -19,4 +19,16 @@ class OperationController extends Controller
         return $this->render('operations/index.html.twig', array(
             'page_name' => 'Upcoming Fleet Ops', 'sub_text' => 'Alliance/Corp sponsered fleet operations'));
     }
+
+    /**
+     * @Route("/operations/create", name="ajax_create_ops")
+     */
+    public function ajax_CreateAction(Request $request)
+    {
+        dump($request);
+
+        $template = $this->render('operations/create.html.twig');
+
+        return $template;
+    }
 }

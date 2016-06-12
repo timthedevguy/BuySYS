@@ -75,7 +75,7 @@
     <ul class="sidebar-menu">
         <li class="header">USER MENU</li>
         <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>User Dashboard</span></a></li>
-        <!--<li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>-->
+        <li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
                 <li><a href="{{ path('quicklook', {'ore_type': 'high'}) }}"><span>High Sec Ore</span></a></li>

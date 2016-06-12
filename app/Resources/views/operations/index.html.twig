@@ -44,10 +44,11 @@
             $('#calendar').fullCalendar({
 
                 {% if is_granted('ROLE_OFFICER') %}
-                dayClick: function(date, jsEvent, view)
-                {
-                    alert('Clicked on: ' + date.format());
-                },
+                    dayClick: function(date, jsEvent, view)
+                    {
+                        //alert('Clicked on: ' + date.format());
+                        createEvent(date.format());
+                    },
                 {% endif %}
 
                 eventClick: function(calEvent, jsEvent, view)
@@ -57,6 +58,17 @@
             });
 
         });
+
+        function createEvent(date) {
+
+            $.get('{{path('ajax_create_ops')}}', {date: date},
+                function(response)
+                {
+                    $( "#base_modal_content" ).html( response );
+                    $( '#base_modal' ).modal( {backdrop: "static"} );
+                }
+            , "html");
+        }
 
     </script>
 
