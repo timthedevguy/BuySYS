@@ -132,7 +132,8 @@ class QuicklookController extends Controller
 		// Loop through items
 		foreach($source as $item) {
 
-            if($item->getTypeId() != '11396' & $item->getTypeId() != '17869' & $item->getTypeId() != '17870' & $item->getTypeId() != '16267' & $item->getTypeId() != '11399' & $item->getIskPerM() != 0) {
+            //$item->getTypeId() != '11396' & $item->getTypeId() != '17869' & $item->getTypeId() != '17870' & $item->getTypeId() != '16267' & $item->getTypeId() != '11399' &
+            if($item->getIskPerM() != 0) {
 
     			// Get Valuation of 100 units of ore
     			$value = floor($item->getIskPerM());
@@ -156,7 +157,8 @@ class QuicklookController extends Controller
 
 		foreach($source as $item) {
 
-            if($item->getTypeId() != '11396' & $item->getTypeId() != '17869' & $item->getTypeId() != '17870' & $item->getTypeId() != '16267' & $item->getTypeId() != '11399' & $item->getIskPerM() != 0) {
+            //$item->getTypeId() != '11396' & $item->getTypeId() != '17869' & $item->getTypeId() != '17870' & $item->getTypeId() != '16267' & $item->getTypeId() != '11399' &
+            if($item->getIskPerM() != 0) {
     			$value = floor($item->getIskPerM());
 
     			// Calculate the percent by getting the spread of the unit

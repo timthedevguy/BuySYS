@@ -1,11 +1,14 @@
 <?php
 namespace AppBundle\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Validator\Constraints\Time;
 
 use AppBundle\Form\BuyBackForm;
@@ -35,6 +38,8 @@ class BuyBackController extends Controller
                 $this->get("helper")->setSetting("buyback_source_type", $request->request->get('source_type'));
                 $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
                 $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
+                $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
+                $this->get("helper")->setSetting("buyback_refine_rate", $request->request->get('refine_rate'));
 
                 $this->addFlash('success', "Settings saved successfully!");
             }
@@ -50,6 +55,8 @@ class BuyBackController extends Controller
         $buybacksettings->setSourceType($this->get("helper")->getSetting("buyback_source_type"));
         $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
         $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
+        $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
+        $buybacksettings->setRefineRate($this->get("helper")->getSetting("buyback_refine_rate"));
 
         return $this->render('buyback/settings.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
@@ -68,7 +75,7 @@ class BuyBackController extends Controller
         $cache = $this->getDoctrine()->getRepository('AppBundle:CacheEntity', 'default');
         $items = array();
         $typeids = array();
-        
+
         // Build our Item List and TypeID List
         foreach(explode("\n", $buyback->getItems()) as $line) {
 

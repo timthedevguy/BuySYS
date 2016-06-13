@@ -3,6 +3,9 @@ namespace AppBundle\Helper;
 
 use AppBundle\Entity\CacheEntity;
 use AppBundle\Helper\Helper;
+use EveBundle\Entity\TypeEntity;
+use EveBundle\Entity\TypeMaterialsEntity;
+use EveBundle\Entity\MarketGroupsEntity;
 
 /* Helper
  *
@@ -25,10 +28,12 @@ class Market {
         // Get Settings
         $bb_source_type = $this->helper->getSetting("buyback_source_type");
         $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+        $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
 
         foreach($jsonData as $jsonItem)
         {
             // Query DB for matching CacheEntity
+            $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
             $cacheItem = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
 
             if(!$cacheItem)
@@ -44,10 +49,58 @@ class Market {
                 $this->doctrine->getManager('default')->flush();
             }
 
-            // Item exists now populate it
-            $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
-            $cacheItem->setLastPull(new \DateTime("now"));
+            if($bb_value_minerals == 1)
+            {
+                // See if this is Ore
+                if($type->getMarketGroupId() >= 0)
+                {
+                    // Get Market Group
+                    $marketGroup = $this->doctrine->getRepository('EveBundle:MarketGroupsEntity','evedata')->findOneByMarketGroupID($type->getMarketGroupId());
 
+                    // Ore Market Category
+                    if($marketGroup->getParentGroupID() == 54 | $marketGroup->getMarketGroupID() == 1031)
+                    {
+                        // Value by Reprocessing Rate
+                        /*$typeMaterials = array();
+                        $typeMaterials = $this->doctrine->getRepository('EveBundle:TypeMaterialsEntity','evedata')->findByTypeID($type->getTypeId());
+                        $marketPrice = 0;
+
+                        foreach($typeMaterials as $typeMaterial)
+                        {
+                            $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
+                            $mineralCost = $this->doctrine->getRepository('AppBundle:CacheEntity','default')->findOneByTypeID($typeMaterial->getMaterialTypeId())->getMarket();
+
+                            if(substr($type->getTypeName(),0,10) != "Compressed")
+                            {
+                                $marketPrice += floor((($mineralCost * $refinedAmount)/100));
+                            }
+                            else
+                            {
+                                $marketPrice += floor(($mineralCost * $refinedAmount));
+                            }
+                        }*/
+
+                        $cacheItem->setMarket($this->ValueByMinerals($type));
+                    }
+                    else
+                    {
+                        // Item exists now populate it
+                        $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
+                    }
+                }
+                else
+                {
+                    // Item exists now populate it
+                    $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
+                }
+            }
+            else
+            {
+                // Item exists now populate it
+                $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
+            }
+
+            $cacheItem->setLastPull(new \DateTime("now"));
             $this->doctrine->getManager('default')->flush();
         }
     }
@@ -113,6 +166,7 @@ class Market {
                 $bb_source_id = $this->helper->getSetting("buyback_source_id");
                 $bb_source_type = $this->helper->getSetting("buyback_source_type");
                 $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+                $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
 
                 // Do this in batches of 20
                 for($i = 0;$i<=count($dirtyTypeIds);$i+=20) {
@@ -133,22 +187,54 @@ class Market {
                     // Parse eve central data
                     foreach($json_array as $market_results)
                     {
+                        $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
             			$cacheItem = $cache->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
 
                         if(!$cacheItem)
                         {
                             $cacheItem = new CacheEntity();
                             $cacheItem->setTypeId($market_results[$bb_source_type]["forQuery"]["types"][0]);
-                            $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                            $cacheItem->setMarket('0');
                             $cacheItem->setLastPull(new \DateTime("now"));
                             $em->persist($cacheItem);
                             $em->flush();
-                        } else {
+                        }// else {
 
-                            $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
-                            $cacheItem->setLastPull(new \DateTime("now"));
-                            $em->flush();
+                        if($bb_value_minerals == 1)
+                        {
+                            // See if this is Ore
+                            if($type->getMarketGroupId() >= 0)
+                            {
+                                // Get Market Group
+                                $marketGroup = $this->doctrine->getRepository('EveBundle:MarketGroupsEntity','evedata')->findOneByMarketGroupID($type->getMarketGroupId());
+
+                                // Ore Market Category
+                                if($marketGroup->getParentGroupID() == 54 | $marketGroup->getMarketGroupID() == 1031)
+                                {
+                                    $cacheItem->setMarket($this->ValueByMinerals($type));
+                                }
+                                else
+                                {
+                                    // Item exists now populate it
+                                    $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                                }
+                            }
+                            else
+                            {
+                                // Item exists now populate it
+                                $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                            }
                         }
+                        else
+                        {
+                            // Item exists now populate it
+                            $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                        }
+
+                        //$cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
+                        $cacheItem->setLastPull(new \DateTime("now"));
+                        $em->flush();
+                        //}
 
                         //$cached[] = $cacheItem;
                         $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
@@ -169,7 +255,7 @@ class Market {
         }
     }
 
-    public function GetMarketPrice($typeId) {
+    /*public function GetMarketPrice($typeId) {
 
         $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
         $em = $this->doctrine->getManager('default');
@@ -223,7 +309,7 @@ class Market {
         }
 
         return $cacheEntity->getMarket();
-    }
+    }*/
 
     public function IsEveCentralAlive()
     {
@@ -291,5 +377,32 @@ class Market {
         }*/
 
         return $cacheEntity->getMarket();
+    }
+
+    public function ValueByMinerals($type)
+    {
+        $bb_refine_rate = $this->helper->getSetting("buyback_refine_rate");
+
+        // Value by Reprocessing Rate
+        $typeMaterials = array();
+        $typeMaterials = $this->doctrine->getRepository('EveBundle:TypeMaterialsEntity','evedata')->findByTypeID($type->getTypeId());
+        $marketPrice = 0;
+
+        foreach($typeMaterials as $typeMaterial)
+        {
+            $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
+            $mineralCost = $this->doctrine->getRepository('AppBundle:CacheEntity','default')->findOneByTypeID($typeMaterial->getMaterialTypeId())->getMarket();
+            dump($type->getTypeName());
+            if(substr($type->getTypeName(),0,10) != "Compressed")
+            {
+                $marketPrice += floor((($mineralCost * $refinedAmount)/100));
+            }
+            else
+            {
+                $marketPrice += floor(($mineralCost * $refinedAmount));
+            }
+        }
+
+        return $marketPrice;
     }
 }

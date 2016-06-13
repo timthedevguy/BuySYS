@@ -58,4 +58,32 @@ class BuyBackSettingsModel
     {
         return $this->source_stat;
     }
+
+    protected $valueMinerals;
+
+    public function setValueMinerals($valueMinerals)
+    {
+        $this->valueMinerals = $valueMinerals;
+
+        return $this;
+    }
+
+    public function getValueMinerals()
+    {
+        return $this->valueMinerals;
+    }
+
+    protected $refineRate;
+
+    public function setRefineRate($refineRate)
+    {
+        $this->refineRate = $refineRate;
+
+        return $this;
+    }
+
+    public function getRefineRate()
+    {
+        return $this->refineRate;
+    }
 }

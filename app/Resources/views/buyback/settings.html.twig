@@ -47,6 +47,29 @@
                                     <input class="form-control" type="text" id="default_tax" name="default_tax" value="{{model.DefaultTax}}"/>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                    <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
+                                    <p>This option will value ores by the reprocessing yield instead of the value of raw ore.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                                        <label>
+                                            <input type="checkbox" id="value_minerals_base" {{ (model.ValueMinerals == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="value_minerals" name="value_minerals" value="{{ (model.ValueMinerals == "1") ? "1" : "0" }}"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">Refining Rate</label>
+                                    <p>Lowest rate at which we refine ore at.</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="text" id="refine_rate" name="refine_rate" value="{{model.RefineRate}}"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 <!-- /.box-body -->
@@ -78,11 +101,11 @@
     $(document).ready(function() {
 
         $('input').on('ifChecked', function(event){
-            $("#maintenance_mode").val("1");
+            $("#value_minerals").val("1");
         });
 
         $('input').on('ifUnchecked', function(event){
-            $("#maintenance_mode").val("0");
+            $("#value_minerals").val("0");
         });
     });
 

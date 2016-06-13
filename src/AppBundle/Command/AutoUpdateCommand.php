@@ -58,6 +58,9 @@ class AutoUpdateCommand extends ContainerAwareCommand
         {
             $output->writeln("Eve-Central is online!");
             // Begin Updating the Cache
+            $logger->info('Auto Updating Minerals');
+            $output->writeln('Auto Updating Minerals');
+            $market->UpdateCache($mineralOres);
             $logger->info('Auto Updating High Sec Ores');
             $output->writeln('Auto Updating High Sec Ores');
             $market->UpdateCache($highSecOres);
@@ -76,9 +79,6 @@ class AutoUpdateCommand extends ContainerAwareCommand
             $logger->info('Auto Updating Gas');
             $output->writeln('Auto Updating Gas');
             $market->UpdateCache($gasOres);
-            $logger->info('Auto Updating Minerals');
-            $output->writeln('Auto Updating Minerals');
-            $market->UpdateCache($mineralOres);
             $logger->info('Auto Updating P0');
             $output->writeln('Auto Updating P0');
             $market->UpdateCache($p0Ores);
