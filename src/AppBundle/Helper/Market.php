@@ -392,7 +392,7 @@ class Market {
         {
             $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
             $mineralCost = $this->doctrine->getRepository('AppBundle:CacheEntity','default')->findOneByTypeID($typeMaterial->getMaterialTypeId())->getMarket();
-            dump($type->getTypeName());
+            
             if(substr($type->getTypeName(),0,10) != "Compressed")
             {
                 $marketPrice += floor((($mineralCost * $refinedAmount)/100));
