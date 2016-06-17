@@ -1,0 +1,40 @@
+{% extends 'igb_base.html.twig' %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Step Three <small>Create and Submit contract</small></h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                Please create a private 'Item Exchange' contract to AMREP (AMREP Research and Production) for the materials entered here.
+                <ol>
+                    <li>Highlight items to sell us, right-click and select Create Contract</li>
+                    <li>Contract to 'AMREP', this will bring up 'AMREP Research and Production'</li>
+                    <li>Copy and Paste the 'Amount' to the 'I will receive' field in the contract</li>
+                    <li>Copy and Paste the 'Auth Code' to the 'Comment' field, this <strong>MUST</strong> be present if you wish to get paid!</li>
+                </ol>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Amount</th>
+                        <td>{{total_value|number_format(0, '.', ',')}}</td>
+                    </tr>
+                    <tr>
+                        <th>Auth Code</th>
+                        <td>{{auth_code}}</td>
+                    </tr>
+                </table>
+                <div id="buyback_submits">
+                    <a class="btn btn-info pull-right" href="{{ path('guest_buyback') }}">Go Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascripts %}
+
+{% endblock %}
