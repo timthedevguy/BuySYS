@@ -41,6 +41,7 @@ class BuyBackController extends Controller
                 $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
                 $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
                 $this->get("helper")->setSetting("buyback_refine_rate", $request->request->get('refine_rate'));
+                $this->get("helper")->setSetting("buyback_default_public_tax", $request->request->get('default_public_tax'));
 
                 $this->addFlash('success', "Settings saved successfully!");
             }
@@ -58,6 +59,7 @@ class BuyBackController extends Controller
         $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
         $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
         $buybacksettings->setRefineRate($this->get("helper")->getSetting("buyback_refine_rate"));
+        $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
 
         return $this->render('buyback/settings.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
@@ -411,7 +413,7 @@ class BuyBackController extends Controller
 
             foreach($items as $lineItem) {
                 //$taxAmount = ;
-                $value = ((int)$lineItem->getQuantity() * ($priceLookup[$lineItem->getTypeId()] * ((100 - $this->get("helper")->getSetting("buyback_default_tax"))/100)));
+                $value = ((int)$lineItem->getQuantity() * ($priceLookup[$lineItem->getTypeId()] * ((100 - $this->get("helper")->getSetting("buyback_default_public_tax"))/100)));
                 $totalValue += $value;
                 $lineItem->setValue($value);
             }
@@ -534,7 +536,7 @@ class BuyBackController extends Controller
 
             foreach($items as $lineItem)
             {
-                $lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
+                $lineItem->setTax($this->get("helper")->getSetting("buyback_default_public_tax"));
                 $lineItem->setMarketPrice($priceLookup[$lineItem->getTypeId()]);
                 $lineItem->setGrossPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()));
                 $gross +=  $lineItem->getGrossPrice();
