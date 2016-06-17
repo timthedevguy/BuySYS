@@ -1,0 +1,45 @@
+{% extends 'igb_base.html.twig' %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Step Two <small>Accept or Deny our Offer</small></h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <h2 id="estimated_value" style="text-align: right; margin-top: 0px;height:40px;">Estimated Value: <span class="text-green">{{total|number_format(0, '.', ',')}}</h2>
+                <table class="table table-striped images-table">
+                    <tr>
+                        <th>Quanity</th>
+                        <th>Item</th>
+                        <!--<th>Volume</th>-->
+                        <th>Value</th>
+                    </tr>
+                    {% for item in items %}
+                        <tr>
+                            <td>{{item.Quantity|number_format(0, '.', ',') }}</td>
+                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{item.Name}}</span></td>
+                            <!--<td>{{item.Volume}}</td>-->
+                            <td>{{item.Value|number_format(0, '.', ',') }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
+                {{ form_start(form) }}
+                    {{ form_row(form.items) }}
+                    <div id="buyback_submits">
+                        <input type="button" id="offer_deny" class="btn btn-danger " value="Deny Offer">
+                        <input type="submit" id="offer_accept" class="btn btn-success " value="Accept Offer">
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascripts %}
+
+{% endblock %}
