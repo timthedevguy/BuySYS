@@ -129,7 +129,7 @@ class BuyBackController extends Controller
                 // Didn't contain tabs, so user typed it in?  Try to preg match it
                 $item = array();
                 preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-
+                dump($item);
                 // Get TYPE from Eve Database
                 $type = $types->findOneByTypeName($item[3]);
 
@@ -380,7 +380,7 @@ class BuyBackController extends Controller
                     // Didn't contain tabs, so user typed it in?  Try to preg match it
                     $item = array();
                     preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-
+                    dump($item);
                     // Get TYPE from Eve Database
                     $type = $types->findOneByTypeName($item[3]);
 
