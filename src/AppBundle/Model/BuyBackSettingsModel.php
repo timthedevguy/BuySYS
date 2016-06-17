@@ -86,4 +86,18 @@ class BuyBackSettingsModel
     {
         return $this->refineRate;
     }
+
+    protected $defaultPublicTax;
+
+    public function setDefaultPublicTax($defaultPublicTax)
+    {
+        $this->defaultPublicTax = $defaultPublicTax;
+
+        return $this;
+    }
+
+    public function getDefaultPublicTax()
+    {
+        return $this->defaultPublicTax;
+    }
 }
