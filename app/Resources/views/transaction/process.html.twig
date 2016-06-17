@@ -33,7 +33,11 @@
                         </tr>
                         <tr>
                             <th>From:</th>
-                            <td>{{ transaction.user.username }}</td>
+                            {% if transaction.user == null %}
+                                <td>Guest</td>
+                            {% else %}
+                                <td>{{ transaction.user.username }}</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <th>Amount:</th>

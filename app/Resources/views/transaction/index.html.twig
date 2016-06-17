@@ -76,7 +76,11 @@
                         {% endif %}
                             <td>{{transaction.created|date("m/d/Y H:i")}}</td>
                             <td><a class="fake_link">{{transaction.orderid}}</a></td>
-                            <td>{{transaction.user.username}}</td>
+                            {% if transaction.user == null %}
+                                <td>Guest</td>
+                            {% else %}
+                                <td>{{transaction.user.username}}</td>
+                            {% endif %}
                             <td>{{transaction.gross|number_format(0, '.', ',')}}</td>
                             <td>{{transaction.net|number_format(0, '.', ',')}}</td>
                             <td>{{(transaction.gross - transaction.net)|number_format(0, '.', ',')}}</td>
