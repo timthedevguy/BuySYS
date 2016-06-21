@@ -79,82 +79,10 @@ class BuyBackController extends Controller
         $items = array();
         $typeids = array();
 
-        // Build our Item List and TypeID List
-        foreach(explode("\n", $buyback->getItems()) as $line) {
-
-            // Array counts
-            // 5 -> View Contents list
-            // 6 -> Inventory list
-
-            // Split by TAB
-            $item = explode("\t", $line);
-
-            // Did this contain tabs?
-            if(count($item) > 1) {
-
-                // 6 Columns -> Means this is pasted from Inventory Screen
-                //if(count($item) == 6) {
-
-                    // Get TYPE from Eve Database
-                    $type = $types->findOneByTypeName($item[0]);
-
-                    if($type != null) {
-
-                        // Create & Populate our BuyBackItemModel
-                        $lineItem = new BuyBackItemModel();
-                        $lineItem->setTypeId($type->getTypeId());
-
-                        if($item[1] == "") {
-                            $lineItem->setQuantity(1);
-                        } else {
-                            $lineItem->setQuantity(str_replace('.', '', $item[1]));
-                            $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
-                        }
-
-                        $lineItem->setName($type->getTypeName());
-                        $lineItem->setVolume($type->getVolume());
-
-                        $items[] = $lineItem;
-
-                        // Build our list of TypeID's
-                        $typeids[] = $type->getTypeId();
-                    } else {
-
-                        $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "Item doesn't exist in Eve Database: ".$item[0]));
-                        return $template;
-                    }
-                //}
-            } else {
-
-                // Didn't contain tabs, so user typed it in?  Try to preg match it
-                $item = array();
-                preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-                dump($item);
-                // Get TYPE from Eve Database
-                $type = $types->findOneByTypeName($item[3]);
-
-                if($type != null) {
-
-                    // Create & Populate our BuyBackItemModel
-                    $lineItem = new BuyBackItemModel();
-                    $lineItem->setTypeId($type->getTypeId());
-                    $lineItem->setQuantity(str_replace(',', '', $item[1]));
-                    $lineItem->setName($type->getTypeName());
-                    $lineItem->setVolume($type->getVolume());
-
-                    $items[] = $lineItem;
-
-                    // Build our list of TypeID's
-                    $typeids[] = $type->getTypeId();
-                }
-            }
-        }
-
-        //$priceLookup = MarketHelper::GetMarketPrices($typeids, $this);
-        $priceLookup = $this->get('market')->GetMarketPrices($typeids);
-
-        if(!is_array($priceLookup)) {
-
+        $items = $this->get('parser')->GetLineItemsFromPasteData($buyback->getItems());
+        dump($items);
+        if(!$this->get('market')->PopulateLineItems($items))
+        {
             $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
             return $template;
         }
@@ -162,11 +90,9 @@ class BuyBackController extends Controller
         $totalValue = 0;
         $ajaxData = "[";
 
-        foreach($items as $lineItem) {
-            //$taxAmount = ;
-            $value = ((int)$lineItem->getQuantity() * ($priceLookup[$lineItem->getTypeId()] * ((100 - $this->get("helper")->getSetting("buyback_default_tax"))/100)));
-            $totalValue += $value;
-            $lineItem->setValue($value);
+        foreach($items as $lineItem)
+        {
+            $totalValue += $lineItem->getNetPrice();
             $ajaxData .= "{ typeid:" . $lineItem->getTypeId() . ", quantity:" . $lineItem->getQuantity() . "},";
         }
 

@@ -10,6 +10,9 @@ services:
     market:
         class: AppBundle\Helper\Market
         arguments: ['@doctrine', '@helper']
+    parser:
+        class: AppBundle\Helper\Parser
+        arguments: ['@doctrine', '@helper']
     authentication_handler:
         class: AppBundle\Helper\AuthenticationHandler
         calls:

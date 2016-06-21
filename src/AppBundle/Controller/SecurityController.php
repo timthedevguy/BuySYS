@@ -136,7 +136,7 @@ class SecurityController extends Controller
 
             } catch (\Pheal\Exceptions\PhealException $e) {
 
-                $this->addFlash('error', 'Something has gone horribly wrong, please contact Lorvulk Munba in game');
+                $this->addFlash('error', 'Something has gone horribly wrong, please contact Lorvulk Munba in game...' + $e->getMessage());
                 return $this->redirectToRoute('register');
             }
 

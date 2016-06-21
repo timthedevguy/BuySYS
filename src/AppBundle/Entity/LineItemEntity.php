@@ -12,6 +12,10 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class LineItemEntity
 {
+    public function __construct()
+    {
+        $this->isValid = true;
+    }
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")
@@ -178,5 +182,19 @@ class LineItemEntity
     public function getTransaction()
     {
         return $this->transaction;
+    }
+
+    protected $isValid;
+
+    public function setIsValid($isValid)
+    {
+        $this->isValid = $isValid;
+
+        return $this;
+    }
+
+    public function getIsValid()
+    {
+        return $this->isValid;
     }
 }

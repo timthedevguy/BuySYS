@@ -96,12 +96,12 @@ class QuicklookController extends Controller
     private function getQuickReview($typeIds) {
 
         $results = array();
-        //$typeIds = array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453');
+        $marketPrices = $this->get("market")->GetCachedMarketPrices($typeIds);
 
         foreach($typeIds as $typeId) {
 
             $tax = $this->get("helper")->getSetting("buyback_default_tax");
-            $marketPrice = $this->get("market")->GetCacheMarketPrice($typeId)*((100-$tax)/100);
+            $marketPrice = $marketPrices[$typeId]*((100-$tax)/100);
 
             $eveType = $this->getDoctrine('evedata')->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeId);
             $oreModel = new OreReviewModel();
@@ -116,9 +116,6 @@ class QuicklookController extends Controller
             $results[] = $oreModel;
         }
 
-        //$em = $this->getDoctrine()->getManager('evedata');
-        //$query = $em->createQuery('SELECT c FROM EveBundle:TypeEntity c WHERE c.typeID IN (:types)')->setParameter('types', $highSecOres);
-        //$types = $query->getResult();
         return $this->calculateBlends($results);
     }
 
