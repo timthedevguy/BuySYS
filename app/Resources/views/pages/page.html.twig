@@ -26,6 +26,7 @@
 
 {% block body %}
     <div role="navigation" aria-label="breadcrumbs navigation">
+        <a href="{{ path('homepage') }}" class="btn btn-neutral" title="Go Home"><i class="fa fa-home" aria-hidden="true"></i> Go Home</a>
         {% if is_granted('ROLE_EDITOR') %}
             <a href="{{path('new_topic', {'id':chapter.Id})}}" class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i> New Topic</a>
             <a href="{{path('edit_topic', {'id':topic.Id})}}" class="btn btn-warning"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Topic</a>
