@@ -48,16 +48,22 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-8">
-                            <a class="btn btn-success pull-left btn-flat" style="margin-right:5px;" href="{{ path('register') }}">Register</a>
+                            <!--<a class="btn btn-success pull-left btn-flat" style="margin-right:5px;" href="{{ path('register') }}">Register</a>-->
                             <a class="btn btn-warning pull-left btn-flat" href="{{ path('reset_password') }}">Reset Password</a>
                         </div>
                         <!-- /.col -->
                         <div class="col-xs-4">
-                            <button class="btn btn-primary btn-block btn-flat" type="submit">Sign In</button>
+                            <button class="btn btn-success btn-block btn-flat" type="submit">Sign In</button>
                         </div>
                         <!-- /.col -->
                     </div>
                 </form>
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <a href="{{path('guest_buyback')}}" class="btn btn-primary btn-block btn-flat">Sell to us without an Account!</a>
+                    </div>
+                </div>
 
             </div>
         <!-- /.login-box-body -->
