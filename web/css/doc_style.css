@@ -4,6 +4,10 @@
 	background: white;
 	padding: 10px;
 }
+H2
+{
+	color: #3091D1;
+}
 .rst-pro-admin H5
 {
 	margin: 10px;
@@ -70,6 +74,7 @@ SPAN.topicid
 	margin-left: 20px;
 	margin-bottom: 24px;
 	line-height: 24px;
+	font-size: 16px
 }
 .rst-content .document UL LI
 {
@@ -94,4 +99,9 @@ figure {
     padding: 10px;
     margin: 10px 20px;
     display: inline-block;
+}
+
+OBJECT
+{
+	margin: 0 0 20px 82px;
 }
