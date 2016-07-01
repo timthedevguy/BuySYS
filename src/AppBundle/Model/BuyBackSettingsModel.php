@@ -73,18 +73,18 @@ class BuyBackSettingsModel
         return $this->valueMinerals;
     }
 
-    protected $refineRate;
+    protected $oreRefineRate;
 
-    public function setRefineRate($refineRate)
+    public function setOreRefineRate($oreRefineRate)
     {
-        $this->refineRate = $refineRate;
+        $this->oreRefineRate = $oreRefineRate;
 
         return $this;
     }
 
-    public function getRefineRate()
+    public function getOreRefineRate()
     {
-        return $this->refineRate;
+        return $this->oreRefineRate;
     }
 
     protected $defaultPublicTax;
@@ -99,5 +99,33 @@ class BuyBackSettingsModel
     public function getDefaultPublicTax()
     {
         return $this->defaultPublicTax;
+    }
+
+    protected $iceRefineRate;
+
+    public function setIceRefineRate($iceRefineRate)
+    {
+        $this->iceRefineRate = $iceRefineRate;
+
+        return $this;
+    }
+
+    public function getIceRefineRate()
+    {
+        return $this->iceRefineRate;
+    }
+
+    protected $salvageRefineRate;
+
+    public function setSalvageRefineRate($salvageRefineRate)
+    {
+        $this->salvageRefineRate = $salvageRefineRate;
+
+        return $this;
+    }
+
+    public function getSalvageRefineRate()
+    {
+        return $this->salvageRefineRate;
     }
 }

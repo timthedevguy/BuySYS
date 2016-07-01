@@ -53,7 +53,7 @@ class QuicklookController extends Controller
                 break;
 
             case "minerals":
-                $results = $this->getQuickReview(array('34','35','36','37','38','39','40','11399'));
+                $results = $this->getQuickReview(array('34','35','36','37','38','39','40','11399','16272','16274','17889','16273','17888','17887','16275'));
                 $subText = "Minerals";
                 $hideCan = true;
                 break;
@@ -97,7 +97,8 @@ class QuicklookController extends Controller
 
         $results = array();
         $marketPrices = $this->get("market")->GetCachedMarketPrices($typeIds);
-
+        dump($typeIds);
+        dump($marketPrices);
         foreach($typeIds as $typeId) {
 
             $tax = $this->get("helper")->getSetting("buyback_default_tax");

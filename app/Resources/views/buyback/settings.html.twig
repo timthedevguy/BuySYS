@@ -59,7 +59,7 @@
                             <div class="form-group">
                                 <div class="col-sm-8">
                                     <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
-                                    <p>This option will value ores by the reprocessing yield instead of the value of raw ore.</p>
+                                    <p>This option will value any item that can be reprocessed by it's mineral yield ad the Refining Rate listed below.</p>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
@@ -72,11 +72,29 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-8">
-                                    <label for="source_id" class="control-label">Refining Rate</label>
+                                    <label for="source_id" class="control-label">Ore Refining Rate</label>
                                     <p>Lowest rate at which we refine ore at.</a>.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="refine_rate" name="refine_rate" value="{{model.RefineRate}}"/>
+                                    <input class="form-control" type="text" id="ore_refine_rate" name="ore_refine_rate" value="{{model.OreRefineRate}}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">Ice Refining Rate</label>
+                                    <p>Lowest rate at which we refine ice at.</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="text" id="ice_refine_rate" name="ice_refine_rate" value="{{model.IceRefineRate}}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">Salvage Refining Rate</label>
+                                    <p>Lowest rate at which we salvage stuff at.</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="text" id="salvage_refine_rate" name="salvage_refine_rate" value="{{model.SalvageRefineRate}}"/>
                                 </div>
                             </div>
                         </div>

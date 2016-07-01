@@ -40,7 +40,9 @@ class BuyBackController extends Controller
                 $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
                 $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
                 $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
-                $this->get("helper")->setSetting("buyback_refine_rate", $request->request->get('refine_rate'));
+                $this->get("helper")->setSetting("buyback_ore_refine_rate", $request->request->get('ore_refine_rate'));
+                $this->get("helper")->setSetting("buyback_ice_refine_rate", $request->request->get('ice_refine_rate'));
+                $this->get("helper")->setSetting("buyback_salvage_refine_rate", $request->request->get('salvage_refine_rate'));
                 $this->get("helper")->setSetting("buyback_default_public_tax", $request->request->get('default_public_tax'));
 
                 $this->addFlash('success', "Settings saved successfully!");
@@ -58,8 +60,10 @@ class BuyBackController extends Controller
         $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
         $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
         $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
-        $buybacksettings->setRefineRate($this->get("helper")->getSetting("buyback_refine_rate"));
+        $buybacksettings->setOreRefineRate($this->get("helper")->getSetting("buyback_ore_refine_rate"));
         $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
+        $buybacksettings->setIceRefineRate($this->get("helper")->getSetting("buyback_ice_refine_rate"));
+        $buybacksettings->setSalvageRefineRate($this->get("helper")->getSetting("buyback_salvage_refine_rate"));
 
         return $this->render('buyback/settings.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
@@ -215,11 +219,16 @@ class BuyBackController extends Controller
             $rensData = $this->get('market')->GetEveCentralData($typeId, "30002510");
             $hekData = $this->get('market')->GetEveCentralData($typeId, "30002053");
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
-
+            $priceDetails = array();
+            $priceDetails['types'] = array();
+            $value = $this->get('market')->GetMarketPriceByComposition($type, $priceDetails);
+            dump($value);
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
-                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData));
+                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
+                                        'details' => $priceDetails));
             return $template;
+
         } else {
 
             // Get item name searched for

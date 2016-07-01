@@ -15,7 +15,7 @@ class MarketHelper
         //self::$greeting .= ' There!';
     }
 
-    public static function GetMarketPrices($typeids, $controller)
+    public static function GetMarket1Prices($typeids, $controller)
     {
         $cache = $controller->getDoctrine()->getRepository('AppBundle:CacheEntity', 'default');
 

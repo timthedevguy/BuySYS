@@ -45,6 +45,7 @@ class AutoUpdateCommand extends ContainerAwareCommand
         $p3Ores = array('2358','2345','2344','2367','17392','2348','9834','2366','2361','17898',
                         '2360','2354','2352','9846','9848','2351','2349','2346','12836','17136','28974');
         $p4Ores = array('2867','2868','2869','2870','2871','2872','2875','2876');
+        $iceMinerals = array('16272','16274','17889','16273','17888','17887','16275');
 
         // Get Market Helper
         $market = $this->getContainer()->get('market');
@@ -73,9 +74,6 @@ class AutoUpdateCommand extends ContainerAwareCommand
             $logger->info('Auto Updating Null Sec Ores');
             $output->writeln('Auto Updating Null Sec Ores');
             $market->UpdateCache($nullSecOres);
-            $logger->info('Auto Updating Ice');
-            $output->writeln('Auto Updating Ice');
-            $market->UpdateCache($iceOres);
             $logger->info('Auto Updating Gas');
             $output->writeln('Auto Updating Gas');
             $market->UpdateCache($gasOres);
@@ -94,6 +92,12 @@ class AutoUpdateCommand extends ContainerAwareCommand
             $logger->info('Auto Updating P4');
             $output->writeln('Auto Updating P4');
             $market->UpdateCache($p4Ores);
+            $logger->info('Auto Updating Ice Minerals');
+            $output->writeln('Auto Updating Ice Minerals');
+            $market->UpdateCache($iceMinerals);
+            $logger->info('Auto Updating Ice');
+            $output->writeln('Auto Updating Ice');
+            $market->UpdateCache($iceOres);
         }
         else
         {

@@ -6,6 +6,7 @@ use AppBundle\Helper\Helper;
 use EveBundle\Entity\TypeEntity;
 use EveBundle\Entity\TypeMaterialsEntity;
 use EveBundle\Entity\MarketGroupsEntity;
+use EveBundle\Entity\DgmTypeAttributesEntity;
 
 /**
  * Market Helper provides all market data lookup functions
@@ -52,34 +53,26 @@ class Market {
                 $this->doctrine->getManager('default')->flush();
             }
 
+            // Is refining option turned on?
             if($bb_value_minerals == 1)
             {
-                // See if this is Ore
-                if($type->getMarketGroupId() >= 0)
-                {
-                    // Get Market Group
-                    $marketGroup = $this->doctrine->getRepository('EveBundle:MarketGroupsEntity','evedata')->findOneByMarketGroupID($type->getMarketGroupId());
+                // Get our Composite price
+                $calcValue = $this->GetMarketPriceByComposition($type);
 
-                    // Ore Market Category
-                    if($marketGroup->getParentGroupID() == 54 | $marketGroup->getMarketGroupID() == 1031)
-                    {
-                        $cacheItem->setMarket($this->GetMarketPriceByComposition($type));
-                    }
-                    else
-                    {
-                        // Item exists now populate it
-                        $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
-                    }
-                }
-                else
+                if($calcValue >= 0)
                 {
-                    // Item exists now populate it
+                    // Set Market Value to Value of refined goods
+                    $cacheItem->setMarket($calcValue);
+                }
+                elseif($calcValue == -1)
+                {
+                    // Set Market Value to Eve Central Data
                     $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
                 }
             }
             else
             {
-                // Item exists now populate it
+                // Set Market Value to Eve Central Data
                 $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
             }
 
@@ -211,34 +204,26 @@ class Market {
                         $em->flush();
                     }
 
+                    // Is refining option turned on?
                     if($bb_value_minerals == 1)
                     {
-                        // See if this is Ore
-                        if($type->getMarketGroupId() >= 0)
-                        {
-                            // Get Market Group
-                            $marketGroup = $this->doctrine->getRepository('EveBundle:MarketGroupsEntity','evedata')->findOneByMarketGroupID($type->getMarketGroupId());
+                        // Get our Composite price
+                        $calcValue = $this->GetMarketPriceByComposition($type);
 
-                            // Ore Market Category
-                            if($marketGroup->getParentGroupID() == 54 | $marketGroup->getMarketGroupID() == 1031)
-                            {
-                                $cacheItem->setMarket($this->GetMarketPriceByComposition($type));
-                            }
-                            else
-                            {
-                                // Item exists now populate it
-                                $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
-                            }
-                        }
-                        else
+                        if($calcValue >= 0)
                         {
-                            // Item exists now populate it
+                            // Set Market Value to Value of refined goods
+                            $cacheItem->setMarket($calcValue);
+                        }
+                        elseif($calcValue == -1)
+                        {
+                            // Set Market Value to Eve Central Data
                             $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
                         }
                     }
                     else
                     {
-                        // Item exists now populate it
+                        // Set Market Value to Eve Central Data
                         $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
                     }
 
@@ -311,38 +296,71 @@ class Market {
      *
      * Get Market price by ore mineral composition
      */
-    public function GetMarketPriceByComposition($type)
+    public function GetMarketPriceByComposition($type, &$details = array())
     {
-        $bb_refine_rate = $this->helper->getSetting("buyback_refine_rate");
+        // Set Default to Salvage Rate
+        $bb_refine_rate = $this->helper->getSetting("buyback_salvage_refine_rate");
+        $details['name'] = $type->getTypeName();
+        $details['typeid'] = $type->getTypeId();
+        $details['refineskill'] = 'Salvage Refine Rate';
 
         // Value by Reprocessing Rate
         $typeMaterials = array();
         $typeMaterials = $this->doctrine->getRepository('EveBundle:TypeMaterialsEntity','evedata')->findByTypeID($type->getTypeId());
-        $marketPrice = 0;
+        $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
+            array('typeID' => $type->getTypeId(), 'attributeID' => '790')
+        );
 
-        foreach($typeMaterials as $typeMaterial)
+        if(!$refineSkill == null)
         {
-            $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
-            $mineralCost = $this->doctrine->getRepository('AppBundle:CacheEntity','default')->findOneByTypeID($typeMaterial->getMaterialTypeId())->getMarket();
-
-            if(substr($type->getTypeName(),0,10) != "Compressed")
+            if($refineSkill == 18025)
             {
-                $marketPrice += floor((($mineralCost * $refinedAmount)/100));
+                // Ice Reprocessing
+                $bb_refine_rate = $this->helper->getSetting("buyback_ice_refine_rate");
+                $details['refineskill'] = 'Ice Refine Rate';
             }
             else
             {
-                $marketPrice += floor(($mineralCost * $refinedAmount));
+                // Ore Reprocessing
+                $bb_refine_rate = $this->helper->getSetting("buyback_ore_refine_rate");
+                $details['refineskill'] = 'Ore Refine Rate';
             }
         }
 
-        return $marketPrice;
+        $marketPrice = 0;
+
+        if(count($typeMaterials) > 0)
+        {
+            $details['materialcount'] = count($typeMaterials);
+            $details['types'] = array();
+
+            foreach($typeMaterials as $typeMaterial)
+            {
+                $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
+                $mineralCost = $this->GetMarketPrices($typeMaterial->getMaterialTypeId())[$typeMaterial->getMaterialTypeId()];
+                $marketPrice += floor((($mineralCost * $refinedAmount)/$type->getPortionSize()));
+
+                $mDetails = array();
+                $mDetails['typeid'] = $typeMaterial->getMaterialTypeId();
+                $mDetails['name'] = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeMaterial->getMaterialTypeId())->getTypeName();
+                $mDetails['quantity'] = $typeMaterial->getQuantity();
+                $mDetails['refinedquantity'] = $refinedAmount;
+                $mDetails['marketprice'] = floor((($mineralCost * $refinedAmount)/$type->getPortionSize()));
+
+                $details['types'][$typeMaterial->getMaterialTypeId()] = $mDetails;
+            }
+            dump($details);
+            return $marketPrice;
+        }
+
+        return -1;
     }
 
     public function PopulateLineItems(&$items, $isPublic = false)
     {
         try
         {
-            $typids = array();
+            $typeids = array();
             $bb_tax = 100;
 
             if($isPublic)
@@ -353,7 +371,7 @@ class Market {
             {
                 $bb_tax = $this->helper->getSetting("buyback_default_tax");
             }
-            dump($items);
+
             foreach($items as $lineItem)
             {
                 if($lineItem->getIsValid())
@@ -361,9 +379,9 @@ class Market {
                     $typeids[] = $lineItem->getTypeId();
                 }
             }
-            dump($typeids);
+
             $prices = $this->GetMarketPrices($typeids);
-            dump($prices);
+
             foreach($items as $lineItemA)
             {
                 if($lineItemA->getIsValid())
@@ -378,7 +396,7 @@ class Market {
         {
             return false;
         }
-        dump($items);
+
         return true;
     }
 }
