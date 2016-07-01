@@ -183,9 +183,7 @@
     <div class="modal fade" id="estimate_modal">
       <div class="modal-dialog" id="estimate_modal_content">
         <div class="modal-content">
-            <div class="modal-loading">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
+            <div class="modal-loading"><i class="fa fa-refresh fa-spin"></i></div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
@@ -210,13 +208,9 @@
 
     function submitQuickEstimate()
     {
-        $.post('{{path('ajax_estimate_buyback')}}', {'buy_back_form[items]': $("#buy_back_form_items").val()},
-            function(response)
-            {
-                $( "#estimate_modal_content" ).html( response );
-                //$('#buyback_quick_modal').modal({backdrop: "static"});
-            }
-        , "html");
+
+
+
     }
 
     $(document).ready(function (e) {
@@ -249,8 +243,15 @@
 
         $("#buyback_quick_submit").click(function(e)
         {
-            $('#estimate_modal').modal({backdrop: "static"});
-            submitQuickEstimate();
+            $('#base_modal').modal({backdrop: "static"});
+            $("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>")
+            $.post('{{path('ajax_estimate_buyback')}}', {'buy_back_form[items]': $("#buy_back_form_items").val()},
+                function(response)
+                {
+                    $( "#base_modal_content" ).html( response );
+                    //$('#buyback_quick_modal').modal({backdrop: "static"});
+                }
+            , "html");
         });
 
         $("#buyback_clear").click(function(e) {
@@ -274,12 +275,12 @@
 
         $(".fake_link[data-type='P'],.fake_link[data-type='PS']").click(function(e) {
 
-            $('#index_modal').modal({backdrop: "static"});
+            $('#base_modal').modal({backdrop: "static"});
 
             $.get('{{path('ajax_view_transaction')}}', {id: $(this).html(), transaction_type: $(this).attr("data-type")},
                 function(response)
                 {
-                    $( "#index_modal_content" ).html( response );
+                    $( "#base_modal_content" ).html( response );
                 }
             , "html");
         });

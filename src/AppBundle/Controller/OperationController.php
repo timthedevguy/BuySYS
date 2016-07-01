@@ -25,8 +25,6 @@ class OperationController extends Controller
      */
     public function ajax_CreateAction(Request $request)
     {
-        dump($request);
-
         $template = $this->render('operations/create.html.twig');
 
         return $template;

@@ -40,7 +40,9 @@ class BuyBackController extends Controller
                 $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
                 $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
                 $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
-                $this->get("helper")->setSetting("buyback_refine_rate", $request->request->get('refine_rate'));
+                $this->get("helper")->setSetting("buyback_ore_refine_rate", $request->request->get('ore_refine_rate'));
+                $this->get("helper")->setSetting("buyback_ice_refine_rate", $request->request->get('ice_refine_rate'));
+                $this->get("helper")->setSetting("buyback_salvage_refine_rate", $request->request->get('salvage_refine_rate'));
                 $this->get("helper")->setSetting("buyback_default_public_tax", $request->request->get('default_public_tax'));
 
                 $this->addFlash('success', "Settings saved successfully!");
@@ -58,8 +60,10 @@ class BuyBackController extends Controller
         $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
         $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
         $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
-        $buybacksettings->setRefineRate($this->get("helper")->getSetting("buyback_refine_rate"));
+        $buybacksettings->setOreRefineRate($this->get("helper")->getSetting("buyback_ore_refine_rate"));
         $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
+        $buybacksettings->setIceRefineRate($this->get("helper")->getSetting("buyback_ice_refine_rate"));
+        $buybacksettings->setSalvageRefineRate($this->get("helper")->getSetting("buyback_salvage_refine_rate"));
 
         return $this->render('buyback/settings.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
@@ -79,82 +83,10 @@ class BuyBackController extends Controller
         $items = array();
         $typeids = array();
 
-        // Build our Item List and TypeID List
-        foreach(explode("\n", $buyback->getItems()) as $line) {
+        $items = $this->get('parser')->GetLineItemsFromPasteData($buyback->getItems());
 
-            // Array counts
-            // 5 -> View Contents list
-            // 6 -> Inventory list
-
-            // Split by TAB
-            $item = explode("\t", $line);
-
-            // Did this contain tabs?
-            if(count($item) > 1) {
-
-                // 6 Columns -> Means this is pasted from Inventory Screen
-                //if(count($item) == 6) {
-
-                    // Get TYPE from Eve Database
-                    $type = $types->findOneByTypeName($item[0]);
-
-                    if($type != null) {
-
-                        // Create & Populate our BuyBackItemModel
-                        $lineItem = new BuyBackItemModel();
-                        $lineItem->setTypeId($type->getTypeId());
-
-                        if($item[1] == "") {
-                            $lineItem->setQuantity(1);
-                        } else {
-                            $lineItem->setQuantity(str_replace('.', '', $item[1]));
-                            $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
-                        }
-
-                        $lineItem->setName($type->getTypeName());
-                        $lineItem->setVolume($type->getVolume());
-
-                        $items[] = $lineItem;
-
-                        // Build our list of TypeID's
-                        $typeids[] = $type->getTypeId();
-                    } else {
-
-                        $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "Item doesn't exist in Eve Database: ".$item[0]));
-                        return $template;
-                    }
-                //}
-            } else {
-
-                // Didn't contain tabs, so user typed it in?  Try to preg match it
-                $item = array();
-                preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-                dump($item);
-                // Get TYPE from Eve Database
-                $type = $types->findOneByTypeName($item[3]);
-
-                if($type != null) {
-
-                    // Create & Populate our BuyBackItemModel
-                    $lineItem = new BuyBackItemModel();
-                    $lineItem->setTypeId($type->getTypeId());
-                    $lineItem->setQuantity(str_replace(',', '', $item[1]));
-                    $lineItem->setName($type->getTypeName());
-                    $lineItem->setVolume($type->getVolume());
-
-                    $items[] = $lineItem;
-
-                    // Build our list of TypeID's
-                    $typeids[] = $type->getTypeId();
-                }
-            }
-        }
-
-        //$priceLookup = MarketHelper::GetMarketPrices($typeids, $this);
-        $priceLookup = $this->get('market')->GetMarketPrices($typeids);
-
-        if(!is_array($priceLookup)) {
-
+        if(!$this->get('market')->PopulateLineItems($items))
+        {
             $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
             return $template;
         }
@@ -162,11 +94,9 @@ class BuyBackController extends Controller
         $totalValue = 0;
         $ajaxData = "[";
 
-        foreach($items as $lineItem) {
-            //$taxAmount = ;
-            $value = ((int)$lineItem->getQuantity() * ($priceLookup[$lineItem->getTypeId()] * ((100 - $this->get("helper")->getSetting("buyback_default_tax"))/100)));
-            $totalValue += $value;
-            $lineItem->setValue($value);
+        foreach($items as $lineItem)
+        {
+            $totalValue += $lineItem->getNetPrice();
             $ajaxData .= "{ typeid:" . $lineItem->getTypeId() . ", quantity:" . $lineItem->getQuantity() . "},";
         }
 
@@ -289,11 +219,16 @@ class BuyBackController extends Controller
             $rensData = $this->get('market')->GetEveCentralData($typeId, "30002510");
             $hekData = $this->get('market')->GetEveCentralData($typeId, "30002053");
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
+            $priceDetails = array();
+            $priceDetails['types'] = array();
+            $value = $this->get('market')->GetMarketPriceByComposition($type, $priceDetails);
 
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
-                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData));
+                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
+                                        'details' => $priceDetails));
             return $template;
+
         } else {
 
             // Get item name searched for
@@ -380,7 +315,7 @@ class BuyBackController extends Controller
                     // Didn't contain tabs, so user typed it in?  Try to preg match it
                     $item = array();
                     preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-                    dump($item);
+
                     // Get TYPE from Eve Database
                     $type = $types->findOneByTypeName($item[3]);
 

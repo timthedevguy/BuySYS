@@ -19,6 +19,7 @@
                     <li class=""><a href="#tab_2-3" data-toggle="tab" aria-expanded="false">Dodixie</a></li>
                     <li class=""><a href="#tab_2-4" data-toggle="tab" aria-expanded="false">Rens</a></li>
                     <li class=""><a href="#tab_2-5" data-toggle="tab" aria-expanded="false">Hek</a></li>
+                    <li class=""><a href="#tab_2-6" data-toggle="tab" aria-expanded="false">Price Breakdown</a></li>
                     <!--<li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>-->
                 </ul>
                 <div class="tab-content">
@@ -262,6 +263,39 @@
                             </tr>
                         </table>
                     </div>
+                    {% if details != null %}
+                    <div class="tab-pane" id="tab_2-6">
+                        <p>Refined using: {{details.refineskill}}</p>
+                        <table class="table table-striped images-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Raw Quantity</th>
+                                    <th>Refined Quantity</th>
+                                    <th>Value<th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for type in details.types %}
+                                    <tr>
+                                        <td><img src="https://image.eveonline.com/Type/{{type.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{type.typeid}}">{{type.name}}</span></td>
+                                        <td>{{type.quantity|number_format(0, '.', ',') }}</td>
+                                        <td>{{type.refinedquantity|number_format(0, '.', ',') }}</td>
+                                        <td>{{type.marketprice|number_format(0, '.', ',') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfooter>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{value|number_format(0, '.', ',')}}</td>
+                                </tr>
+                            </tfooter>
+                        </table>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
