@@ -349,7 +349,7 @@ class Market {
 
                 $details['types'][$typeMaterial->getMaterialTypeId()] = $mDetails;
             }
-            dump($details);
+
             return $marketPrice;
         }
 

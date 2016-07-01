@@ -19,14 +19,12 @@ class Parser
 
     public function GetLineItemsFromPasteData($raw)
     {
-        dump($raw);
         $results = array();
         $types = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata');
 
         // Build our Item List and TypeID List
         foreach(preg_split("/\r\n|\n|\r/", $raw) as $line)
         {
-            dump($line);
             // Split by TAB
             $item = explode("\t", $line);
             // Create result entry
@@ -68,7 +66,6 @@ class Parser
 
                 if(preg_match("/((\d|,)*)\s+(.*)/", $line, $itemA))
                 {
-                    dump($itemA);
                     // Found '#,### Type Name'
                     $type = $types->findOneByTypeName($itemA[3]);
 

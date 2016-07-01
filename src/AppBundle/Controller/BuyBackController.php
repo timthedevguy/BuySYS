@@ -84,7 +84,7 @@ class BuyBackController extends Controller
         $typeids = array();
 
         $items = $this->get('parser')->GetLineItemsFromPasteData($buyback->getItems());
-        dump($items);
+
         if(!$this->get('market')->PopulateLineItems($items))
         {
             $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
@@ -222,7 +222,7 @@ class BuyBackController extends Controller
             $priceDetails = array();
             $priceDetails['types'] = array();
             $value = $this->get('market')->GetMarketPriceByComposition($type, $priceDetails);
-            dump($value);
+
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
                                         'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
@@ -315,7 +315,7 @@ class BuyBackController extends Controller
                     // Didn't contain tabs, so user typed it in?  Try to preg match it
                     $item = array();
                     preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-                    dump($item);
+
                     // Get TYPE from Eve Database
                     $type = $types->findOneByTypeName($item[3]);
 

@@ -97,8 +97,7 @@ class QuicklookController extends Controller
 
         $results = array();
         $marketPrices = $this->get("market")->GetCachedMarketPrices($typeIds);
-        dump($typeIds);
-        dump($marketPrices);
+
         foreach($typeIds as $typeId) {
 
             $tax = $this->get("helper")->getSetting("buyback_default_tax");

@@ -20,6 +20,7 @@
 
         function doSearch() {
 
+            $( "#base_modal_content" ).html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
             $('#base_modal').modal({backdrop: "static"});
 
             $.post('{{path('ajax_lookup_price')}}', {id: $("#search-input").val()},

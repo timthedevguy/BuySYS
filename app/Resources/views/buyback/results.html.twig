@@ -83,7 +83,7 @@
         $.post('{{path('ajax_accept_buyback')}}', {total: {{total}}, items: {{ajaxData}}, shares: $("#give_me_shares").val() },
             function(response)
             {
-                $( "#estimate_modal_content" ).html( response );
+                $( "#base_modal_content" ).html( response );
             }
         , "html");
     }
