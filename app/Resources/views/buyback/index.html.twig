@@ -11,6 +11,7 @@
                 <p>Welcome to <b>Am</b>SYS!  We would love to buy your stuff!  In order to help us do this please follow the simple guidlines below and ensure your goods are in one of those stations.</p>
                 <ol>
                     <li>Ensure items are in a station in <b>Asghatil</b>, <b>Tidacha</b> or <b>Jarizza</b>.</li>
+                    <li>Ensure your inventory view is set to 'Details <img src="http://binarymethod.com/images/details.png"/>' or 'List <img src="http://binarymethod.com/images/list.png"/>'</li>
                 </ol>
                 <div class="alert alert-error alert-dismissable" id="more-than-200" style="display:none;">
                     <h4 style="margin-bottom:0px;"><i class="icon fa fa-times"></i> Contracts are limited to 200 items or less!</h4>
@@ -20,7 +21,7 @@
                     {{ form_start(form) }}
                         {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:400px;'}}) }}
                         <div id="buyback_submits">
-                            <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'public_buyback': 'help_using_buyback'}) }}" target="_new">Help</a>
+                            <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'public_buyback'}) }}" target="_new">Help</a>
                             <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
                             <input type="submit" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
                         </div>
