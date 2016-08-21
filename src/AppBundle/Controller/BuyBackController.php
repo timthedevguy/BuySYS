@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Validator\Constraints\Time;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 use AppBundle\Form\BuyBackForm;
 use AppBundle\Form\BuyBackHiddenForm;
@@ -94,6 +95,7 @@ class BuyBackController extends Controller
         $totalValue = 0;
         $ajaxData = "[";
 
+        /* @var $lineItem LineItemEntity */
         foreach($items as $lineItem)
         {
             $totalValue += $lineItem->getNetPrice();
@@ -508,4 +510,25 @@ class BuyBackController extends Controller
         }
     }
 
+    /**
+     * @Route("/ajax_type_list", name="ajax_type_list")
+     */
+    public function ajax_TypeListAction(Request $request)
+    {
+        $query = $request->request->get("query");
+        $limit = $request->request->get("limit");
+
+        $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity','evedata')->findAllLikeName($query);
+
+        $results = array();
+        for($count = 0;$count < $limit;$count++)
+        {
+            $result = array();
+            $result['id'] = $types[$count]->getTypeId();
+            $result['value'] = $types[$count]->getTypeName();
+            $results[] = $result;
+        }
+
+        return new JsonResponse($results);
+    }
 }

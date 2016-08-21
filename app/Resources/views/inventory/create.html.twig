@@ -1,0 +1,49 @@
+{% form_theme form 'forms/my_bootstrap_layout.html.twig' %}
+
+{{ form_start(form, {'attr': {'id': 'form_create_inventory'}, 'action': path('ajax_create_inventory')}) }}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Create Inventory</h4>
+</div>
+<div class="modal-body" >
+    <div class="form-group">
+        {{ form_label(form.typeid) }}&nbsp;&nbsp;<span class="text-info"><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Please use actual Unit names"></i></span>
+        {{ form_errors(form.typeid) }}
+        {{ form_widget(form.typeid) }}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.quantity) }}&nbsp;&nbsp;<span class="text-info"><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="If Quantity is more than 1 than system will calculate unit cost automaticly"></i></span>
+        {{ form_errors(form.quantity) }}
+        {{ form_widget(form.quantity) }}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.cost) }}&nbsp;&nbsp;<span class="text-info"><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Be sure to use Eve-Praisal Jita cost of Minerals + Job Cost"></i></span>
+        {{ form_errors(form.cost) }}
+        {{ form_widget(form.cost) }}
+    </div>
+</div>
+<div class="modal-footer">
+    {{ form_widget(form.save, {'label': 'Add Inventory', 'attr': {'class': 'btn btn-primary'}}) }}
+</div>
+{{ form_end(form) }}
+
+<script type="text/javascript">
+
+    $(document).ready(function(e) {
+
+        $('#form_create_inventory').submit(function(f) {
+            f.preventDefault();
+
+            // Hide the Modal
+            $('#base_modal').modal('hide');
+
+            // Post this form
+            postForm($('#form_create_inventory'), function(response) {
+
+
+            });
+
+        });
+    });
+
+</script>
