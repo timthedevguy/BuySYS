@@ -18,7 +18,7 @@ class InventoryController extends Controller
     {
         $inventory = $this->getDoctrine()->getRepository('AppBundle:InventoryEntity')->findAll();
 
-        return $this->render('inventory/index.html.twig', array('page_name' => 'Iventory', 'sub_text' => 'Current Stock', 'inventory' => $inventory));
+        return $this->render('inventory/index.html.twig', array('page_name' => 'Inventory', 'sub_text' => 'Current Stock', 'inventory' => $inventory));
     }
 
     /**
@@ -28,12 +28,21 @@ class InventoryController extends Controller
     {
         $id = $request->query->get('id');
 
+        $em = $this->getDoctrine()->getManager();
         $inv = $this->getDoctrine()->getRepository('AppBundle:InventoryEntity')->findOneById($id);
+
+        if($inv->getQuantity() == 1)
+        {
+            $em->remove($inv);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_inventory');
+        }
 
         $inv->setCost($inv->getCost() - ($inv->getCost() / $inv->getQuantity()));
         $inv->setQuantity($inv->getQuantity() - 1);
 
-        $em = $this->getDoctrine()->getManager();
+
         $em->flush();
 
         return $this->redirectToRoute('admin_inventory');
