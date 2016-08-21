@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="{{ asset('/css/blue.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap3-wysihtml5.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/dataTables.bootstrap.css') }}" />
+        <link href="{{ asset('/css/typeaheadbundle.css') }}" type="text/css" rel="stylesheet" />
 
         {% block stylesheets %}{% endblock %}
 
@@ -25,6 +26,9 @@
         <script src="{{ asset('/js/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/js/dataTables.bootstrap.min.js') }}"></script>
         <script src="{{ asset('/js/app.min.js') }}"></script>
+        <script src="{{ asset('/js/bootstrap-typeahead.js') }}"></script>
+        <script src="{{ asset('/js/typeaheadbundle.js') }}"></script>
+
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -105,6 +109,34 @@
           <!-- Control Sidebar -->
           {{ include('elements/navControlbar.html.twig') }}
         </div><!-- ./wrapper -->
+
+        <script type="text/javascript">
+
+            function postForm( $form, callback ){
+
+                /*
+                 * Get all form values
+                 */
+                var values = {};
+                $.each( $form.serializeArray(), function(i, field) {
+                    values[field.name] = field.value;
+                });
+
+                /*
+                 * Throw the form values to the server!
+                 */
+                $.ajax({
+                    type        : $form.attr( 'method' ),
+                    url         : $form.attr( 'action' ),
+                    data        : values,
+                    success     : function(data) {
+                        callback( data );
+                    }
+                });
+
+            }
+
+        </script>
 
         {% block javascripts %}
 

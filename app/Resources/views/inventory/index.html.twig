@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-archive" aria-hidden="true"></i> Inventory</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-xs btn-success" id="create_inventory_button"><i class="fa fa-plus"></i> Add Inventory</button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <table class="table table-striped" id="inventory-table">
+                        <tr>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Job Cost</th>
+                            <th>Unit Cost</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for inv in inventory %}
+                            <tr>
+                                <td>{{ inv.createdon|date("m/d/Y H:i") }}</td>
+                                <td>{{ inv.user }}</td>
+                                <td>{{ inv.typename }}</td>
+                                <td>{{ inv.quantity|number_format(0, '.', ',') }}</td>
+                                <td>{{ inv.cost|number_format(0, '.', ',') }}</td>
+                                <td>{{ (inv.cost / inv.quantity)|number_format(0, '.', ',') }}</td>
+                                <td><a href="{{ path('subtract_inventory', {'id': inv.id}) }}" data-id="{{inv.id}}" class="btn btn-info btn-xs"><i class="fa fa-minus" aria-hidden="true"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        $("#create_inventory_button").click(function(e) {
+
+            $('#base_modal').modal({backdrop: "static"});
+
+            $.get('{{ path('ajax_create_inventory') }}',
+
+                    function(response)
+                    {
+                        $("#base_modal .modal-content").html(response);
+                    }
+            , "html");
+        });
+
+    </script>
+
+{% endblock %}

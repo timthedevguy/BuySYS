@@ -74,7 +74,7 @@
 
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
-        <li class="header">USER MENU</li>
+        <li class="header">USER</li>
         <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>User Dashboard</span></a></li>
         <!--<li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>-->
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
@@ -98,14 +98,16 @@
             </ul>
         </li>
         {% if is_granted('ROLE_MEMBER') %}
-            <li class='header'>MEMBER MENU</li>
+            <li class='header'>MEMBER</li>
             <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>
         {% endif %}
 
         {% if is_granted('ROLE_ADMIN') %}
-            <li class="header">ADMIN MENU</li>
-            <li class="{{(page_name == "Admin Dashboard" ? 'active' : '')}}"><a href="{{ path('admin_dashboard') }}"><i class="fa fa-tachometer"></i> <span>Admin Dashboard</span></a></li>
+            <li class="header">ACCOUNTING</li>
             <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Contract Queue</span></a></li>
+            <li class="header">INVENTORY</li>
+            <li class="{{ (page_name == "Inventory" ? 'active' : '') }}"><a href="{{ path('admin_inventory') }}"><i class="fa fa-archive" aria-hidden="true"></i> <span>Inventory</span></a></li>
+            <li class="header">SYSTEM</li>
             <li class="{{(page_name == "Users" ? 'active' : '')}}"><a href="{{path('admin_users')}}"><i class="fa fa-users"></i> <span>Users</span></a></li>
             <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
             <li class="{{(page_name == "Settings" ? 'active' : '')}}"><a href="#"><i class="fa fa-cogs"></i> <span>Settings</span><i class="fa fa-angle-left pull-right"></i></a>
