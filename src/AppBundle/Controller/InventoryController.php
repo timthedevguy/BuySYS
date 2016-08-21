@@ -24,12 +24,13 @@ class InventoryController extends Controller
     /**
      * @Route("/admin/inventory/subtact", name="subtract_inventory")
      */
-    public function Action(Request $request)
+    public function removeInventoryAction(Request $request)
     {
         $id = $request->query->get('id');
 
         $inv = $this->getDoctrine()->getRepository('AppBundle:InventoryEntity')->findOneById($id);
 
+        $inv->setCost($inv->getCost() - ($inv->getCost() / $inv->getQuantity()));
         $inv->setQuantity($inv->getQuantity() - 1);
 
         $em = $this->getDoctrine()->getManager();
