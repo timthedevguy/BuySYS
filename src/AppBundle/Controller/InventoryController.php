@@ -47,6 +47,21 @@ class InventoryController extends Controller
 
         return $this->redirectToRoute('admin_inventory');
     }
+
+    /**
+     * @Route("/admin/inventory/delete", name="delete_inventory")
+     */
+    public function deleteInventoryAction(Request $request)
+    {
+        $id = $request->query->get('id');
+
+        $em = $this->getDoctrine()->getManager();
+        $inv = $this->getDoctrine()->getRepository('AppBundle:InventoryEntity')->findOneById($id);
+
+        $em->remove($inv);
+        $em->flush();
+        return $this->redirectToRoute('admin_inventory');
+    }
     
     /**
      * @Route("/admin/inventory/ajax_create_inventory", name="ajax_create_inventory")
