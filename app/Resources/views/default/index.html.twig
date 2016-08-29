@@ -25,7 +25,7 @@
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <div class="alert alert-error alert-dismissable" id="more-than-200" style="display:none;">
-                        <h4 style="margin-bottom:0px;"><i class="icon fa fa-times"></i> Contracts are limited to 200 items or less!</h4>
+                        <h4 style="margin-bottom:0px;"><i class="icon fa fa-times"></i> Contracts are limited to 500 items or less!</h4>
                     </div>
                     {% if eveCentralOK == true %}
                         {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
@@ -264,7 +264,7 @@
             var pData = e.originalEvent.clipboardData.getData('text');
             var numberOfLineBreaks = (pData.match(/\n/g)||[]).length;
 
-            if(numberOfLineBreaks > 200) {
+            if(numberOfLineBreaks > 500) {
 
                 $("#more-than-200").css("display", "block");
                 e.preventDefault();
