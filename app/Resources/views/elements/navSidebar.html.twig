@@ -107,6 +107,7 @@
             <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Contract Queue</span></a></li>
             <li class="header">INVENTORY</li>
             <li class="{{ (page_name == "Inventory" ? 'active' : '') }}"><a href="{{ path('admin_inventory') }}"><i class="fa fa-archive" aria-hidden="true"></i> <span>Inventory</span></a></li>
+            <li class="{{ (page_name == "Compare" ? 'active' : '') }}"><a href="{{ path('compare_inventory') }}"><i class="fa fa-compress" aria-hidden="true"></i> <span>Compare</span></a></li>
             <li class="header">SYSTEM</li>
             <li class="{{(page_name == "Users" ? 'active' : '')}}"><a href="{{path('admin_users')}}"><i class="fa fa-users"></i> <span>Users</span></a></li>
             <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>

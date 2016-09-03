@@ -141,6 +141,7 @@ class Market {
      * cache as needed.  Takes in to account ore composition if Buyback
      * settings dictate it.
      * @param array $typeIds Array of TypeIds
+     * @return array Array of Prices
      */
     public function GetMarketPrices($typeIds)
     {
@@ -237,6 +238,49 @@ class Market {
             foreach($cached as $cacheItem)
             {
                 $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+            }
+
+            return $results;
+
+        } catch(Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function GetLiveMarketPrices($typeIds) {
+
+        $results = array();
+
+        // If $typeIds is not an array, then make it an array
+        if(!is_array($typeIds))
+        {
+            $tmp = $typeIds;
+            $typeIds = array();
+            $typeIds[] = $tmp;
+        }
+
+        try
+        {
+            // Get only Unique TypeIds
+            $dirtyTypeIds = array_unique($typeIds);
+
+            // If we have dirty cache pull new data
+            if(count($dirtyTypeIds) > 0) {
+
+                // Get Settings
+                $bb_source_type = $this->helper->getSetting("buyback_source_type");
+                $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+
+                // Get updated Stats from Eve Central
+                $json_array = $this->GetEveCentralData($dirtyTypeIds);
+
+                // Parse eve central data
+                foreach ($json_array as $market_results) {
+                    $type = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
+
+                    $results[$type->getTypeId()] = $market_results[$bb_source_type][$bb_source_stat];
+                }
             }
 
             return $results;
@@ -356,7 +400,14 @@ class Market {
         return -1;
     }
 
-    public function PopulateLineItems(&$items, $isPublic = false)
+    public function GetMarketPriceByCompositionByTypeId($typeid) {
+
+        $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeid);
+        $details = array();
+        return $this->GetMarketPriceByComposition($type,$details);
+    }
+
+    public function PopulateLineItems(&$items, $isPublic = false, $isLive = false)
     {
         try
         {
@@ -372,6 +423,11 @@ class Market {
                 $bb_tax = $this->helper->getSetting("buyback_default_tax");
             }
 
+            if($isLive == true) {
+
+                $bb_tax = 0;
+            }
+
             foreach($items as $lineItem)
             {
                 if($lineItem->getIsValid())
@@ -380,7 +436,13 @@ class Market {
                 }
             }
 
-            $prices = $this->GetMarketPrices($typeids);
+            if($isLive == true) {
+
+                $prices = $this->GetLiveMarketPrices($typeids);
+            } else {
+
+                $prices = $this->GetMarketPrices($typeids);
+            }
 
             foreach($items as $lineItemA)
             {
