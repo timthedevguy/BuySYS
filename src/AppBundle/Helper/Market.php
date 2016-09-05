@@ -108,7 +108,7 @@ class Market {
             }
 
             // Lookup in batches of 20
-            for($i = 0; $i <= count($typeIds); $i += 20)
+            for($i = 0; $i < count($typeIds); $i += 20)
             {
                 $limit = $i+20;
                 if($limit > count($typeIds)) {$limit = count($typeIds);}
@@ -158,7 +158,7 @@ class Market {
         try
         {
             // Get only Unique TypeIds
-            $dirtyTypeIds = array_unique($typeIds);
+            $dirtyTypeIds = array_values(array_unique($typeIds));
 
             $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
 
@@ -263,7 +263,7 @@ class Market {
         try
         {
             // Get only Unique TypeIds
-            $dirtyTypeIds = array_unique($typeIds);
+            $dirtyTypeIds = array_values(array_unique($typeIds));
 
             // If we have dirty cache pull new data
             if(count($dirtyTypeIds) > 0) {
