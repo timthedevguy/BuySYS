@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\Form\ExclusionForm;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -22,6 +23,7 @@ use AppBundle\Entity\CacheEntity;
 use AppBundle\Entity\TransactionEntity;
 use AppBundle\Helper\MarketHelper;
 use AppBundle\Model\BuyBackSettingsModel;
+use AppBundle\Entity\ExclusionEntity;
 
 class BuyBackController extends Controller
 {
@@ -71,6 +73,64 @@ class BuyBackController extends Controller
     }
 
     /**
+     * @Route("/admin/settings/exclusions", name="admin_buyback_exclusions")
+     */
+    public function exclusionsAction(Request $request)
+    {
+        $mode = $this->get("helper")->getSetting("buyback_whitelist_mode");
+        $form = $this->createForm(ExclusionForm::class);
+
+        if($request->getMethod() == "POST") {
+
+            $form_results = $request->request->get('exclusion_form');
+            $exclusion = new ExclusionEntity();
+            $exclusion->setMarketGroupId($form_results['marketgroupid']);
+            $exclusion->setWhitelist($mode);
+            $group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->
+                findOneByMarketGroupID($exclusion->getMarketGroupId());
+            $exclusion->setMarketGroupName($group->getMarketGroupName());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($exclusion);
+            $em->flush();
+        }
+
+        $exclusions = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
+
+        return $this->render('buyback/exclusions.html.twig', array(
+            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
+            'exclusions' => $exclusions, 'form' => $form->createView()));
+    }
+
+    /**
+     * @Route("/admin/settings/exclusions/delete", name="admin_delete_exclusion")
+     */
+    public function deleteExclusionAction(Request $request)
+    {
+        $exclusion = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->
+            findOneById($request->query->get('id'));
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($exclusion);
+        $em->flush();
+
+        return $this->redirectToRoute('admin_buyback_exclusions');
+    }
+
+    /**
+     * @Route("/admin/settings/mode", name="ajax_admin_buyback_mode")
+     */
+    public function ajax_ExclusionModeAction(Request $request)
+    {
+        $mode = $request->request->get("mode");
+
+        $this->get("helper")->setSetting("buyback_whitelist_mode", $mode);
+
+        $response = new Response();
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+    /**
      * @Route("/buyback/estimate", name="ajax_estimate_buyback")
      */
     public function ajax_EstimateAction(Request $request) {
@@ -93,21 +153,26 @@ class BuyBackController extends Controller
         }
 
         $totalValue = 0;
-        $ajaxData = "[";
+        $hasInvalid = false;
+        $ajaxData = array();
 
         /* @var $lineItem LineItemEntity */
         foreach($items as $lineItem)
         {
             $totalValue += $lineItem->getNetPrice();
-            $ajaxData .= "{ typeid:" . $lineItem->getTypeId() . ", quantity:" . $lineItem->getQuantity() . "},";
+            //$ajaxData .= "{ typeid:" . $lineItem->getTypeId() . ", quantity:" . $lineItem->getQuantity() . "},";
+            $ajaxData[] = array('typeid' => $lineItem->getTypeId(), 'quantity' => $lineItem->getQuantity(),
+                'isvalid' => $lineItem->getIsValid());
+            if(!$lineItem->getIsValid()) {$hasInvalid = true;}
         }
 
-        $ajaxData .= "]";
-        $ajaxData = rtrim($ajaxData, ",");
+        //$ajaxData .= "]";
+        //$ajaxData = rtrim($ajaxData, ",");
 
         if($items != null) {
 
-            $template = $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $totalValue, 'ajaxData' => $ajaxData ));
+            $template = $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $totalValue,
+                'ajaxData' => json_encode($ajaxData), 'hasInvalid' => $hasInvalid ));
         } else {
 
             $template = $this->render('buyback/novalid.html.twig');
@@ -124,80 +189,111 @@ class BuyBackController extends Controller
         // Get our list of Items
         $items = $request->request->get('items');
         $shares = $request->request->get('shares');
-
+        dump($items);
         // Generate list of unique items to pull from cache
         $typeids = Array();
-        $typeids = array_unique(array_map(function($n){return($n['typeid']);}, $items));
-
-        // Get Type Database
-        $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
-
-        // Pull data from Cache
-        $em = $this->getDoctrine()->getManager('default');
-        $query = $em->createQuery('SELECT c FROM AppBundle:CacheEntity c WHERE c.typeID IN (:types)')->setParameter('types', $typeids);
-        $cached = $query->getResult();
-
-        $transaction = new TransactionEntity();
-        $transaction->setUser($this->getUser());
-
-        if($shares == 1) {
-            $transaction->setType("PS");
-        } else {
-            $transaction->setType("P");
-        }
-
-        $transaction->setIsComplete(false);
-        $transaction->setOrderId($transaction->getType() . uniqid());
-        $transaction->setGross(0);
-        $transaction->setNet(0);
-        $transaction->setCreated(new \DateTime("now"));
-        $transaction->setStatus("Pending");
-        $em->persist($transaction);
-
-        $gross = 0;
-        $net = 0;
-
+        /*$typeids = array_unique(array_map(function($n){
+            dump($n['isvalid']);
+            if($n['isvalid'] == 'true') {
+                return($n['typeid']);
+            }
+        }, $items));*/
         foreach($items as $item) {
 
-            $lineItem = new LineItemEntity();
-            $lineItem->setTypeId($item['typeid']);
-            $lineItem->setQuantity($item['quantity']);
-            $lineItem->setName( $types->findOneByTypeID($item['typeid'])->getTypeName() );
-            $lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
+            if($item['isvalid'] == 'true') {
 
-            foreach($cached as $cache) {
+                $typeids[] = $item['typeid'];
+            }
+        }
 
-                if($cache->getTypeId() == $lineItem->getTypeId()) {
+        if(count($typeids) > 0) {
 
-                    $lineItem->setMarketPrice($cache->getMarket());
-                    $lineItem->setGrossPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()));
-                    $gross +=  $lineItem->getGrossPrice();
-                    $lineItem->setNetPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()) * ((100-$lineItem->getTax())/100));
-                    $net += $lineItem->getNetPrice();
-                    break;
+            // Get Type Database
+            $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
+
+            // Pull data from Cache
+            $em = $this->getDoctrine()->getManager('default');
+            /*$query = $em->createQuery('SELECT c FROM AppBundle:CacheEntity c WHERE c.typeID IN (:types)')->setParameter('types', $typeids);
+            $cached = $query->getResult();*/
+
+            $transaction = new TransactionEntity();
+            $transaction->setUser($this->getUser());
+
+            if ($shares == 1) {
+                $transaction->setType("PS");
+            } else {
+                $transaction->setType("P");
+            }
+
+            $transaction->setIsComplete(false);
+            $transaction->setOrderId($transaction->getType() . uniqid());
+            $transaction->setGross(0);
+            $transaction->setNet(0);
+            $transaction->setCreated(new \DateTime("now"));
+            $transaction->setStatus("Pending");
+            $em->persist($transaction);
+
+            $gross = 0;
+            $net = 0;
+
+            $lineItems = array();
+
+            foreach ($items as $item) {
+                if($item['isvalid'] == 'true') {
+
+                    $lineItem = new LineItemEntity();
+                    $lineItem->setTypeId($item['typeid']);
+                    $lineItem->setQuantity($item['quantity']);
+                    $lineItem->setName($types->findOneByTypeID($item['typeid'])->getTypeName());
+                    $lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
+
+                    /*foreach ($cached as $cache) {
+
+                        if ($cache->getTypeId() == $lineItem->getTypeId()) {
+
+                            $lineItem->setMarketPrice($cache->getMarket());
+                            $lineItem->setGrossPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()));
+                            $gross += $lineItem->getGrossPrice();
+                            $lineItem->setNetPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()) * ((100 - $lineItem->getTax()) / 100));
+                            $net += $lineItem->getNetPrice();
+                            break;
+                        }
+                    }*/
+
+                    //$transaction->addLineItem($lineItem);
+                    $em->persist($lineItem);
+                    $lineItems[] = $lineItem;
                 }
             }
 
-            $transaction->addLineItem($lineItem);
-            $em->persist($lineItem);
+            $this->get('market')->PopulateLineItems($lineItems);
+
+            foreach($lineItems as $lineitem) {
+
+                $transaction->setGross($transaction->getGross() + $lineItem->getGrossPrice());
+                $transaction->setNet($transaction->getNet() + $lineItem->getNetPrice());
+                $transaction->addLineitem($lineItem);
+                //$em->flush();
+                dump($lineItem);
+            }
+
+            $share_value = 0;
+
+            if ($shares == 1) {
+
+                $share_value = floor($net / 1000000);
+                $net = $net - ($share_value * 1000000);
+            }
+
+            $em->flush();
+
+            $template = $this->render('buyback/accepted.html.twig', Array('auth_code' => $transaction->getOrderId(), 'total_value' => $transaction->getNet(),
+                'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value));
+        } else {
+
+            $template = $this->render('buyback/novalid.html.twig');
         }
 
-        $share_value = 0;
-
-        if($shares == 1) {
-
-            $share_value = floor($net/1000000);
-            $net = $net - ($share_value * 1000000);
-        }
-
-        $transaction->setGross($gross);
-        $transaction->setNet($net);
-
-        //$em->persist($transaction);
-        $em->flush();
-
-        $template = $this->render('buyback/accepted.html.twig', Array ( 'auth_code' => $transaction->getOrderId(), 'total_value' => $net,
-        'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value ));
         return $template;
     }
 
@@ -221,6 +317,8 @@ class BuyBackController extends Controller
             $rensData = $this->get('market')->GetEveCentralData($typeId, "30002510");
             $hekData = $this->get('market')->GetEveCentralData($typeId, "30002053");
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
+            $market_group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')
+                ->findOneByMarketGroupID($type->getMarketGroupId())->getMarketGroupName();
             $priceDetails = array();
             $priceDetails['types'] = array();
             $value = $this->get('market')->GetMarketPriceByComposition($type, $priceDetails);
@@ -228,7 +326,7 @@ class BuyBackController extends Controller
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
                                         'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
-                                        'details' => $priceDetails));
+                                        'details' => $priceDetails, 'market_group' => $market_group));
             return $template;
 
         } else {
@@ -527,6 +625,31 @@ class BuyBackController extends Controller
             $result['id'] = $types[$count]->getTypeId();
             $result['value'] = $types[$count]->getTypeName();
             $results[] = $result;
+        }
+
+        return new JsonResponse($results);
+    }
+
+    /**
+     * @Route("/ajax_market_list", name="ajax_market_list")
+     */
+    public function ajax_MarketListAction(Request $request)
+    {
+        $query = $request->request->get("query");
+        $limit = $request->request->get("limit");
+
+        $groups = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->findAllLikeName($query);
+
+        $results = array();
+        for($count = 0;$count < count($groups);$count++)
+        {
+            $result = array();
+            $result['id'] = $groups[$count]->getMarketGroupId();
+            $result['value'] = $groups[$count]->getMarketGroupName();
+
+            $results[] = $result;
+
+            if($count >= $limit) {break;}
         }
 
         return new JsonResponse($results);

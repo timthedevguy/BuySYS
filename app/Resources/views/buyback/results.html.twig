@@ -10,6 +10,12 @@
     </div>
     <div class="modal-body" >
         <h2 id="estimated_value" style="text-align: right; margin-top: 0px;height:40px;">Estimated Value: <span class="text-green">{{total|number_format(0, '.', ',')}}</h2>
+        {% if hasInvalid %}
+            <div class="alert alert-danger">
+                Some of the items submitted are invalid.  These are indicated by a red background and will not be included this
+                transaction.  You can safely remove them from the contract.
+            </div>
+        {% endif %}
         <div class="buyback-results-container">
             <table class="table table-striped images-table">
                 <tr>
@@ -18,7 +24,7 @@
                     <th>Value</th>
                 </tr>
                 {% for item in items %}
-                    <tr>
+                    <tr class="{{ (item.isvalid) ? '' : 'danger' }}">
                         <td>{{item.Quantity|number_format(0, '.', ',') }}</td>
                         <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{item.Name}}</span></td>
                         <td>{{item.NetPrice|number_format(0, '.', ',') }}</td>
@@ -80,7 +86,7 @@
 
     function acceptOfferSubmit()
     {
-        $.post('{{path('ajax_accept_buyback')}}', {total: {{total}}, items: {{ajaxData}}, shares: $("#give_me_shares").val() },
+        $.post('{{path('ajax_accept_buyback')}}', {total: {{total}}, items: {{ajaxData|raw}}, shares: $("#give_me_shares").val() },
             function(response)
             {
                 $( "#base_modal_content" ).html( response );

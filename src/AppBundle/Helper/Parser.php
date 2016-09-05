@@ -3,6 +3,7 @@ namespace AppBundle\Helper;
 
 use AppBundle\Helper\Helper;
 use AppBundle\Entity\LineItemEntity;
+use AppBundle\Entity\ExclusionEntity;
 
 /**
  * Handles all text parsing functions
@@ -21,6 +22,15 @@ class Parser
     {
         $results = array();
         $types = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata');
+        // Get any exclusions
+        $mode = $this->helper->getSetting("buyback_whitelist_mode");
+        $exclusions = $this->doctrine->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
+        $groups = array();
+
+        foreach($exclusions as $exclusion) {
+
+            $groups[] = $exclusion->getMarketGroupId();
+        }
 
         // Build our Item List and TypeID List
         foreach(preg_split("/\r\n|\n|\r/", $raw) as $line)
@@ -39,6 +49,14 @@ class Parser
                 {
                     $lineItem->setTypeId($type->getTypeId());
                     $lineItem->setName($type->getTypeName());
+
+                    if(in_array($type->getMarketGroupId(), $groups) & $mode == "false") {
+
+                        $lineItem->setIsValid(false);
+                    }elseif(!in_array($type->getMarketGroupID(), $groups) & $mode == "true") {
+
+                        $lineItem->setIsValid(false);
+                    }
                     //$lineItem->setVolume($type->getVolume());
                 }
                 else
@@ -73,7 +91,14 @@ class Parser
                     {
                         $lineItem->setTypeId($type->getTypeId());
                         $lineItem->setName($type->getTypeName());
-                        //$lineItem->setVolume($type->getVolume());
+
+                        if(in_array($type->getMarketGroupId(), $groups) & $mode == "false") {
+
+                            $lineItem->setIsValid(false);
+                        }elseif(!in_array($type->getMarketGroupID(), $groups) & $mode == "true") {
+
+                            $lineItem->setIsValid(false);
+                        }
                     }
                     else
                     {
