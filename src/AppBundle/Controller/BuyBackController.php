@@ -189,15 +189,10 @@ class BuyBackController extends Controller
         // Get our list of Items
         $items = $request->request->get('items');
         $shares = $request->request->get('shares');
-        dump($items);
+
         // Generate list of unique items to pull from cache
         $typeids = Array();
-        /*$typeids = array_unique(array_map(function($n){
-            dump($n['isvalid']);
-            if($n['isvalid'] == 'true') {
-                return($n['typeid']);
-            }
-        }, $items));*/
+
         foreach($items as $item) {
 
             if($item['isvalid'] == 'true') {
@@ -273,8 +268,6 @@ class BuyBackController extends Controller
                 $transaction->setGross($transaction->getGross() + $lineItem->getGrossPrice());
                 $transaction->setNet($transaction->getNet() + $lineItem->getNetPrice());
                 $transaction->addLineitem($lineItem);
-                //$em->flush();
-                dump($lineItem);
             }
 
             $share_value = 0;
