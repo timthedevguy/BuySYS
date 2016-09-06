@@ -156,6 +156,8 @@ class TransactionEntity
     public function addLineitem(LineItemEntity $lineitem)
     {
         $lineitem->setTransaction($this);
+        $this->net += $lineitem->getNetPrice();
+        $this->gross += $lineitem->getGrossPrice();
         $this->lineitems[] = $lineitem;
 
         return $this;

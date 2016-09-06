@@ -234,6 +234,7 @@ class BuyBackController extends Controller
             $lineItems = array();
 
             foreach ($items as $item) {
+
                 if($item['isvalid'] == 'true') {
 
                     $lineItem = new LineItemEntity();
@@ -242,20 +243,6 @@ class BuyBackController extends Controller
                     $lineItem->setName($types->findOneByTypeID($item['typeid'])->getTypeName());
                     $lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
 
-                    /*foreach ($cached as $cache) {
-
-                        if ($cache->getTypeId() == $lineItem->getTypeId()) {
-
-                            $lineItem->setMarketPrice($cache->getMarket());
-                            $lineItem->setGrossPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()));
-                            $gross += $lineItem->getGrossPrice();
-                            $lineItem->setNetPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()) * ((100 - $lineItem->getTax()) / 100));
-                            $net += $lineItem->getNetPrice();
-                            break;
-                        }
-                    }*/
-
-                    //$transaction->addLineItem($lineItem);
                     $em->persist($lineItem);
                     $lineItems[] = $lineItem;
                 }
@@ -263,20 +250,12 @@ class BuyBackController extends Controller
 
             $this->get('market')->PopulateLineItems($lineItems);
 
-            foreach($lineItems as $lineitem) {
+            foreach($lineItems as $lineItem) {
 
-                $transaction->setGross($transaction->getGross() + $lineItem->getGrossPrice());
-                $transaction->setNet($transaction->getNet() + $lineItem->getNetPrice());
                 $transaction->addLineitem($lineItem);
             }
 
             $share_value = 0;
-
-            if ($shares == 1) {
-
-                $share_value = floor($net / 1000000);
-                $net = $net - ($share_value * 1000000);
-            }
 
             $em->flush();
 
