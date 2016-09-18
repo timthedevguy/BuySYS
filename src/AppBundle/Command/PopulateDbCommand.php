@@ -15,7 +15,7 @@ class PopulateDbCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('db:populate')
+            ->setName('amsys:settings:populate')
             ->setDescription('Populate Database with default settings')
         ;
     }

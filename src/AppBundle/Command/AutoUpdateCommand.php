@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class AutoUpdateCommand extends ContainerAwareCommand
 {
@@ -15,7 +16,7 @@ class AutoUpdateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('auto:update')
+            ->setName('amsys:cache:update')
             ->setDescription('Update Market Price of a configured set of items.')
         ;
     }
@@ -57,47 +58,74 @@ class AutoUpdateCommand extends ContainerAwareCommand
 
         if($eveCentralOK == true)
         {
-            $output->writeln("Eve-Central is online!");
+            $progress = new ProgressBar($output, 13);
+            //$output->writeln("Eve-Central is online!");
             // Begin Updating the Cache
-            $logger->info('Auto Updating Minerals');
-            $output->writeln('Auto Updating Minerals');
+            //$logger->info('Auto Updating Minerals');
+            //$output->writeln('Auto Updating Minerals');
+            $progress->setMessage('Updating Minerals');
             $market->UpdateCache($mineralOres);
-            $logger->info('Auto Updating High Sec Ores');
-            $output->writeln('Auto Updating High Sec Ores');
+            $progress->advance();
+            //$logger->info('Auto Updating High Sec Ores');
+            //$output->writeln('Auto Updating High Sec Ores');
+            $progress->setMessage('Updating High Sec Ores');
             $market->UpdateCache($highSecOres);
-            $logger->info('Auto Updating Other High Sec Ores');
-            $output->writeln('Auto Updating Other High Sec Ores');
+            $progress->advance();
+            //$logger->info('Auto Updating Other High Sec Ores');
+            //$output->writeln('Auto Updating Other High Sec Ores');
+            $progress->setMessage('Updating Other High Sec Ores');
             $market->UpdateCache($otherHighSecOres);
-            $logger->info('Auto Updating Low Sec Ores');
-            $output->writeln('Auto Updating Low Sec Ores');
+            $progress->advance();
+            //$logger->info('Auto Updating Low Sec Ores');
+            //$output->writeln('Auto Updating Low Sec Ores');
+            $progress->setMessage('Updating Low Sec Ores');
             $market->UpdateCache($lowSecOres);
-            $logger->info('Auto Updating Null Sec Ores');
-            $output->writeln('Auto Updating Null Sec Ores');
+            $progress->advance();
+            //$logger->info('Auto Updating Null Sec Ores');
+            //$output->writeln('Auto Updating Null Sec Ores');
+            $progress->setMessage('Updating Null Sec Ores');
             $market->UpdateCache($nullSecOres);
-            $logger->info('Auto Updating Gas');
-            $output->writeln('Auto Updating Gas');
+            $progress->advance();
+            //$logger->info('Auto Updating Gas');
+           //$output->writeln('Auto Updating Gas');
+            $progress->setMessage('Updating Gas');
             $market->UpdateCache($gasOres);
-            $logger->info('Auto Updating P0');
-            $output->writeln('Auto Updating P0');
+            $progress->advance();
+            //$logger->info('Auto Updating P0');
+            //$output->writeln('Auto Updating P0');
+            $progress->setMessage('Updating P0');
             $market->UpdateCache($p0Ores);
-            $logger->info('Auto Updating P1');
-            $output->writeln('Auto Updating P1');
+            $progress->advance();
+            //$logger->info('Auto Updating P1');
+            //$output->writeln('Auto Updating P1');
+            $progress->setMessage('Updating P1');
             $market->UpdateCache($p1Ores);
-            $logger->info('Auto Updating P2');
-            $output->writeln('Auto Updating P2');
+            $progress->advance();
+            //$logger->info('Auto Updating P2');
+            //$output->writeln('Auto Updating P2');
+            $progress->setMessage('Updating P2');
             $market->UpdateCache($p2Ores);
-            $logger->info('Auto Updating P3');
-            $output->writeln('Auto Updating P3');
+            $progress->advance();
+            //$logger->info('Auto Updating P3');
+            //$output->writeln('Auto Updating P3');
+            $progress->setMessage('Updating P3');
             $market->UpdateCache($p3Ores);
-            $logger->info('Auto Updating P4');
-            $output->writeln('Auto Updating P4');
+            $progress->advance();
+            //$logger->info('Auto Updating P4');
+            //$output->writeln('Auto Updating P4');
+            $progress->setMessage('Updating P4');
             $market->UpdateCache($p4Ores);
-            $logger->info('Auto Updating Ice Minerals');
-            $output->writeln('Auto Updating Ice Minerals');
+            $progress->advance();
+            //$logger->info('Auto Updating Ice Minerals');
+            //$output->writeln('Auto Updating Ice Minerals');
+            $progress->setMessage('Updating Ice Minerals');
             $market->UpdateCache($iceMinerals);
-            $logger->info('Auto Updating Ice');
-            $output->writeln('Auto Updating Ice');
+            $progress->advance();
+            //$logger->info('Auto Updating Ice');
+            //$output->writeln('Auto Updating Ice');
+            $progress->setMessage('Updating Ice');
             $market->UpdateCache($iceOres);
+            $progress->advance();
         }
         else
         {
