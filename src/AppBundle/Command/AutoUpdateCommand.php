@@ -58,71 +58,72 @@ class AutoUpdateCommand extends ContainerAwareCommand
 
         if($eveCentralOK == true)
         {
+            $output->writeln('');
+            $output->writeln('<info>Eve-Central is online!  All Ores/Ice/Gas/Minerals will now be updated with latest data from Eve-Central</info>');
             $progress = new ProgressBar($output, 13);
-            //$output->writeln("Eve-Central is online!");
+
             // Begin Updating the Cache
-            //$logger->info('Auto Updating Minerals');
-            //$output->writeln('Auto Updating Minerals');
+            $logger->info('Auto Updating Minerals');
             $progress->setMessage('Updating Minerals');
             $market->UpdateCache($mineralOres);
             $progress->advance();
-            //$logger->info('Auto Updating High Sec Ores');
-            //$output->writeln('Auto Updating High Sec Ores');
+
+            $logger->info('Auto Updating High Sec Ores');
             $progress->setMessage('Updating High Sec Ores');
             $market->UpdateCache($highSecOres);
             $progress->advance();
-            //$logger->info('Auto Updating Other High Sec Ores');
-            //$output->writeln('Auto Updating Other High Sec Ores');
+
+            $logger->info('Auto Updating Other High Sec Ores');
             $progress->setMessage('Updating Other High Sec Ores');
             $market->UpdateCache($otherHighSecOres);
             $progress->advance();
-            //$logger->info('Auto Updating Low Sec Ores');
-            //$output->writeln('Auto Updating Low Sec Ores');
+
+            $logger->info('Auto Updating Low Sec Ores');
             $progress->setMessage('Updating Low Sec Ores');
             $market->UpdateCache($lowSecOres);
             $progress->advance();
-            //$logger->info('Auto Updating Null Sec Ores');
-            //$output->writeln('Auto Updating Null Sec Ores');
+
+            $logger->info('Auto Updating Null Sec Ores');
             $progress->setMessage('Updating Null Sec Ores');
             $market->UpdateCache($nullSecOres);
             $progress->advance();
-            //$logger->info('Auto Updating Gas');
-           //$output->writeln('Auto Updating Gas');
+
+            $logger->info('Auto Updating Gas');
             $progress->setMessage('Updating Gas');
             $market->UpdateCache($gasOres);
             $progress->advance();
-            //$logger->info('Auto Updating P0');
-            //$output->writeln('Auto Updating P0');
+
+            $logger->info('Auto Updating P0');
             $progress->setMessage('Updating P0');
             $market->UpdateCache($p0Ores);
             $progress->advance();
-            //$logger->info('Auto Updating P1');
-            //$output->writeln('Auto Updating P1');
+
+            $logger->info('Auto Updating P1');
             $progress->setMessage('Updating P1');
             $market->UpdateCache($p1Ores);
             $progress->advance();
-            //$logger->info('Auto Updating P2');
-            //$output->writeln('Auto Updating P2');
+
+            $logger->info('Auto Updating P2');
             $progress->setMessage('Updating P2');
             $market->UpdateCache($p2Ores);
             $progress->advance();
-            //$logger->info('Auto Updating P3');
-            //$output->writeln('Auto Updating P3');
+
+            $logger->info('Auto Updating P3');
             $progress->setMessage('Updating P3');
             $market->UpdateCache($p3Ores);
             $progress->advance();
-            //$logger->info('Auto Updating P4');
-            //$output->writeln('Auto Updating P4');
+
+            $logger->info('Auto Updating P4');
             $progress->setMessage('Updating P4');
             $market->UpdateCache($p4Ores);
             $progress->advance();
-            //$logger->info('Auto Updating Ice Minerals');
-            //$output->writeln('Auto Updating Ice Minerals');
+
+            $logger->info('Auto Updating Ice Minerals');
             $progress->setMessage('Updating Ice Minerals');
             $market->UpdateCache($iceMinerals);
             $progress->advance();
-            //$logger->info('Auto Updating Ice');
-            //$output->writeln('Auto Updating Ice');
+
+            $logger->info('Auto Updating Ice');
             $progress->setMessage('Updating Ice');
             $market->UpdateCache($iceOres);
             $progress->advance();
@@ -131,5 +132,7 @@ class AutoUpdateCommand extends ContainerAwareCommand
         {
             $output->writeln("Eve-Central is offline!");
         }
+
+        $output->writeln('');
     }
 }
