@@ -592,7 +592,7 @@ class BuyBackController extends Controller
 
         $results = array();
 
-        if(count($results) < $limit) { $limit = count($results); }
+        if(count($types) < $limit) { $limit = count($types); }
 
         for($count = 0;$count < $limit;$count++)
         {
