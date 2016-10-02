@@ -591,6 +591,9 @@ class BuyBackController extends Controller
         $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity','evedata')->findAllLikeName($query);
 
         $results = array();
+
+        if(count($results) < $limit) { $limit = count($results); }
+
         for($count = 0;$count < $limit;$count++)
         {
             $result = array();
