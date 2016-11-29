@@ -8,7 +8,7 @@ I personally have deployed this to GreenGeeks Hosting, DigitalOcean ($5) and sel
 1. Install LAMP stack (Apache2, MySQL, PHP 5.x) [DigitalOcean Ubuntu 14 LAMP](https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-14-04)
 1. Add Swap to the server, this improves performance [DigitalOcean Adding SWAP](https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-14-04)
 2. Install PHPMyAdmin, will assist in maintenance [DigitalOcean Secure PHPMyAdmin Install](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-14-04)
-3. Install PHP Bz2 `apt-get install php5.6-bz2` then `phpendmod bz2`, restart server or Apache2
+3. Install PHP Bz2 `apt-get install php5.6-bz2` then `phpenmod bz2`, restart server or Apache2
 4. Clone Git Repository to `/var/www/html` this will create a folder called 'amsys'
 5. Edit `/etc/apache2/sites-enabled/000-default.conf` and add new VirtualHost using your own information.  The important parts are the DocumentRoot and Directory configuration.
 ```
@@ -86,3 +86,14 @@ Add Cron Job to pull Ore/Minerals/Ice/Gas/PI prices every 15 minutes.
 
 #### Composer 'Killed' error
 This is due to the server not having any swap space, add swap space.
+
+### Updating your Installation
+Easiest way is to create an update script
+1. Navigate to `/var/www/html/amsys` and create `update.sh`
+2. Make is executable, `chmod +x update.sh`
+3. Edit update.sh
+```
+git pull https://username:password@github.com/binarygod/amsys.git
+php app/console cache:clear --env=prod
+```
+1. To do an update and get new changes, simply navigate to `/var/www/html/amsys` and run `./update.sh`, this will pull the new code and refresh the cache
