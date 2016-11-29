@@ -89,6 +89,7 @@ This is due to the server not having any swap space, add swap space.
 
 ### Updating your Installation
 Easiest way is to create an update script
+
 1. Navigate to `/var/www/html/amsys` and create `update.sh`
 2. Make is executable, `chmod +x update.sh`
 3. Edit update.sh
