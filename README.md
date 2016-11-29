@@ -73,7 +73,7 @@ parameters:
 ### Creating User Account
 1. Navigate to http://your.com/register and register an account, API is used ONLY to confirm that you own that character
 2. Login to PHPMyAdmin and load the Users table, change `role` from ROLE_USER to ROLE_ADMIN and save.
-3. Logout of Amsys and log back in, you know have admin permissions
+3. Logout of Amsys and log back in, you now have admin permissions
 
 
 ### Auto Update Cache
