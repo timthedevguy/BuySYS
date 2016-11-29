@@ -6,6 +6,7 @@ AmSYS developed for The Amarr Republic/Allied Industries is an application desig
 I personally have deployed this to GreenGeeks Hosting, DigitalOcean ($5) and self hosted Ubuntu 14 LTS.
 
 1. Install LAMP stack (Apache2, MySQL, PHP 5.x) [DigitalOcean Ubuntu 14 LAMP](https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-14-04)
+1. Add Swap to the server, this improves performance [DigitalOcean Adding SWAP](https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-14-04)
 2. Install PHPMyAdmin, will assist in maintenance [DigitalOcean Secure PHPMyAdmin Install](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-14-04)
 3. Install PHP Bz2 `apt-get install php5.6-bz2` then `phpendmod bz2`, restart server or Apache2
 4. Clone Git Repository to `/var/www/html` this will create a folder called 'amsys'
@@ -80,3 +81,8 @@ Add Cron Job to pull Ore/Minerals/Ice/Gas/PI prices every 15 minutes.
 
 1. crontab -e
 2. */15 * * * * php /var/www/html/amsys/app/console amsys:cache:update
+
+### Troubleshooting
+
+#### Composer 'Killed' error
+This is due to the server not having any swap space, add swap space.
