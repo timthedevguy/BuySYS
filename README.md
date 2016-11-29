@@ -48,17 +48,17 @@ parameters:
         database_port: 3306
         database_name: amsys_db
         database_user: amsys_user
-        database_password: 44891620a
+        database_password: password
         database_host2: 10.0.1.14
         database_port2: 3306
         database_name2: evedata
         database_user2: amsys_user
-        database_password2: 44891620a
+        database_password2: password
         mailer_transport: smtp
-        mailer_host: server18.websitehostserver.net
+        mailer_host: server.websitehostserver.net
         mailer_port: 465
         mailer_user: no-reply@binarymethod.com
-        mailer_password: 44891620a
+        mailer_password: password
         mailer_encryption: ssl
         mailer_auth_mode: login
         secret: 27cf9b3f2d86b1b6bc6aeaacad9941b5cc1f8a20
