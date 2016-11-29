@@ -98,3 +98,12 @@ git pull https://username:password@github.com/binarygod/amsys.git
 php app/console cache:clear --env=prod
 ```
 1. To do an update and get new changes, simply navigate to `/var/www/html/amsys` and run `./update.sh`, this will pull the new code and refresh the cache
+
+### Roles
+I never coded an interface in for Groups and permissions, I was the sole coder so it wasn't high priority.  Current Roles are as follows
+
+1. ROLE_ADMIN: ROLE_OFFICER, ROLE_EDITOR - GOD!
+2. ROLE_OFFICER: ROLE_MEMBER, ROLE_EDITOR - All of below, can't actually remember what else
+3. ROLE_EDITOR: ROLE_MEMBER - Can use buyback, gets discounted rate, can Edit/Create 'Pages'
+4. ROLE_MEMBER: ROLE_USER - Can use buyback, gets discounted rate, can access 'Pages'
+5. ROLE_USER - Can use buyback, gets discounted rate, cannot access 'Pages'
