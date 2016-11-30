@@ -41,7 +41,7 @@ HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]gin
 sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
 sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
 ```
-9. Navigate to `/var/www/html/amsys/app/config` and edit parameters.yml, fill in your data for the databases and users
+9. Navigate to `/var/www/html/amsys/app/config` and edit parameters.yml, fill in your data for the databases and users, you can copy and paste from the text below:
 ```
 # This file is auto-generated during the composer install
 parameters:
