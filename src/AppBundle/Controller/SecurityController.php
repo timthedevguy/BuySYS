@@ -144,7 +144,7 @@ class SecurityController extends Controller
             $password = $this->get('security.password_encoder')
                 ->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
-            $user->setRole("ROLE_USER");
+            $user->setRole("ROLE_MEMBER");
             $user->setIsActive(true);
             $user->setLastLogin(new \DateTime());
 
