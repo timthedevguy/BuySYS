@@ -247,7 +247,7 @@ class SecurityController extends Controller
                 $em->flush();
 
                 $message = \Swift_Message::newInstance()
-                ->setSubject('AmSYS Password Reset Request')
+                ->setSubject('OgSYS Password Reset Request')
                 ->setFrom('amsys@alliedindustries-eve.com')
                 ->setTo($user->getEmail())
                 ->setBody(
