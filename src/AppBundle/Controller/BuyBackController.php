@@ -1,7 +1,12 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\RuleEntity;
+use AppBundle\Form\AddGroupRuleForm;
+use AppBundle\Form\AddTypeRuleForm;
 use AppBundle\Form\ExclusionForm;
+use AppBundle\Model\GroupRuleModel;
+use AppBundle\Model\TypeRuleModel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -101,6 +106,52 @@ class BuyBackController extends Controller
         return $this->render('buyback/exclusions.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
             'exclusions' => $exclusions, 'form' => $form->createView()));
+    }
+
+    /**
+     * @Route("/admin/settings/rules", name="admin_buyback_rules")
+     */
+    public function rulesAction(Request $request)
+    {
+        $groupModel = new GroupRuleModel();
+        $typeModel = new TypeRuleModel();
+
+        $groupForm = $this->createForm(AddGroupRuleForm::class, $groupModel);
+        $typeForm = $this->createForm(AddTypeRuleForm::class, $typeModel);
+
+        $em = $this->getDoctrine()->getManager();
+        $rules = $em->getRepository('AppBundle:RuleEntity', 'default')->findAll();
+
+        if($request->getMethod() == "POST") {
+
+            $form_results = $request->request->get('add_type_rule_form');
+            $rule = new RuleEntity();
+
+            if($form_results == null) {
+
+                // Submitted form is Group Form
+                $form_results = $request->request->get('add_group_rule_form');
+                $rule->setTarget('group');
+                $rule->setTargetId($form_results['marketgroupid']);
+                $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
+                //$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($inv->getTypeId());
+            } else {
+
+                // Submitted form was Type Form
+                $rule->setTarget('type');
+                $rule->setTargetId($form_results['typeid']);
+                $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($form_results['typeid'])->getTypeName());
+            }
+            // TODO Add Sort code
+            $rule->setSort(1);
+            $rule->setAttribute($form_results['attribute']);
+            $rule->setValue($form_results['value']);
+            $em->persist($rule);
+            $em->flush();
+        }
+
+        return $this->render('buyback/rules.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
+            'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules));
     }
 
     /**

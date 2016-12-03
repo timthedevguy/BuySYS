@@ -6,9 +6,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="filter")
+ * @ORM\Table(name="rule")
  */
-class FilterEntity
+class RuleEntity
 {
     /**
      * @ORM\Id()
@@ -16,14 +16,14 @@ class FilterEntity
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    
+
     public function setId($id)
     {
         $this->id = $id;
-    
+
         return $this;
     }
-    
+
     public function getId()
     {
         return $this->id;
@@ -33,14 +33,14 @@ class FilterEntity
      * @ORM\Column(type="integer")
      */
     protected $sort;
-    
+
     public function setSort($sort)
     {
         $this->sort = $sort;
-    
+
         return $this;
     }
-    
+
     public function getSort()
     {
         return $this->sort;
@@ -50,31 +50,65 @@ class FilterEntity
      * @ORM\Column(type="string", length=255)
      */
     protected $target;
-    
+
     public function setTarget($target)
     {
         $this->target = $target;
-    
+
         return $this;
     }
-    
+
     public function getTarget()
     {
         return $this->target;
     }
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    protected $targetId;
+
+    public function setTargetId($targetId)
+    {
+        $this->targetId = $targetId;
+
+        return $this;
+    }
+
+    public function getTargetId()
+    {
+        return $this->targetId;
+    }
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
-    protected $attribute;
+    protected $targetName;
     
-    public function setAttribute($attribute)
+    public function setTargetName($targetName)
     {
-        $this->attribute = $attribute;
+        $this->targetName = $targetName;
     
         return $this;
     }
     
+    public function getTargetName()
+    {
+        return $this->targetName;
+    }
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $attribute;
+
+    public function setAttribute($attribute)
+    {
+        $this->attribute = $attribute;
+
+        return $this;
+    }
+
     public function getAttribute()
     {
         return $this->attribute;
@@ -84,14 +118,14 @@ class FilterEntity
      * @ORM\Column(type="decimal", precision=19, scale=2)
      */
     protected $value;
-    
+
     public function setValue($value)
     {
         $this->value = $value;
-    
+
         return $this;
     }
-    
+
     public function getValue()
     {
         return $this->value;

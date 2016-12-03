@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Buyback Rules</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p>Buyback rules work much like Cascading Style Sheets</p>
+                            <ul>
+                                <li>Rules are processed Top to Bottom</li>
+                                <li>Rules compound to form the final pricing options</li>
+                                <li>If an item does not get matched then it will not be able to be sold to the buyback system</li>
+                                <li>Setting a Market Price overrides all other rules!!! (Be sure to include the tax, even tax rules are overridden)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Add by Market Group</h4>
+                            {{ form_start(groupform) }}
+                            {{ form_widget(groupform) }}
+                            {{ form_end(groupform) }}
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Add by Item</h4>
+                            {{ form_start(typeform) }}
+                            {{ form_widget(typeform) }}
+                            {{ form_end(typeform) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Rules</h3>
+                </div>
+                <div class="box-body no-padding">
+                    <div id="exclusions-form-wrap">
+
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Target Type</th>
+                                <th>Target</th>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in rules %}
+                                <tr>
+                                    <td>{{ item.sort }}</td>
+                                    <td>{{ (item.target == 'group') ? "Group Rule" : "Target Rule" }}</td>
+                                    <td>{{ item.targetname }}</td>
+                                    <td>{{ item.attribute }}</td>
+                                    <td>{{ item.value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+
+    </script>
+
+{% endblock %}
