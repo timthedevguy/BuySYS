@@ -47,7 +47,7 @@ class CacheEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="decimal", precision=19, scale=2)
      */
     protected $market;
 

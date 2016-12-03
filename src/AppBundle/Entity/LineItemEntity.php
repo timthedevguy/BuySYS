@@ -70,7 +70,7 @@ class LineItemEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="decimal", precision=19, scale=2)
      */
     protected $marketPrice;
 
@@ -104,7 +104,7 @@ class LineItemEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="decimal", precision=19, scale=2)
      */
     protected $grossPrice;
 
@@ -121,7 +121,7 @@ class LineItemEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="decimal", precision=19, scale=2)
      */
     protected $netPrice;
 
