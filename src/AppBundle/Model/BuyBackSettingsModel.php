@@ -72,6 +72,20 @@ class BuyBackSettingsModel
     {
         return $this->valueMinerals;
     }
+    
+    protected $valueSalvage;
+    
+    public function setValueSalvage($valueSalvage)
+    {
+        $this->valueSalvage = $valueSalvage;
+    
+        return $this;
+    }
+    
+    public function getValueSalvage()
+    {
+        return $this->valueSalvage;
+    }
 
     protected $oreRefineRate;
 

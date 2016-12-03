@@ -59,13 +59,27 @@
                             <div class="form-group">
                                 <div class="col-sm-8">
                                     <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
-                                    <p>This option will value any item that can be reprocessed by it's mineral yield ad the Refining Rate listed below.</p>
+                                    <p>This option will value any item that can be reprocessed by Refining Skill by it's mineral yield at the Refining Rate listed below.</p>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                                         <label>
-                                            <input type="checkbox" id="value_minerals_base" {{ (model.ValueMinerals == "1") ? 'checked' : '' }}/>
+                                            <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (model.ValueMinerals == "1") ? 'checked' : '' }}/>
                                             <input type="hidden" id="value_minerals" name="value_minerals" value="{{ (model.ValueMinerals == "1") ? "1" : "0" }}"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                    <label for="maintenance_mode_base" class="control-label">Value Salvage by Minerals</label>
+                                    <p>This option will value any item that can be reprocessed by Salvaging Skill by it's mineral yield at the Refining Rate listed below.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                                        <label>
+                                            <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (model.ValueSalvage == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="value_salvage" name="value_salvage" value="{{ (model.ValueSalvage == "1") ? "1" : "0" }}"/>
                                         </label>
                                     </div>
                                 </div>
@@ -128,11 +142,11 @@
     $(document).ready(function() {
 
         $('input').on('ifChecked', function(event){
-            $("#value_minerals").val("1");
+            $('#'+$(this).attr('data-t')).val("1");
         });
 
         $('input').on('ifUnchecked', function(event){
-            $("#value_minerals").val("0");
+            $('#'+$(this).attr('data-t')).val("0");
         });
     });
 

@@ -43,6 +43,7 @@ class BuyBackController extends Controller
                 $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
                 $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
                 $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
+                $this->get("helper")->setSetting("buyback_value_salvage", $request->request->get('value_salvage'));
                 $this->get("helper")->setSetting("buyback_ore_refine_rate", $request->request->get('ore_refine_rate'));
                 $this->get("helper")->setSetting("buyback_ice_refine_rate", $request->request->get('ice_refine_rate'));
                 $this->get("helper")->setSetting("buyback_salvage_refine_rate", $request->request->get('salvage_refine_rate'));
@@ -63,6 +64,7 @@ class BuyBackController extends Controller
         $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
         $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
         $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
+        $buybacksettings->setValueSalvage($this->get("helper")->getSetting("buyback_value_salvage"));
         $buybacksettings->setOreRefineRate($this->get("helper")->getSetting("buyback_ore_refine_rate"));
         $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
         $buybacksettings->setIceRefineRate($this->get("helper")->getSetting("buyback_ice_refine_rate"));
@@ -294,11 +296,12 @@ class BuyBackController extends Controller
             $priceDetails = array();
             $priceDetails['types'] = array();
             $value = $this->get('market')->GetMarketPriceByComposition($type, $priceDetails);
+            $isPricedByMinerals = $this->get('market')->IsPricedByMinerals($typeId);
 
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
                                         'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
-                                        'details' => $priceDetails, 'market_group' => $market_group));
+                                        'details' => $priceDetails, 'market_group' => $market_group, 'is_priced' => $isPricedByMinerals));
             return $template;
 
         } else {

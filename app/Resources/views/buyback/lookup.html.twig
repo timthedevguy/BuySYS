@@ -267,6 +267,7 @@
                     {% if details != null %}
                     <div class="tab-pane" id="tab_2-6">
                         <p>Refined using: {{details.refineskill}}</p>
+                        <p>Priced by Minerals?: {{ (is_priced == true) ? 'Yes' : 'No' }}</p>
                         <table class="table table-striped images-table">
                             <thead>
                                 <tr>

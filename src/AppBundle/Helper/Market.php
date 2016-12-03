@@ -185,6 +185,7 @@ class Market {
                 $bb_source_type = $this->helper->getSetting("buyback_source_type");
                 $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
                 $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
+                $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
 
                 // Get updated Stats from Eve Central
                 $json_array = $this->GetEveCentralData($dirtyTypeIds);
@@ -205,8 +206,17 @@ class Market {
                         $em->flush();
                     }
 
+                    // Refining Skill is pulled by looking for TypeID AND AttributeID 790
+                    // Result:
+                    //      null : Salvaging Skill is used
+                    //    number : Means another skill is used
+                    $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
+                        array('typeID' => $type->getTypeId(), 'attributeID' => '790')
+                    );
+
                     // Is refining option turned on?
-                    if($bb_value_minerals == 1)
+                    if(($bb_value_minerals == 1 & $refineSkill != null) |
+                        ($bb_value_salvage == 1 & $refineSkill == null))
                     {
                         // Get our Composite price
                         $calcValue = $this->GetMarketPriceByComposition($type);
@@ -246,6 +256,25 @@ class Market {
 
             return $e;
         }
+    }
+
+    public function IsPricedByMinerals($typeId) {
+
+        $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
+        $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
+
+        $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
+            array('typeID' => $typeId, 'attributeID' => '790')
+        );
+
+        // Is refining option turned on?
+        if(($bb_value_minerals == 1 & $refineSkill != null) |
+            ($bb_value_salvage == 1 & $refineSkill == null))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public function GetLiveMarketPrices($typeIds) {
