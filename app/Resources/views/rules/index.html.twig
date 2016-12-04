@@ -49,24 +49,24 @@
                     </div>
                     <table class="table table-striped">
                         <thead>
-                            <tr>
-                                <th>Order</th>
-                                <th>Target Type</th>
-                                <th>Target</th>
-                                <th>Attribute</th>
-                                <th>Value</th>
-                            </tr>
+                        <tr>
+                            <th>Order</th>
+                            <th>Target Type</th>
+                            <th>Target</th>
+                            <th>Attribute</th>
+                            <th>Value</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% for item in rules %}
-                                <tr>
-                                    <td>{{ item.sort }}</td>
-                                    <td>{{ (item.target == 'group') ? "Group Rule" : "Item Rule" }}</td>
-                                    <td>{{ item.targetname }}</td>
-                                    <td>{{ item.attribute }}</td>
-                                    <td>{{ item.value }}</td>
-                                </tr>
-                            {% endfor %}
+                        {% for item in rules %}
+                            <tr>
+                                <td>{{ item.sort }}</td>
+                                <td>{{ (item.target == 'group') ? "Group Rule" : "Item Rule" }}</td>
+                                <td>{{ item.targetname }}</td>
+                                <td>{{ item.attribute }}</td>
+                                <td>{{ item.value }}</td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
