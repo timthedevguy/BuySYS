@@ -100,7 +100,9 @@ class QuicklookController extends Controller
 
         foreach($typeIds as $typeId) {
 
-            $tax = $this->get("helper")->getSetting("buyback_default_tax");
+            //$tax = $this->get("helper")->getSetting("buyback_default_tax");
+            $options = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->ProcessBuybackRules($typeId);
+            $tax = $options['tax'];
             $marketPrice = $marketPrices[$typeId]*((100-$tax)/100);
 
             $eveType = $this->getDoctrine('evedata')->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeId);
@@ -110,8 +112,8 @@ class QuicklookController extends Controller
             $oreModel->setVolume($eveType->getVolume());
             $oreModel->setIskPer($marketPrice);
             $oreModel->setIskPerM($marketPrice/$oreModel->getVolume());
-            $oreModel->setCanUnits(27000/$oreModel->getVolume());
-            $oreModel->setCanPrice(27000*$oreModel->getIskPerM());
+            $oreModel->setCanUnits(27500/$oreModel->getVolume());
+            $oreModel->setCanPrice(27500*$oreModel->getIskPerM());
 
             $results[] = $oreModel;
         }

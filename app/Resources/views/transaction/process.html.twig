@@ -13,12 +13,6 @@
                 </div>
                 <div class="col-md-6">
                     <table class="table table-striped">
-                        {% if shares == 1 %}
-                            <tr>
-                                <th>Shares</th>
-                                <td><span class="label label-warning">{{share_value}} Shares</span></td>
-                            </tr>
-                        {% endif %}
                         <tr>
                             <th>Order Id:</th>
                             <td>{{ transaction.orderid }}</td>

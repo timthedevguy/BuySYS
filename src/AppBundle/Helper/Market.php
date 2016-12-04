@@ -39,6 +39,7 @@ class Market {
             // Query DB for matching CacheEntity
             $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
             $cacheItem = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
+            $options = $this->ProcessBuybackRules($type->getTypeID());
 
             if(!$cacheItem)
             {
@@ -53,25 +54,24 @@ class Market {
                 $this->doctrine->getManager('default')->flush();
             }
 
-            // Is refining option turned on?
-            if($bb_value_minerals == 1)
-            {
-                // Get our Composite price
-                $calcValue = $this->GetMarketPriceByComposition($type);
+            // TODO Add Rules Code here
+            if($options['isrefined'] == true & $options['price'] == '0') {
 
-                if($calcValue >= 0)
-                {
+                // Get our Composite price
+                $calcValue = $this->GetMarketPriceByComposition($type, $options);
+
+                if ($calcValue >= 0) {
                     // Set Market Value to Value of refined goods
                     $cacheItem->setMarket($calcValue);
-                }
-                elseif($calcValue == -1)
-                {
+                } elseif ($calcValue == -1) {
                     // Set Market Value to Eve Central Data
                     $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
                 }
-            }
-            else
-            {
+            } else if($options['price'] != '0') {
+
+                $cacheItem->setMarket($options['price']);
+            } else {
+
                 // Set Market Value to Eve Central Data
                 $cacheItem->setMarket($jsonItem[$bb_source_type][$bb_source_stat]);
             }
@@ -195,6 +195,7 @@ class Market {
                 {
                     $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
         			$cacheItem = $cache->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
+                    $options = $this->ProcessBuybackRules($type->getTypeID());
 
                     if(!$cacheItem)
                     {
@@ -206,20 +207,13 @@ class Market {
                         $em->flush();
                     }
 
-                    // Refining Skill is pulled by looking for TypeID AND AttributeID 790
-                    // Result:
-                    //      null : Salvaging Skill is used
-                    //    number : Means another skill is used
-                    $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
-                        array('typeID' => $type->getTypeId(), 'attributeID' => '790')
-                    );
+                    // TODO Add Rules Code here
 
                     // Is refining option turned on?
-                    if(($bb_value_minerals == 1 & $refineSkill != null) |
-                        ($bb_value_salvage == 1 & $refineSkill == null))
-                    {
+                    if($options['isrefined'] == true & $options['price'] == '0') {
+
                         // Get our Composite price
-                        $calcValue = $this->GetMarketPriceByComposition($type);
+                        $calcValue = $this->GetMarketPriceByComposition($type, $options);
 
                         if($calcValue >= 0)
                         {
@@ -231,9 +225,11 @@ class Market {
                             // Set Market Value to Eve Central Data
                             $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
                         }
-                    }
-                    else
-                    {
+                    } else if($options['price'] != '0') {
+
+                        // Set hardcoded price
+                        $cacheItem->setMarket($options['price']);
+                    } else {
                         // Set Market Value to Eve Central Data
                         $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
                     }
@@ -369,8 +365,9 @@ class Market {
      *
      * Get Market price by ore mineral composition
      */
-    public function GetMarketPriceByComposition($type, &$details = array())
+    public function GetMarketPriceByComposition($type, $options, &$details = array())
     {
+        // TODO Maybe add rule code here
         // Set Default to Salvage Rate
         $bb_refine_rate = $this->helper->getSetting("buyback_salvage_refine_rate");
         $details['name'] = $type->getTypeName();
@@ -477,9 +474,14 @@ class Market {
             {
                 if($lineItemA->getIsValid())
                 {
+                    $options = $this->ProcessBuybackRules($lineItemA->getTypeId());
+
+                    if($isLive != true) {$bb_tax = $options['tax'];}
+
                     $lineItemA->setMarketPrice($prices[$lineItemA->getTypeId()]);
                     $lineItemA->setGrossPrice($lineItemA->getMarketPrice()*$lineItemA->getQuantity());
                     $lineItemA->setNetPrice(($lineItemA->getMarketPrice()*((100-$bb_tax)/100))*$lineItemA->getQuantity());
+                    $lineItemA->setTax($bb_tax);
                 }
             }
         }
@@ -515,11 +517,8 @@ class Market {
         }
 
         $type = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
-        $group = $this->doctrine->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->findOneByMarketGroupID($type->getMarketGroupID());
 
         $rules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')->findAllByTypeAndGroup($typeId, $type->getMarketGroupID());
-
-        dump($rules);
 
         foreach($rules as $rule) {
 

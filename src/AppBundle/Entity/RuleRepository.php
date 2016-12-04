@@ -60,8 +60,6 @@ class RuleRepository extends EntityRepository
             ->orderBy('r.sort', 'ASC')
             ->getQuery();*/
         $groupt = "group";
-        dump($type);
-        dump($group);
 
         $query = $this->createQueryBuilder('r');
         $query = $this->createQueryBuilder('r')

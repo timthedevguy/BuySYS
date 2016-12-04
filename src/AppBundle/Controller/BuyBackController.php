@@ -245,7 +245,7 @@ class BuyBackController extends Controller
                     $lineItem->setTypeId($item['typeid']);
                     $lineItem->setQuantity($item['quantity']);
                     $lineItem->setName($types->findOneByTypeID($item['typeid'])->getTypeName());
-                    $lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
+                    //$lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
 
                     $em->persist($lineItem);
                     $lineItems[] = $lineItem;
