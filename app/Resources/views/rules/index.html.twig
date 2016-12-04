@@ -18,6 +18,9 @@
                                 <li>If an item does not get matched then it will not be able to be sold to the buyback system</li>
                                 <li>Setting a Market Price overrides all other rules!!! (Be sure to include the tax, even tax rules are overridden)</li>
                             </ul>
+                            <div class="alert alert-info">
+                                When using Attribute 'Is Refined' use a value of 1 or 0, 1 = On, 0 = Off.
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <h4>Add by Market Group</h4>
@@ -55,9 +58,20 @@
                             <th>Target</th>
                             <th>Attribute</th>
                             <th>Value</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
+                        {% for item in builtin %}
+                            <tr>
+                                <td><i>{{ item.sort }}</i></td>
+                                <td><i>{{ item.target }}</i></td>
+                                <td><i>{{ item.targetname }}</i></td>
+                                <td><i>{{ item.attribute }}</i></td>
+                                <td><i>{{ item.value }}</i></td>
+                                <td></td>
+                            </tr>
+                        {% endfor %}
                         {% for item in rules %}
                             <tr>
                                 <td>{{ item.sort }}</td>
@@ -65,6 +79,11 @@
                                 <td>{{ item.targetname }}</td>
                                 <td>{{ item.attribute }}</td>
                                 <td>{{ item.value }}</td>
+                                <td>
+                                    <a href="{{ path('admin_buyback_rules_up', {'id': item.id}) }}" class="btn btn-success btn-xs"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
+                                    <a href="{{ path('admin_buyback_rules_down', {'id': item.id}) }}" class="btn btn-success btn-xs"><i class="fa fa-arrow-down" aria-hidden="true"></i></a>
+                                    <a href="{{ path('admin_buyback_rules_delete', {'id': item.id}) }}" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>

@@ -25,7 +25,6 @@ class RuleController extends Controller
         $typeForm = $this->createForm(AddTypeRuleForm::class, $typeModel);
 
         $em = $this->getDoctrine()->getManager();
-        $rules = $em->getRepository('AppBundle:RuleEntity', 'default')->findAll();
 
         if($request->getMethod() == "POST") {
 
@@ -56,7 +55,115 @@ class RuleController extends Controller
             $em->flush();
         }
 
+        $rules = $em->getRepository('AppBundle:RuleEntity', 'default')->findAllSortedBySort();
+
+        // Create built in rules
+        $builtIn = array();
+        $rule = new RuleEntity();
+        $rule->setSort('0');
+        $rule->setTargetName('Everything');
+        $rule->setTarget('Global Rule');
+        $rule->setAttribute('Tax');
+        $rule->setValue($this->get("helper")->getSetting("buyback_default_tax"));
+
+        $builtIn[] = $rule;
+
+        if($this->get("helper")->getSetting("buyback_value_minerals") == 1) {
+
+            $rule = new RuleEntity();
+            $rule->setSort('0');
+            $rule->setTargetName('Anything Refinable');
+            $rule->setTarget('Global Rule');
+            $rule->setAttribute('Is Refined');
+            $rule->setValue('Yes');
+
+            $builtIn[] = $rule;
+        }
+
+        if($this->get("helper")->getSetting("buyback_value_salvage") == 1) {
+
+            $rule = new RuleEntity();
+            $rule->setSort('0');
+            $rule->setTargetName('Anything Salvageable');
+            $rule->setTarget('Global Rule');
+            $rule->setAttribute('Is Refined');
+            $rule->setValue('Yes');
+
+            $builtIn[] = $rule;
+        }
+
         return $this->render('rules/index.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
-            'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules));
+            'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules,
+            'builtin' => $builtIn));
+    }
+
+    /**
+     * @Route("/admin/settings/rules/delete/{id}", name="admin_buyback_rules_delete")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneById($id);
+
+        if($rule != null) {
+
+            $em = $this->getDoctrine()->getManager();
+
+            $rules = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findAllAfter($rule->getSort());
+
+            $em->remove($rule);
+
+            foreach($rules as $rule) {
+
+                $rule->setSort($rule->getSort() - 1);
+            }
+
+            $em->flush();
+        }
+        
+        return $this->redirectToRoute('admin_buyback_rules');
+    }
+
+    /**
+     * @Route("/admin/settings/rules/up/{id}", name="admin_buyback_rules_up")
+     */
+    public function upAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneById($id);
+
+        if($rule != null) {
+
+            $prevRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() - 1);
+
+            $prevRule->setSort($rule->getSort());
+            $rule->setSort($rule->getSort() - 1);
+
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('admin_buyback_rules');
+    }
+
+    /**
+     * @Route("/admin/settings/rules/down/{id}", name="admin_buyback_rules_down")
+     */
+    public function downAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneById($id);
+
+        if($rule != null) {
+
+            $nextRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() + 1);
+
+            $nextRule->setSort($rule->getSort());
+            $rule->setSort($rule->getSort() + 1);
+
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('admin_buyback_rules');
     }
 }
