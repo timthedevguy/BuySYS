@@ -297,13 +297,14 @@ class BuyBackController extends Controller
                 ->findOneByMarketGroupID($type->getMarketGroupId())->getMarketGroupName();
             $priceDetails = array();
             $priceDetails['types'] = array();
-            $value = $this->get('market')->GetMarketPriceByComposition($type, $priceDetails);
+            $options = $this->get('market')->ProcessBuybackRules($typeId);
+            $value = $this->get('market')->GetMarketPriceByComposition($type, $options, $priceDetails);
             $isPricedByMinerals = $this->get('market')->IsPricedByMinerals($typeId);
 
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
                                         'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
-                                        'details' => $priceDetails, 'market_group' => $market_group, 'is_priced' => $isPricedByMinerals));
+                                        'details' => $priceDetails, 'market_group' => $market_group, 'is_priced' => $isPricedByMinerals, 'options' => $options));
             return $template;
 
         } else {

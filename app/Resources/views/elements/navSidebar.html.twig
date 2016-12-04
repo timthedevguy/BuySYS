@@ -111,11 +111,13 @@
             <li class="header">SYSTEM</li>
             <li class="{{(page_name == "Users" ? 'active' : '')}}"><a href="{{path('admin_users')}}"><i class="fa fa-users"></i> <span>Users</span></a></li>
             <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
+            <li class="{{(page_name == "Admin Tools" ? 'active' : '')}}"><a href="{{path('admin_tools')}}"><i class="fa fa-wrench" aria-hidden="true"></i> <span>Admin Tools</span></a></li>
             <li class="{{(page_name == "Settings" ? 'active' : '')}}"><a href="#"><i class="fa fa-cogs"></i> <span>Settings</span><i class="fa fa-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">
                     <li class="{{(page_name == "Core System Settings" ? 'active' : '')}}"><a href="{{ path('admin_core_settings') }}"><i class="fa fa-cogs"></i> <span>Core Settings</span></a></li>
                     <li><a href="{{ path('admin_buyback_settings') }}"><i class="fa fa-cogs"></i> <span>Buyback Settings</span></a></li>
                     <li><a href="{{ path('admin_buyback_exclusions') }}"><i class="fa fa-ban"></i> <span>Buyback Exclusions</span></a></li>
+                    <li><a href="{{ path('admin_buyback_rules') }}"><i class="fa fa-filter"></i> <span>Buyback Rules</span></a></li>
                 </ul>
             </li>
         {% endif %}

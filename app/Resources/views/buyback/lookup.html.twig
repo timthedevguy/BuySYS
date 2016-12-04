@@ -21,6 +21,7 @@
                     <li class=""><a href="#tab_2-4" data-toggle="tab" aria-expanded="false">Rens</a></li>
                     <li class=""><a href="#tab_2-5" data-toggle="tab" aria-expanded="false">Hek</a></li>
                     <li class=""><a href="#tab_2-6" data-toggle="tab" aria-expanded="false">Price Breakdown</a></li>
+                    <li class=""><a href="#tab_2-7" data-toggle="tab" aria-expanded="false">Rules</a></li>
                     <!--<li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>-->
                 </ul>
                 <div class="tab-content">
@@ -298,6 +299,30 @@
                         </table>
                     </div>
                     {% endif %}
+                    <div class="tab-pane" id="tab_2-7">
+                        <table class="table table-stripped">
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr>
+                                <th>Tax</th>
+                                <td>{{ options.tax }}</td>
+                            </tr>
+                            <tr>
+                                <th>Is Refined?</th>
+                                <td>{{ (options.isrefined == true) ? 'Yes' : 'No' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Price</th>
+                                <td>{{ options.price }}</td>
+                            </tr>
+                            <tr>
+                                <th>Applied Rules</th>
+                                <td>{{ options.rules }}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
 

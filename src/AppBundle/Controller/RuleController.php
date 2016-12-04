@@ -46,6 +46,8 @@ class RuleController extends Controller
                     $rule->setTargetId($form_results['marketgroupid']);
                     $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->
                     findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
+
+                    $this->addFlash('success', "Added new Group rule");
                 } else {
 
                     // Submitted form was Type Form
@@ -53,6 +55,8 @@ class RuleController extends Controller
                     $rule->setTargetId($form_results['typeid']);
                     $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->
                     findOneByTypeID($form_results['typeid'])->getTypeName());
+
+                    $this->addFlash('success', "Added new Item rule");
                 }
 
                 $rule->setSort($this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->getNextSort());
@@ -129,6 +133,8 @@ class RuleController extends Controller
             }
 
             $em->flush();
+
+            $this->addFlash('success', "Deleted rule");
         }
         
         return $this->redirectToRoute('admin_buyback_rules');
@@ -151,6 +157,8 @@ class RuleController extends Controller
             $rule->setSort($rule->getSort() - 1);
 
             $em->flush();
+
+            $this->addFlash('success', "Moved rule");
         }
 
         return $this->redirectToRoute('admin_buyback_rules');
@@ -173,6 +181,8 @@ class RuleController extends Controller
             $rule->setSort($rule->getSort() + 1);
 
             $em->flush();
+
+            $this->addFlash('success', "Moved rule");
         }
 
         return $this->redirectToRoute('admin_buyback_rules');

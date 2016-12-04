@@ -17,3 +17,6 @@ services:
         class: AppBundle\Helper\AuthenticationHandler
         calls:
             - [ setContainer, [ @service_container ] ]
+    cache:
+        class: AppBundle\Helper\Cache
+        arguments: ['@doctrine', '@helper', '@market']

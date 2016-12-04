@@ -101,7 +101,7 @@ class QuicklookController extends Controller
         foreach($typeIds as $typeId) {
 
             //$tax = $this->get("helper")->getSetting("buyback_default_tax");
-            $options = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->ProcessBuybackRules($typeId);
+            $options = $this->get('market')->ProcessBuybackRules($typeId);
             $tax = $options['tax'];
             $marketPrice = $marketPrices[$typeId]*((100-$tax)/100);
 

@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-wrench" aria-hidden="true"></i> Tools</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ path('admin_clearcache') }}" class="btn btn-primary form-control">Clear Cache</a>
+                            <p style="text-align: center;padding: 5px;">Completely clears every Cached price in the database.  It is recommended to have system in maintenance mode for this.  Can cause errors with Quicklook system.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ path('admin_updatecache') }}" class="btn btn-primary form-control">Update Cache</a>
+                            <p style="text-align: center;padding: 5px;">Updates the base Ore, Ice, Gas, Minerals, Planetary Interaction prices.  <strong>Should be ran after a Clear Cache to prevent system errors!</strong> </p>
+                            <span class="label label-warning pull-right" data-toggle="tooltip" data-placement="right" title="Can take a minute to load, BE PATIENT!!!">Live Pull!</span>
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
