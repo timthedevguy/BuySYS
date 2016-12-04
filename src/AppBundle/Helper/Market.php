@@ -490,4 +490,58 @@ class Market {
 
         return true;
     }
+
+    public function ProcessBuybackRules($typeId) {
+
+        $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
+        $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
+        $bb_tax = $this->helper->getSetting("buyback_default_tax");
+        $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
+            array('typeID' => $typeId, 'attributeID' => '790')
+        );
+
+        // Set our base
+        $results = array();
+        $results['tax'] = $bb_tax;
+        $results['price'] = 0;
+        $results['isrefined'] = false;
+        $results['rules'] = '0';
+
+        // Set the IsRefined Options
+        if(($bb_value_minerals == 1 & $refineSkill != null) |
+            ($bb_value_salvage == 1 & $refineSkill == null))
+        {
+            $results['isrefined'] = true;
+        }
+
+        $type = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
+        $group = $this->doctrine->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->findOneByMarketGroupID($type->getMarketGroupID());
+
+        $rules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')->findAllByTypeAndGroup($typeId, $type->getMarketGroupID());
+
+        dump($rules);
+
+        foreach($rules as $rule) {
+
+            $attribute = $rule->getAttribute();
+
+            if($attribute == 'tax') {
+
+                $results['tax'] = $rule->getValue();
+            } else if($attribute == 'price') {
+
+                $results['price'] = $rule->getValue();
+            } else if($attribute == 'isrefined') {
+
+                $results['isrefined'] = true;
+            }
+
+            $results['rules'] = $results['rules'].', '.$rule->getSort();
+        }
+
+        $results['name'] = $type->getTypeName();
+        $results['typeid'] = $type->getTypeID();
+
+        return $results;
+    }
 }

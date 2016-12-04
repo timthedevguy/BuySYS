@@ -47,4 +47,41 @@ class RuleRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    public function findAllByTypeAndGroup($type, $group) {
+
+        /*$query = $this->createQueryBuilder('r')
+            ->where('r.targetId = :typeid AND r.target = :typegroup')
+            ->where('r.targetId = :marketgroupid AND r.target = :groupgroup')
+            ->setParameter('typeid', $type)
+            ->setParameter('typegroup', 'item')
+            ->setParameter('marketgroupid', $group)
+            ->setParameter('groupgroup', 'group')
+            ->orderBy('r.sort', 'ASC')
+            ->getQuery();*/
+        $groupt = "group";
+        dump($type);
+        dump($group);
+
+        $query = $this->createQueryBuilder('r');
+        $query = $this->createQueryBuilder('r')
+            ->where($query->expr()->orX(
+                $query->expr()->andX(
+                    $query->expr()->eq('r.target', ':typegroup'),
+                    $query->expr()->eq('r.targetId', ':typeid')
+                ),
+                $query->expr()->andX(
+                    $query->expr()->eq('r.target', ':groupgroup'),
+                    $query->expr()->eq('r.targetId', ':marketgroupid')
+                )
+            ))
+            ->setParameter('typeid', $type)
+            ->setParameter('typegroup', 'type')
+            ->setParameter('marketgroupid', $group)
+            ->setParameter('groupgroup', 'group')
+            ->orderBy('r.sort', 'ASC')
+            ->getQuery();
+
+        return $query->getResult();
+    }
 }
