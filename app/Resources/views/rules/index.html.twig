@@ -11,6 +11,29 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-4">
+                            <h4>Add by Group</h4>
+                            {{ form_start(groupform) }}
+                            {{ form_widget(groupform) }}
+                            {{ form_end(groupform) }}
+                            <span class="badge bg-yellow pull-right">Group is shown in Yellow when using 'Market Price Search...'</span>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Add by Market Group</h4>
+                            {{ form_start(marketgroupform) }}
+                            {{ form_widget(marketgroupform) }}
+                            {{ form_end(marketgroupform) }}
+                            <span class="badge bg-light-blue pull-right">Market Group is shown in Blue when using 'Market Price Search...'</span>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Add by Item</h4>
+                            {{ form_start(typeform) }}
+                            {{ form_widget(typeform) }}
+                            {{ form_end(typeform) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>How Rules work:</h3>
                             <p>Buyback rules work much like Cascading Style Sheets</p>
                             <ul>
                                 <li>Rules are processed Top to Bottom</li>
@@ -21,18 +44,6 @@
                             <div class="alert alert-info">
                                 When using Attribute 'Is Refined' use a value of 1 or 0, 1 = On, 0 = Off.
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <h4>Add by Market Group</h4>
-                            {{ form_start(groupform) }}
-                            {{ form_widget(groupform) }}
-                            {{ form_end(groupform) }}
-                        </div>
-                        <div class="col-md-4">
-                            <h4>Add by Item</h4>
-                            {{ form_start(typeform) }}
-                            {{ form_widget(typeform) }}
-                            {{ form_end(typeform) }}
                         </div>
                     </div>
                 </div>

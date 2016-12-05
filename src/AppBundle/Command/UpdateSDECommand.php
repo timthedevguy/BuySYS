@@ -39,6 +39,7 @@ class UpdateSDECommand extends ContainerAwareCommand
         $tables[] = "invMarketGroups";
         $tables[] = "invTypes";
         $tables[] = "invTypeMaterials";
+        $tables[] = "invGroups";
 
         $helper = $this->getHelper('question');
         $output->writeln('');
@@ -50,7 +51,7 @@ class UpdateSDECommand extends ContainerAwareCommand
             return;
         } else {
 
-            $bar = new ProgressBar($output, 4);
+            $bar = new ProgressBar($output, count($tables));
             $output->writeln('');
             $output->writeln('<info>Downloading SDE files from fuzzwork.co</info>');
             $bar->start();
@@ -78,7 +79,7 @@ class UpdateSDECommand extends ContainerAwareCommand
             $output->writeln('');
             $output->writeln('<info>Extracting SDE...</info>');
 
-            $bar = new ProgressBar($output, 4);
+            $bar = new ProgressBar($output, count($tables));
             $bar->start();
 
             foreach($tables as $table) {
@@ -106,7 +107,7 @@ class UpdateSDECommand extends ContainerAwareCommand
             $database_password = $this->getContainer()->getParameter('database_password2');
             $database_host = $this->getContainer()->getParameter('database_host2');
 
-            $bar = new ProgressBar($output, 4);
+            $bar = new ProgressBar($output, count($tables));
             $bar->start();
 
             foreach($tables as $table) {
@@ -124,7 +125,7 @@ class UpdateSDECommand extends ContainerAwareCommand
             $output->writeln('');
             $output->writeln('<info>Cleaning up...</info>');
 
-            $bar = new ProgressBar($output, 4);
+            $bar = new ProgressBar($output, count($tables));
             $bar->start();
 
             foreach($tables as $table) {

@@ -9,14 +9,14 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Lifo\TypeaheadBundle\Form\Type\TypeaheadType;
 
-class AddGroupRuleForm extends AbstractType
+class AddMarketGroupRuleForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('groupid', TypeaheadType::class, array('label' => false,
-                'class' => 'EveBundle\Entity\GroupsEntity', 'render' => 'groupName',
-                'route' => 'ajax_group_list', 'attr' => array('placeholder' => 'Group Name...')))
+            ->add('marketgroupid', TypeaheadType::class, array('label' => false,
+                'class' => 'EveBundle\Entity\MarketGroupsEntity', 'render' => 'marketGroupName',
+                'route' => 'ajax_market_list', 'attr' => array('placeholder' => 'Market Group Name...')))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(
                     'tax' => 'Tax Percent',
@@ -29,7 +29,7 @@ class AddGroupRuleForm extends AbstractType
                 'btn btn-flat btn-success')))
         ;
     }
-    
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(

@@ -295,6 +295,8 @@ class BuyBackController extends Controller
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
             $market_group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')
                 ->findOneByMarketGroupID($type->getMarketGroupId())->getMarketGroupName();
+            $group = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')
+                ->findOneByGroupID($type->getGroupID())->getGroupName();
             $priceDetails = array();
             $priceDetails['types'] = array();
             $options = $this->get('market')->ProcessBuybackRules($typeId);
@@ -304,7 +306,8 @@ class BuyBackController extends Controller
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
                                         'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
-                                        'details' => $priceDetails, 'market_group' => $market_group, 'is_priced' => $isPricedByMinerals, 'options' => $options));
+                                        'details' => $priceDetails, 'market_group' => $market_group, 'is_priced' => $isPricedByMinerals, 'options' => $options,
+                'group' => $group));
             return $template;
 
         } else {
@@ -627,6 +630,31 @@ class BuyBackController extends Controller
             $result = array();
             $result['id'] = $groups[$count]->getMarketGroupId();
             $result['value'] = $groups[$count]->getMarketGroupName();
+
+            $results[] = $result;
+
+            if($count >= $limit) {break;}
+        }
+
+        return new JsonResponse($results);
+    }
+
+    /**
+     * @Route("/ajax_group_list", name="ajax_group_list")
+     */
+    public function ajax_GroupListAction(Request $request)
+    {
+        $query = $request->request->get("query");
+        $limit = $request->request->get("limit");
+
+        $groups = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity','evedata')->findAllLikeName($query);
+
+        $results = array();
+        for($count = 0;$count < count($groups);$count++)
+        {
+            $result = array();
+            $result['id'] = $groups[$count]->getGroupId();
+            $result['value'] = $groups[$count]->getGroupName();
 
             $results[] = $result;
 

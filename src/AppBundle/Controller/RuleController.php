@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\Form\AddMarketGroupRuleForm;
 use AppBundle\Form\TestRuleForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -20,11 +21,12 @@ class RuleController extends Controller
     public function indexAction(Request $request)
     {
         $results = null;
-        $groupModel = new GroupRuleModel();
-        $typeModel = new TypeRuleModel();
+        //$groupModel = new GroupRuleModel();
+        //$typeModel = new TypeRuleModel();
 
-        $groupForm = $this->createForm(AddGroupRuleForm::class, $groupModel);
-        $typeForm = $this->createForm(AddTypeRuleForm::class, $typeModel);
+        $groupForm = $this->createForm(AddGroupRuleForm::class);
+        $marketGroupForm = $this->createForm(AddMarketGroupRuleForm::class);
+        $typeForm = $this->createForm(AddTypeRuleForm::class);
         $testForm = $this->createForm(TestRuleForm::class);
 
         $em = $this->getDoctrine()->getManager();
@@ -42,12 +44,28 @@ class RuleController extends Controller
 
                     // Submitted form is Group Form
                     $form_results = $request->request->get('add_group_rule_form');
-                    $rule->setTarget('group');
-                    $rule->setTargetId($form_results['marketgroupid']);
-                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->
-                    findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
 
-                    $this->addFlash('success', "Added new Group rule");
+                    if($form_results == null) {
+
+                        // Submited Form is MarketGroup Form
+                        $form_results = $request->request->get('add_marketgroup_rule_form');
+                        $rule->setTarget('marketgroup');
+                        $rule->setTargetId($form_results['marketgroupid']);
+                        $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->
+                        findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
+
+                        $this->addFlash('success', "Added new Market Group rule");
+                    } else {
+
+                        // Submited Form is Group Form
+                        $rule->setTarget('group');
+                        $rule->setTargetId($form_results['groupid']);
+                        $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')->
+                        findOneByGroupID($form_results['groupid'])->getGroupName());
+
+                        $this->addFlash('success', "Added new Group rule");
+                    }
+
                 } else {
 
                     // Submitted form was Type Form
@@ -109,7 +127,8 @@ class RuleController extends Controller
 
         return $this->render('rules/index.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
             'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules,
-            'builtin' => $builtIn, 'testform' => $testForm->createView(), 'results' => $results));
+            'builtin' => $builtIn, 'testform' => $testForm->createView(), 'marketgroupform' => $marketGroupForm->createView(),
+            'results' => $results));
     }
 
     /**

@@ -518,7 +518,7 @@ class Market {
 
         $type = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
 
-        $rules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')->findAllByTypeAndGroup($typeId, $type->getMarketGroupID());
+        $rules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')->findAllByTypeAndGroup($typeId, $type->getGroupID(), $type->getMarketGroupID());
 
         foreach($rules as $rule) {
 

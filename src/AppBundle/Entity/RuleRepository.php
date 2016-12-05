@@ -48,7 +48,7 @@ class RuleRepository extends EntityRepository
         return $query->getResult();
     }
 
-    public function findAllByTypeAndGroup($type, $group) {
+    public function findAllByTypeAndGroup($type, $group, $marketgroup) {
 
         /*$query = $this->createQueryBuilder('r')
             ->where('r.targetId = :typeid AND r.target = :typegroup')
@@ -59,7 +59,6 @@ class RuleRepository extends EntityRepository
             ->setParameter('groupgroup', 'group')
             ->orderBy('r.sort', 'ASC')
             ->getQuery();*/
-        $groupt = "group";
 
         $query = $this->createQueryBuilder('r');
         $query = $this->createQueryBuilder('r')
@@ -69,13 +68,19 @@ class RuleRepository extends EntityRepository
                     $query->expr()->eq('r.targetId', ':typeid')
                 ),
                 $query->expr()->andX(
-                    $query->expr()->eq('r.target', ':groupgroup'),
+                    $query->expr()->eq('r.target', ':marketgroup'),
                     $query->expr()->eq('r.targetId', ':marketgroupid')
+                ),
+                $query->expr()->andX(
+                    $query->expr()->eq('r.target', ':groupgroup'),
+                    $query->expr()->eq('r.targetId', ':groupid')
                 )
             ))
             ->setParameter('typeid', $type)
             ->setParameter('typegroup', 'type')
-            ->setParameter('marketgroupid', $group)
+            ->setParameter('marketgroupid', $marketgroup)
+            ->setParameter('marketgroup', 'marketgroup')
+            ->setParameter('groupid', $group)
             ->setParameter('groupgroup', 'group')
             ->orderBy('r.sort', 'ASC')
             ->getQuery();
