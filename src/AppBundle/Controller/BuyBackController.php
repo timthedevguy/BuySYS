@@ -377,7 +377,7 @@ class BuyBackController extends Controller
 
             $formH = $this->createForm(BuyBackHiddenForm::class, $bb, array( 'action' => $this->generateUrl('guest_accept_offer')));
             $formH->handleRequest($request);
-            dump($items);
+
             return $this->render('buyback/step_two.html.twig', array('items' => $items, 'total' => $totalValue, 'rawitems' => $bb->getItems(), 'form' => $formH->createView() ));
         }
 
