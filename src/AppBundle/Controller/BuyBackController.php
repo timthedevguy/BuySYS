@@ -346,92 +346,27 @@ class BuyBackController extends Controller
             $items = array();
             $typeids = array();
 
-            // Build our Item List and TypeID List
-            foreach(explode("\n", $bb->getItems()) as $line) {
+            $items = $this->get('parser')->GetLineItemsFromPasteData($bb->getItems());
 
-                // Array counts
-                // 5 -> View Contents list
-                // 6 -> Inventory list
-
-                // Split by TAB
-                $item = explode("\t", $line);
-
-                // Did this contain tabs?
-                if(count($item) > 1) {
-
-                    // 6 Columns -> Means this is pasted from Inventory Screen
-                    //if(count($item) == 6) {
-
-                        // Get TYPE from Eve Database
-                        $type = $types->findOneByTypeName($item[0]);
-
-                        if($type != null) {
-
-                            // Create & Populate our BuyBackItemModel
-                            $lineItem = new BuyBackItemModel();
-                            $lineItem->setTypeId($type->getTypeId());
-
-                            if($item[1] == "") {
-                                $lineItem->setQuantity(1);
-                            } else {
-                                $lineItem->setQuantity(str_replace('.', '', $item[1]));
-                                $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
-                            }
-
-                            $lineItem->setName($type->getTypeName());
-                            $lineItem->setVolume($type->getVolume());
-
-                            $items[] = $lineItem;
-
-                            // Build our list of TypeID's
-                            $typeids[] = $type->getTypeId();
-                        } else {
-
-                            $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "Item doesn't exist in Eve Database: ".$item[0]));
-                            return $template;
-                        }
-                    //}
-                } else {
-
-                    // Didn't contain tabs, so user typed it in?  Try to preg match it
-                    $item = array();
-                    preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-
-                    // Get TYPE from Eve Database
-                    $type = $types->findOneByTypeName($item[3]);
-
-                    if($type != null) {
-
-                        // Create & Populate our BuyBackItemModel
-                        $lineItem = new BuyBackItemModel();
-                        $lineItem->setTypeId($type->getTypeId());
-                        $lineItem->setQuantity(str_replace(',', '', $item[1]));
-                        $lineItem->setName($type->getTypeName());
-                        $lineItem->setVolume($type->getVolume());
-
-                        $items[] = $lineItem;
-
-                        // Build our list of TypeID's
-                        $typeids[] = $type->getTypeId();
-                    }
-                }
+            if(!$this->get('market')->PopulateLineItems($items))
+            {
+                $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
+                return $template;
             }
 
-            $priceLookup = $this->get('market')->GetMarketPrices($typeids);
+            //$priceLookup = $this->get('market')->GetMarketPrices($typeids);
 
-            if(!is_array($priceLookup)) {
+            //if(!is_array($priceLookup)) {
 
-                $this->addFlash('error', "No pricing information found.  Please Eve mail 'Lorvulk Ormand' in game if you feel this is in error.");
-                return $this->redirectToRoute('guest_buyback');
-            }
+                //$this->addFlash('error', "No pricing information found.  Please Eve mail 'Lorvulk Ormand' in game if you feel this is in error.");
+                //return $this->redirectToRoute('guest_buyback');
+            //}
 
             $totalValue = 0;
 
             foreach($items as $lineItem) {
                 //$taxAmount = ;
-                $value = ((int)$lineItem->getQuantity() * ($priceLookup[$lineItem->getTypeId()] * ((100 - $this->get("helper")->getSetting("buyback_default_public_tax"))/100)));
-                $totalValue += $value;
-                $lineItem->setValue($value);
+                $totalValue += $lineItem->getNetPrice();
             }
 
             if($items == null)
@@ -442,7 +377,7 @@ class BuyBackController extends Controller
 
             $formH = $this->createForm(BuyBackHiddenForm::class, $bb, array( 'action' => $this->generateUrl('guest_accept_offer')));
             $formH->handleRequest($request);
-
+            dump($items);
             return $this->render('buyback/step_two.html.twig', array('items' => $items, 'total' => $totalValue, 'rawitems' => $bb->getItems(), 'form' => $formH->createView() ));
         }
 
@@ -469,78 +404,11 @@ class BuyBackController extends Controller
             $items = array();
             $typeids = array();
 
-            // Build our Item List and TypeID List
-            foreach(explode("\n", $bb->getItems()) as $line) {
+            $items = $this->get('parser')->GetLineItemsFromPasteData($bb->getItems());
 
-                // Array counts
-                // 5 -> View Contents list
-                // 6 -> Inventory list
-
-                // Split by TAB
-                $item = explode("\t", $line);
-
-                // Did this contain tabs?
-                if(count($item) > 1) {
-
-                    // 6 Columns -> Means this is pasted from Inventory Screen
-                    //if(count($item) == 6) {
-
-                        // Get TYPE from Eve Database
-                        $type = $types->findOneByTypeName($item[0]);
-
-                        if($type != null) {
-
-                            // Create & Populate our BuyBackItemModel
-                            $lineItem = new LineItemEntity();
-                            $lineItem->setTypeId($type->getTypeId());
-
-                            if($item[1] == "") {
-                                $lineItem->setQuantity(1);
-                            } else {
-                                $lineItem->setQuantity(str_replace('.', '', $item[1]));
-                                $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
-                            }
-
-                            $lineItem->setName($type->getTypeName());
-
-                            $items[] = $lineItem;
-
-                            // Build our list of TypeID's
-                            $typeids[] = $type->getTypeId();
-                        } else {
-
-                            $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "Item doesn't exist in Eve Database: ".$item[0]));
-                            return $template;
-                        }
-                } else {
-
-                    // Didn't contain tabs, so user typed it in?  Try to preg match it
-                    $item = array();
-                    preg_match("/((\d|,)*)\s+(.*)/", $line, $item);
-
-                    // Get TYPE from Eve Database
-                    $type = $types->findOneByTypeName($item[3]);
-
-                    if($type != null)
-                    {
-                        // Create & Populate our BuyBackItemModel
-                        $lineItem = new LineItemEntity();
-                        $lineItem->setTypeId($type->getTypeId());
-                        $lineItem->setQuantity(str_replace(',', '', $item[1]));
-                        $lineItem->setName($type->getTypeName());
-
-                        $items[] = $lineItem;
-
-                        // Build our list of TypeID's
-                        $typeids[] = $type->getTypeId();
-                    }
-                }
-            }
-
-            $priceLookup = $this->get('market')->GetMarketPrices($typeids);
             $em = $this->getDoctrine()->getManager('default');
 
-            if(!is_array($priceLookup)) {
+            if(!$this->get('market')->PopulateLineItems($items)) {
 
                 $this->addFlash('error', "No pricing information found.  Please Eve mail 'Lorvulk Ormand' in game if you feel this is in error.");
                 return $this->redirectToRoute('guest_buyback');
@@ -552,11 +420,7 @@ class BuyBackController extends Controller
 
             foreach($items as $lineItem)
             {
-                $lineItem->setTax($this->get("helper")->getSetting("buyback_default_public_tax"));
-                $lineItem->setMarketPrice($priceLookup[$lineItem->getTypeId()]);
-                $lineItem->setGrossPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()));
                 $gross +=  $lineItem->getGrossPrice();
-                $lineItem->setNetPrice(($lineItem->getMarketPrice() * $lineItem->getQuantity()) * ((100-$lineItem->getTax())/100));
                 $net += $lineItem->getNetPrice();
             }
 
@@ -573,7 +437,7 @@ class BuyBackController extends Controller
             $transaction->setStatus("Pending");
             $em->persist($transaction);
 
-            foreach($items as $item)
+            foreach($items as $lineItem)
             {
                 $transaction->addLineItem($lineItem);
                 $em->persist($lineItem);

@@ -20,8 +20,8 @@
                         <tr>
                             <td>{{item.Quantity|number_format(0, '.', ',') }}</td>
                             <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{item.Name}}</span></td>
-                            <!--<td>{{item.Volume}}</td>-->
-                            <td>{{item.Value|number_format(0, '.', ',') }}</td>
+
+                            <td>{{item.NetPrice|number_format(0, '.', ',') }}</td>
                         </tr>
                     {% endfor %}
                 </table>
