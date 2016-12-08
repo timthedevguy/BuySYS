@@ -121,7 +121,7 @@ class Market {
                 }
 
                 // Build EveCentral Query string
-                $queryString = "http://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $lookup) . "&usesystem=" . $bb_source_id;
+                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $lookup) . "&usesystem=" . $bb_source_id;
 
                 // Query EveCentral and grab results
                 $json = file_get_contents($queryString);
@@ -322,7 +322,7 @@ class Market {
      */
     public function IsEveCentralAlive()
     {
-        $header_check = get_headers("http://api.eve-central.com/api/marketstat?typeid=34");
+        $header_check = get_headers("https://api.eve-central.com/api/marketstat?typeid=34");
 
         if(explode(' ', $header_check[0])[1] == '200')
         {

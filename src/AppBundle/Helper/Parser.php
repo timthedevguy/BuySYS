@@ -20,6 +20,8 @@ class Parser
 
     public function GetLineItemsFromPasteData($raw)
     {
+        //define Vars
+        $rawInputArray = array();
         $results = array();
         $types = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata');
         // Get any exclusions
@@ -27,10 +29,33 @@ class Parser
         $exclusions = $this->doctrine->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
         $groups = array();
 
+        // Get exclusion groups
         foreach($exclusions as $exclusion) {
 
             $groups[] = $exclusion->getMarketGroupId();
         }
+
+        // Get raw input as array (split on line breaks)
+        $rawInputArray = preg_split("/\r\n|\n|\r/", $raw);
+
+        // Check first entry to determine parser type
+        $item = explode("\t", $rawInputArray[0]); // Split by TAB
+
+        if (count($item) > 2) { // If more than 2 tabs, likely copy/pasted from game (TODO: CHECK!)
+          // Check format of copy/paste and call appropriate parser
+
+          //inventory parser
+          //remote can parser
+          //contract parser
+        } else { // Likely manual user input
+          // Check format of user input and call appropriate parser
+
+          //number first parser
+          //number last parser
+        }
+
+
+        // Return results
 
         // Build our Item List and TypeID List
         foreach(preg_split("/\r\n|\n|\r/", $raw) as $line)
