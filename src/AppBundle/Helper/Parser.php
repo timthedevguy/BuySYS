@@ -48,7 +48,7 @@ class Parser
             if(count($item) == 3) //Remote View Can in Station
             {
                 $oParser = new RemoteViewCanParser();
-            } elseif(count($item) == 4) { //Inventory or Contract
+            } elseif(count($item) >= 4) { //Inventory or Contract
                 $oParser = new InventoryParser();
             }
 
@@ -61,11 +61,12 @@ class Parser
         // Loop through results and apply parser
         foreach($rawInputArray as $line)
         {
-            $lineItem = $oParser->parseLine(trim($line), $types, $groups, $mode);
+            $line = trim($line);
+            $lineItem = $oParser->parseLine($line, $types, $groups, $mode);
 
             if($lineItem == null) //parser failed - try hueristic
             {
-                $lineItem = (new HueristicParser())->parseLine(trim($line), $types, $groups, $mode);
+                $lineItem = (new HueristicParser())->parseLine($line, $types, $groups, $mode);
             }
 
             $results[] = $lineItem;
@@ -74,106 +75,6 @@ class Parser
 
         // Return results
         return $results;
-
-//        // Build our Item List and TypeID List
-//        foreach(preg_split("/\r\n|\n|\r/", $raw) as $line)
-//        {
-//            // Split by TAB
-//            $item = explode("\t", $line);
-//            // Create result entry
-//            $lineItem = new LineItemEntity();
-//
-//            // Did this contain tabs?
-//            if(count($item) > 1)
-//            {
-//                $type = $types->findOneByTypeName($item[0]);
-//
-//                if($type != null)
-//                {
-//                    $lineItem->setTypeId($type->getTypeId());
-//                    $lineItem->setName($type->getTypeName());
-//
-//                    if(in_array($type->getMarketGroupId(), $groups) & $mode == "false") {
-//
-//                        $lineItem->setIsValid(false);
-//                    }elseif(!in_array($type->getMarketGroupID(), $groups) & $mode == "true") {
-//
-//                        $lineItem->setIsValid(false);
-//                    }
-//                    //$lineItem->setVolume($type->getVolume());
-//                }
-//                else
-//                {
-//                    $lineItem->setTypeId(0);
-//                    $lineItem->setName($item[0]);
-//                    //$lineItem->setVolume(0);
-//                    $lineItem->setIsValid(false);
-//                }
-//
-//                if($item[1] == "")
-//                {
-//                    $lineItem->setQuantity(1);
-//                }
-//                else
-//                {
-//                    $lineItem->setQuantity(str_replace('.', '', $item[1]));
-//                    $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
-//                }
-//            }
-//            else
-//            {
-//                // Didn't contain tabs, so user typed it in?  Try to preg match it
-//                $itemA = array();
-//
-//                if(preg_match("/((\d|,)*)\s+(.*)/", $line, $itemA))
-//                {
-//                    // Found '#,### Type Name'
-//                    $type = $types->findOneByTypeName($itemA[3]);
-//
-//                    if($type != null)
-//                    {
-//                        $lineItem->setTypeId($type->getTypeId());
-//                        $lineItem->setName($type->getTypeName());
-//
-//                        if(in_array($type->getMarketGroupId(), $groups) & $mode == "false") {
-//
-//                            $lineItem->setIsValid(false);
-//                        }elseif(!in_array($type->getMarketGroupID(), $groups) & $mode == "true") {
-//
-//                            $lineItem->setIsValid(false);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        $lineItem->setTypeId(0);
-//                        $lineItem->setName($itemA[3]);
-//                        //$lineItem->setVolume(0);
-//                        $lineItem->setIsValid(false);
-//                    }
-//
-//                    if($itemA[1] == "")
-//                    {
-//                        $lineItem->setQuantity(1);
-//                    }
-//                    else
-//                    {
-//                        $lineItem->setQuantity(str_replace('.', '', $itemA[1]));
-//                        $lineItem->setQuantity(str_replace(',', '', $lineItem->getQuantity()));
-//                    }
-//                }
-//                else
-//                {
-//                    $lineItem->setTypeId(0);
-//                    $lineItem->setName('Item not found: '+$line);
-//                    //$lineItem->setVolume(0);
-//                    $lineItem->setIsValid(false);
-//                }
-//            }
-//
-//            $results[] = $lineItem;
-//        }
-//
-//        return $results;
     }
 }
 
@@ -206,10 +107,10 @@ abstract class TabbedParser implements IParser
     public function parseTabbedLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode, $nameIndex, $quantityIndex)
     {
         $lineItem = null;
-
+        dump($line);
         // Split by TAB
         $item = explode("\t", $line);
-
+        dump($item);
         // Create result entry
         $lineItem = new LineItemEntity();
 
@@ -276,16 +177,17 @@ class UserInputParser extends TabbedParser
     // Going to turn this into a tabbed line and then parse it as such
     public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
     {
-
+        dump($line);
         $item = preg_split('/ +/', $line); //split on spaces
-
+        dump($item);
         if(is_numeric(ParserUtils::getRawNumber($item[0], true))) //if number is first thing input
         {
+            dump("1");
             //build tabbed line
             $formattedLine = ParserUtils::getRawNumber($item[0], true)."\t";
             foreach(array_slice($item, 1) as $word)
             {
-                $formattedLine .= $word;
+                $formattedLine .= $word." ";
             }
         }
         else //assume number is last
@@ -294,11 +196,12 @@ class UserInputParser extends TabbedParser
             $formattedLine = ParserUtils::getRawNumber($item[count($item) - 1])."\t";
             foreach(array_slice($item, 0, count($item) - 1) as $word)
             {
-                $formattedLine .= $word;
+                $formattedLine .= $word." ";
             }
         }
+        $formattedLine = trim($formattedLine);
 
-        return self::parseTabbedLine($formattedLine, $itemTypes, $excludedGroups, $whiteListMode, 0, 1);
+        return self::parseTabbedLine($formattedLine, $itemTypes, $excludedGroups, $whiteListMode, 1, 0);
     }
 }
 
