@@ -107,10 +107,10 @@ abstract class TabbedParser implements IParser
     public function parseTabbedLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode, $nameIndex, $quantityIndex)
     {
         $lineItem = null;
-        dump($line);
+
         // Split by TAB
         $item = explode("\t", $line);
-        dump($item);
+
         // Create result entry
         $lineItem = new LineItemEntity();
 
@@ -177,12 +177,10 @@ class UserInputParser extends TabbedParser
     // Going to turn this into a tabbed line and then parse it as such
     public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
     {
-        dump($line);
         $item = preg_split('/ +/', $line); //split on spaces
-        dump($item);
+
         if(is_numeric(ParserUtils::getRawNumber($item[0], true))) //if number is first thing input
         {
-            dump("1");
             //build tabbed line
             $formattedLine = ParserUtils::getRawNumber($item[0], true)."\t";
             foreach(array_slice($item, 1) as $word)
