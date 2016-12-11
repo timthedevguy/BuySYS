@@ -27,7 +27,6 @@ class Parser
         $mode = $this->helper->getSetting("buyback_whitelist_mode");
         $exclusions = $this->doctrine->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
         $groups = array();
-        $oParser = new HueristicParser(); //default to hueristic
 
         // Get exclusion groups
         foreach($exclusions as $exclusion)
@@ -41,22 +40,7 @@ class Parser
         // Check first entry to determine parser type
         $item = explode("\t", $rawInputArray[0]); // Split by TAB
 
-        if(count($item) > 1)
-        { // If tabs, likely copy/pasted from game
-
-            // Check format of copy/paste and call appropriate parser
-            if(count($item) == 3) //Remote View Can in Station
-            {
-                $oParser = new RemoteViewCanParser();
-            } elseif(count($item) >= 4) { //Inventory or Contract
-                $oParser = new InventoryParser();
-            }
-
-        }
-        else // try manual user input
-        {
-            $oParser = new UserInputParser();
-        }
+        $oParser = ParserUtils::getParserForItem($item);
 
         // Loop through results and apply parser
         foreach($rawInputArray as $line)
@@ -64,9 +48,9 @@ class Parser
             $line = trim($line);
             $lineItem = $oParser->parseLine($line, $types, $groups, $mode);
 
-            if($lineItem == null) //parser failed - try hueristic
+            if($lineItem->getTypeId() == 0) //parser failed - try hueristic
             {
-                $lineItem = (new HueristicParser())->parseLine($line, $types, $groups, $mode);
+                $lineItem = ParserUtils::getParserForItem($lineItem)->parseLine($line, $types, $groups, $mode);
             }
 
             $results[] = $lineItem;
@@ -76,6 +60,7 @@ class Parser
         // Return results
         return $results;
     }
+
 }
 
 
@@ -94,6 +79,30 @@ class ParserUtils
         }
 
         return $rawNumber;
+    }
+
+    public static function getParserForItem($item)
+    {
+        $oParser = new HueristicParser(); //default to hueristic
+
+        if(count($item) > 1) // If tabs, likely copy/pasted from game
+        {
+
+            // Check format of copy/paste and call appropriate parser
+            if(count($item) == 3) //Remote View Can in Station
+            {
+                $oParser = new RemoteViewCanParser();
+            } elseif(count($item) >= 4) { //Inventory or Contract
+                $oParser = new InventoryParser();
+            }
+
+        }
+        else // no tabs, maybe manual user input?
+        {
+            $oParser = new UserInputParser();
+        }
+
+        return $oParser;
     }
 }
 
@@ -114,42 +123,46 @@ abstract class TabbedParser implements IParser
         // Create result entry
         $lineItem = new LineItemEntity();
 
-        // Get type from Eve DB
-        $type = $itemTypes->findOneByTypeName($item[$nameIndex]);
 
-        // Set typeId, typeName, and isValid
-        if($type != null) //type found in DB
+        // Make sure array is greater than indexes
+        if (count($item) > $nameIndex && count($item) > $quantityIndex)
         {
-            $lineItem->setTypeId($type->getTypeId());
-            $lineItem->setName($type->getTypeName());
+            // Get type from Eve DB
+            $type = $itemTypes->findOneByTypeName($item[$nameIndex]);
 
-            if(in_array($type->getMarketGroupId(), $excludedGroups) & $whiteListMode == "false")
+            // Set typeId, typeName, and isValid
+            if($type != null) //type found in DB
             {
-                $lineItem->setIsValid(false);
+                $lineItem->setTypeId($type->getTypeId());
+                $lineItem->setName($type->getTypeName());
+
+                if(in_array($type->getMarketGroupId(), $excludedGroups) & $whiteListMode == "false")
+                {
+                    $lineItem->setIsValid(false);
+                }
+                elseif(!in_array($type->getMarketGroupID(), $excludedGroups) & $whiteListMode == "true")
+                {
+                    $lineItem->setIsValid(false);
+                }
+                //$lineItem->setVolume($type->getVolume());
             }
-            elseif(!in_array($type->getMarketGroupID(), $excludedGroups) & $whiteListMode == "true")
+            else //type not found in DB - set defaults
             {
+                $lineItem->setTypeId(0);
+                $lineItem->setName($item[$nameIndex]);
                 $lineItem->setIsValid(false);
+                //$lineItem->setVolume(0);
             }
-            //$lineItem->setVolume($type->getVolume());
-        }
-        else //type not found in DB - set defaults
-        {
-            $lineItem->setTypeId(0);
-            $lineItem->setName($item[$nameIndex]);
-            $lineItem->setIsValid(false);
-            //$lineItem->setVolume(0);
-        }
 
-        if($item[$quantityIndex] == "") //no quantity specified - default to 1
-        {
-            $lineItem->setQuantity(1);
+            if($item[$quantityIndex] == "") //no quantity specified - default to 1
+            {
+                $lineItem->setQuantity(1);
+            }
+            else
+            {
+                $lineItem->setQuantity(ParserUtils::getRawNumber($item[$quantityIndex]));
+            }
         }
-        else
-        {
-            $lineItem->setQuantity(ParserUtils::getRawNumber($item[$quantityIndex]));
-        }
-
 
         return $lineItem;
     }
@@ -207,10 +220,18 @@ class HueristicParser implements IParser
 {
     public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
     {
-        $lineItem = null;
+        //TODO: build parser
+
+
         // Create result entry
         $lineItem = new LineItemEntity();
 
+        $lineItem->setTypeId(0);
+        $lineItem->setName("No Item Found");
+        $lineItem->setIsValid(false);
+        //$lineItem->setVolume(0);
+
         return $lineItem;
+
     }
 }
