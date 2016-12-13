@@ -15,12 +15,12 @@
                 {% if shares == 1 %}
                     <tr>
                         <th>Shares</th>
-                        <td>{{share_value|number_format(0, '.', ',')}}</td>
+                        <td>{{share_value|round()}}</td>
                     </tr>
                 {% endif %}
                 <tr>
                     <th>Amount</th>
-                    <td>{{total_value|number_format(0, '.', ',')}}</td>
+                    <td>{{total_value|round()}}</td>
                 </tr>
                 <tr>
                     <th>Auth Code</th>
