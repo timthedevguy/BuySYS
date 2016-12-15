@@ -30,7 +30,7 @@
                     {{ form_row(form.items) }}
                     <div id="buyback_submits">
                         <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'public_buyback': 'help_using_buyback'}) }}" target="_new">Help</a>
-                        <input type="button" id="offer_deny" class="btn btn-danger " value="Deny Offer">
+                        <input type="button" id="offer_deny" class="btn btn-danger " onClick="window.history.back();return true; " value="Deny Offer">
                         <input type="submit" id="offer_accept" class="btn btn-success " value="Accept Offer">
                     </div>
                 {{ form_end(form) }}
