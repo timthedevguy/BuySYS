@@ -130,8 +130,8 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             foreach($tables as $table) {
 
-                unlink($table.'.sql');
-                unlink($table.'.sql.bz2');
+                //unlink($table.'.sql');
+                //unlink($table.'.sql.bz2');
 
                 $bar->advance();
             }

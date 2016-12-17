@@ -26,8 +26,8 @@ class SuggestionController extends Controller
         {
             $message = \Swift_Message::newInstance()
             ->setSubject('Suggestion from Website')
-            ->setFrom('amsys@alliedindustries-eve.com')
-            ->setTo(array('binary.god@gmail.com', 'mathiascrendraven@gmail.com','dustynruss@yahoo.com'))
+            ->setFrom('buyback.omnigalactic@gmail.com')
+            ->setTo(array('binary.god@gmail.com'))
             ->setBody(
                 $this->renderView(
                     // app/Resources/views/Emails/registration.html.twig
