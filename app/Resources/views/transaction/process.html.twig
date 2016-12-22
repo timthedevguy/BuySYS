@@ -181,7 +181,7 @@
     });
 
     function validateContract() {
-
+        $('#auto_verify_results').html('<div class="modal-loading"><i class="fa fa-refresh fa-spin"></i></div>');
         //ajax form
         var $formInput = $('#buy_back_form_items').val();
         var $orderId = $('#orderId').val();
