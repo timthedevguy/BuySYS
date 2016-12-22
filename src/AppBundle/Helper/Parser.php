@@ -71,6 +71,7 @@ class ParserUtils
     {
         $rawNumber = str_replace('.', '', $number);
         $rawNumber = str_replace(',', '', $rawNumber);
+        $rawNumber = preg_replace('/\s+/u', '', $rawNumber); // Added for regions that use spaces instead of , or .
 
         if ($replaceMultiplySign)
         {
