@@ -9,7 +9,7 @@
 namespace AppBundle\Model;
 
 
-class LineItemComparatorModel
+class LineItemComparisonModel
 {
     protected $isExactMatch;
 
@@ -23,6 +23,34 @@ class LineItemComparatorModel
     public function isExactMatch()
     {
         return $this->isExactMatch;
+    }
+
+    protected $totalExcess;
+
+    public function setTotalExcess($totalExcess)
+    {
+        $this->totalExcess = $totalExcess;
+
+        return $this;
+    }
+
+    public function getTotalExcess()
+    {
+        return $this->totalExcess;
+    }
+
+    protected $totalMissing;
+
+    public function setTotalMissing($totalMissing)
+    {
+        $this->totalMissing = $totalMissing;
+
+        return $this;
+    }
+
+    public function getTotalMissing()
+    {
+        return $this->totalMissing;
     }
 
     protected $excessLineItems = Array();

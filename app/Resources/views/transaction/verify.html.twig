@@ -1,0 +1,39 @@
+
+<div>
+    {% if lineItemComparison.isexactmatch %}
+        <p>Everything matches perfectly!</p>
+    {% else %}
+        <div class="col-md-6">
+            Total Excess: {{ lineItemComparison.totalexcess|number_format(0,'.',',') }}
+        </div>
+
+        <div class="col-md-6">
+            Total Missing: {{ lineItemComparison.totalmissing|number_format(0,'.',',') }}
+        </div>
+        <table class="table table-striped images-table">
+            <tr>
+                <th style="width:100px;">Quantity</th>
+                <th>Item</th>
+                <th>Unit Price</th>
+                <th>Net Price</th>
+            </tr>
+            {% for item in lineItemComparison.excesslineitems %}
+                <tr class="success">
+                    <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                    <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                    <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                    <td>{{ item.netprice|number_format(0,'.',',') }}</td>
+                </tr>
+            {% endfor %}
+            {% for item in lineItemComparison.missinglineitems %}
+                <tr class="danger">
+                    <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                    <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                    <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                    <td>{{ item.netprice|number_format(0,'.',',') }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    {% endif %}
+</div>
