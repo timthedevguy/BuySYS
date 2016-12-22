@@ -15,6 +15,14 @@ use AppBundle\Model\LineItemComparisonModel;
 
 class LineItemComparator
 {
+
+    private $market;
+
+    public function __construct($market)
+    {
+        $this->market = $market;
+    }
+
     public function CompareLineItems(&$lineItemsOriginal, &$lineItemsNew)
     {
         $lineItemComparison = new LineItemComparisonModel();
@@ -30,12 +38,18 @@ class LineItemComparator
         $missingLineItems = $this->getLineItemsByIdCounts($originalExcessCounts, $lineItemsOriginal);
         $excessLineItems = $this->getLineItemsByIdCounts($newExcessCounts, $lineItemsNew);
 
+        // Get Market prices for excess items
+        if (count($excessLineItems) > 0)
+        {
+            $this->market->PopulateLineItems($excessLineItems);
+        }
+
         // Build Response
         $lineItemComparison->setIsExactMatch(count($originalExcessCounts) == 0 && count($newExcessCounts) == 0);
+        $lineItemComparison->setTotalExcess($this->getTotalGross($excessLineItems));
+        $lineItemComparison->setTotalMissing($this->getTotalGross($missingLineItems));
         $lineItemComparison->setExcessLineItems($excessLineItems);
         $lineItemComparison->setMissingLineItems($missingLineItems);
-
-        dump($lineItemComparison);
 
         return $lineItemComparison;
     }
@@ -100,5 +114,17 @@ class LineItemComparator
         }
 
         return $matchingLineItems;
+    }
+
+    private function getTotalGross(&$lineItems)
+    {
+        $totalGross = 0;
+
+        foreach ($lineItems as $item)
+        {
+            $totalGross += $item->getGrossPrice();
+        }
+
+        return $totalGross;
     }
 }

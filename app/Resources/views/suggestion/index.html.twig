@@ -11,7 +11,7 @@
                 {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
                 {{ form_start(form) }}
                     {{ form_row(form.message, {'attr': {'placeholder': 'Type message here', 'style': 'height:400px;'}}) }}
-                    <div id="buyback_submits">
+                    <div id="buyback_submits" class="right_justify_submits">
                         <input type="submit" id="buyback_quick_submit" class="btn btn-success " value="Send Now">
                     </div>
                 {{ form_end(form) }}
