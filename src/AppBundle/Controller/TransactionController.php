@@ -1,11 +1,15 @@
 <?php
 namespace AppBundle\Controller;
 
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use AppBundle\Model\BuyBackModel;
+use AppBundle\Form\BuyBackForm;
 use AppBundle\Entity\TranactionEntity;
 
 class TransactionController extends Controller
@@ -47,6 +51,12 @@ class TransactionController extends Controller
      */
     public function ajax_ProcessAction(Request $request)
     {
+        // Set up text area form for comparing transaction
+        $bb = new BuyBackModel();
+        $form = $this->createForm(BuyBackForm::class, $bb);
+
+        $form->handleRequest($request);
+
         // Get Transaction Id
         // Get our list of Items
         $order_id = $request->request->get('id');
@@ -54,7 +64,7 @@ class TransactionController extends Controller
         $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
         $transaction = $transactions->findOneByOrderId($order_id);
 
-        $template = $this->render('transaction/process.html.twig', Array ( 'transaction' => $transaction));
+        $template = $this->render('transaction/process.html.twig', Array ( 'transaction' => $transaction, 'form' => $form->createView()));
         return $template;
     }
 
@@ -117,5 +127,39 @@ class TransactionController extends Controller
         }
 
         return  new Response('ERROR');
+    }
+
+    /**
+     * @Route("/admin/transaction/validate", name="ajax_validate_transaction")
+     */
+    public function ajax_ValidateTransaction(Request $request)
+    {
+
+        // Get list of items from stored transaction
+        $orderId = $request->request->get('orderId');
+        $pasteData = $request->request->get('formInput');
+
+        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
+        $transaction = $transactions->findOneByOrderId($orderId);
+        $transactionItems = $transaction->getLineitems();
+
+
+        // Get items posted in request (copied from game contract)
+        if ($pasteData == null || $pasteData == "")
+        {
+            $requestItems = Array();
+        }
+        else
+        {
+            $requestItems = $this->get('parser')->GetLineItemsFromPasteData($pasteData);
+        }
+
+        // Compare
+        $lineItemComparison = $this->get('lineItemComparator')->CompareLineItems($transactionItems, $requestItems);
+
+        // Build response
+        $template = $this->render('transaction/verify.html.twig', Array ( 'lineItemComparison' => $lineItemComparison));
+        return $template;
+
     }
 }

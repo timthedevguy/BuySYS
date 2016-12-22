@@ -20,3 +20,6 @@ services:
     cache:
         class: AppBundle\Helper\Cache
         arguments: ['@doctrine', '@helper', '@market']
+    lineItemComparator:
+        class: AppBundle\Helper\LineItemComparator
+        arguments: ['@market']
