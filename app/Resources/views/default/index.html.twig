@@ -273,18 +273,25 @@
             }
         });
 
+        bindClickFakeLink();
+    });
+
+    function bindClickFakeLink() {
+
         $(".fake_link[data-type='P'],.fake_link[data-type='PS']").click(function(e) {
 
+            //put spinner in modal
             $('#base_modal').modal({backdrop: "static"});
+            $('#base_modal_content').html('<div class="modal-loading"><i class="fa fa-refresh fa-spin"></i></div>');
 
             $.get('{{path('ajax_view_transaction')}}', {id: $(this).html(), transaction_type: $(this).attr("data-type")},
                 function(response)
                 {
                     $( "#base_modal_content" ).html( response );
                 }
-            , "html");
+                , "html");
         });
-    });
+    }
 </script>
 
 {% endblock %}
