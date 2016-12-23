@@ -81,7 +81,7 @@
                         </thead>
                         <tbody>
                         {% for sale in oSales %}
-                            <tr>
+                            <tr id="row-{{sale.orderid}}">
                                 <td>{{sale.created|date("m/d/Y H:i")}}</td>
                                 <td><a class="fake_link" data-type="{{sale.type}}">{{sale.orderid}}</a></td>
                                 <td>{{sale.net|number_format(0, '.', ',')}}</td>
