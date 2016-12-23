@@ -99,6 +99,7 @@
         <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Decline</button>
         <button type="button" id="processAccept-button" class="btn btn-success" data-dismiss="modal">Accept and Process</button>
     {% else %}
+        <button type="button" id="processReopen-button" class="btn btn-warning" data-dismiss="modal">Reopen Transaction</button>
         <button type="button" id="processClose-button" class="btn btn-default" data-dismiss="modal">Close</button>
     {% endif %}
 </div>
@@ -166,6 +167,38 @@
                     });
                 }
             , "html");
+        });
+
+        $("#processReopen-button").click(function (e) {
+
+            $.post('{{path('ajax_reopen_transaction')}}', {id: "{{ transaction.orderid }}"},
+                function(response)
+                {
+                    $("#row-{{transaction.orderid}}").removeClass('label-grey');
+                    $("#row-{{transaction.orderid}}").removeClass('danger');
+                    $("#row-{{transaction.orderid}}").addClass('success');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-grey');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-danger');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").addClass('label-success');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html('Pending');
+
+                    $tExpense = stringToNumber($("#oExpense").html());
+                    $tExpense = $tExpense + {{transaction.net}};
+
+                    $cComplete = stringToNumber($("#cComplete").html());
+                    $cComplete += 1;
+
+                    $("#oExpense").toggle("puff", function(e) {
+                        $("#oExpense").html(numberToString($tExpense));
+                        $("#oExpense").toggle();
+                    });
+
+                    $("#cComplete").toggle("puff", function(e) {
+                        $("#cComplete").html($cComplete);
+                        $("#cComplete").toggle();
+                    });
+                }
+                , "html");
         });
 
         $(".mark_off").click(function(e)
