@@ -109,6 +109,26 @@ class TransactionController extends Controller
     }
 
     /**
+     * @Route("/admin/transaction/reopen", name="ajax_reopen_transaction")
+     */
+    public function ajax_ReopenAction(Request $request)
+    {
+        // Handles the Transaction (IE Closes it)
+        $order_id = $request->request->get('id');
+
+        //$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
+        //$transaction = $transactions->findOneByOrderId($order_id);
+        $em = $this->getDoctrine('default')->getManager();
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+
+        $transaction->setIsComplete(false);
+        $transaction->setStatus("Pending");
+        $em->flush();
+
+        return new Response('OK');
+    }
+
+    /**
      * @Route("/transaction/view", name="ajax_view_transaction")
      */
     public function ajax_ViewAction(Request $request)
