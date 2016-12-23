@@ -43,7 +43,6 @@
         $("#buybackacceptclose").click(function(e) {
 
             $('#base_modal').modal('hide');
-            //$( "#estimate_modal_content" ).html("<div class='modal-loading'><i class='fa fa-refresh fa-spin'></i></div>");
 
             $oSales = stringToNumber($("#oSales").html());
             $oSales += 1;
@@ -53,11 +52,17 @@
                 $("#oSales").toggle();
             });
 
-            $("#rSales").DataTable().row.add([
-                    '{{transaction.created|date("m/d/Y H:i")}}',
-                    '<a class="fake_link" data-type="{{transaction.type}}">{{transaction.orderid}}</a>',
-                    '{{transaction.net|number_format(0, '.', ',')}}'
-                ]).draw(false);
+            // Add some data
+            var data = [
+                '{{transaction.created|date("m/d/Y H:i")}}',
+                '<a class="fake_link" data-type="{{transaction.type}}">{{transaction.orderid}}</a>',
+                '{{transaction.net|number_format(0, '.', ',')}}'
+            ];
+
+            // add id
+            data.id = "row-{{transaction.orderid}}";
+
+            $("#rSales").DataTable().row.add(data).draw(false);
 
 
             //$("#rSales TR:first").after('<tr><td>{{transaction.created|date("m/d/Y H:i")}}</td><td>{{transaction.orderid}}</td><td>{{transaction.net|number_format(0, '.', ',')}}</td></tr>');

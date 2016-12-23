@@ -226,7 +226,16 @@
         $('.data-table').DataTable();
 
         $('#rSales').DataTable({
-            "order": [[ 0, "desc" ]]
+            "order": [[ 0, "desc" ]],
+
+            // Define custom handler for createdRow event
+            "createdRow" : function( row, data, index ) {
+
+                // Add identity if it specified
+                if( data.hasOwnProperty("id") ) {
+                    row.id = data.id;
+                }
+            }
         });
 
         $(".news_item_link").click(function(e) {
