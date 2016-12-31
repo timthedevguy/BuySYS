@@ -17,6 +17,7 @@ class SuggestionController extends Controller
     {
         $sm = new SuggestionModel();
         $form = $this->createForm(SuggestionForm::class, $sm);
+        $user = $this->getUser();
 
         // Handle Form
         $form->handleRequest($request);
@@ -32,7 +33,7 @@ class SuggestionController extends Controller
                 $this->renderView(
                     // app/Resources/views/Emails/registration.html.twig
                     'suggestion/message.html.twig',
-                    array('message' => $sm->getMessage())
+                    array('message' => $sm->getMessage(), 'username' => $user->GetUsername())
                 ),
                 'text/html'
             );
