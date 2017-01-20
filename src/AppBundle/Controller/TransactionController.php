@@ -89,7 +89,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * @Route("/admin/transaction/decline", name="ajax_decline_transaction")
+     * @Route("/transaction/decline", name="ajax_decline_transaction")
      */
     public function ajax_DeclineAction(Request $request)
     {

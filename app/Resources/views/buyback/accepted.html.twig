@@ -62,7 +62,7 @@
             // add id
             data.id = "row-{{transaction.orderid}}";
 
-            $("#rSales").DataTable().row.add(data).draw(false);
+            $("#rSales").DataTable().row.add(data).draw(true);
 
 
             //$("#rSales TR:first").after('<tr><td>{{transaction.created|date("m/d/Y H:i")}}</td><td>{{transaction.orderid}}</td><td>{{transaction.net|number_format(0, '.', ',')}}</td></tr>');
