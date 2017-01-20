@@ -75,7 +75,16 @@
             $.post('{{path('ajax_decline_transaction')}}', {id: "{{ transaction.orderid }}"},
                 function(response)
                 {
-                    $("#row-{{transaction.orderid}}").remove();
+
+                    var $oSales = stringToNumber($("#oSales").html());
+                    $oSales -= 1;
+
+                    $("#oSales").toggle("puff", function(e) {
+                        $("#oSales").html(numberToString($oSales));
+                        $("#oSales").toggle();
+                    });
+
+                    $("#rSales").DataTable().row("#row-{{transaction.orderid}}").remove().draw(false);
 
                 }
                 , "html");
