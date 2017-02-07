@@ -104,6 +104,26 @@ class SecurityController extends Controller
      */
     public function registerAction(Request $request)
     {
+
+
+        return $this->render('security/register.html.twig', array());
+    }
+
+    /**
+     * @Route("/register/sso/callback", name="register_sso_callback")
+     */
+    public function registerSSOCallbackAction(Request $request)
+    {
+
+
+        return $this->render(':security:register.html.twig', array());
+    }
+
+    /**
+     * @Route("/register-old", name="register-old")
+     */
+    public function registerOldAction(Request $request)
+    {
         $user = new UserEntity();
         $form = $this->createForm(RegisterUserForm::class, $user);
 
@@ -165,7 +185,7 @@ class SecurityController extends Controller
         }
 
         return $this->render(
-            'security/register.html.twig',
+            'security/register-old.html.twig',
             array('form' => $form->createView())
         );
     }

@@ -2,38 +2,18 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
-
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
-
-    # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
-    # This file is auto-generated during the composer install
-    parameters:
-        database_host: localhost
+        database_host: <HOST>
         database_port: 3306
-        database_name: amsys_db
-        database_user: amsys_user
-        database_password: 44891620a
-        database_host2: localhost
+        database_name: <DATABASE>
+        database_user: <USER>
+        database_password: <PASSWORD>
+        database_host2: <HOST2>
         database_port2: 3306
-        database_name2: eve_frostline
-        database_user2: amsys_user
-        database_password2: 44891620a
-        mailer_transport: smtp
-        mailer_host: server18.websitehostserver.net
-        mailer_port: 465
-        mailer_user: no-reply@binarymethod.com
-        mailer_password: 44891620a
-        mailer_encryption: ssl
-        mailer_auth_mode: login
+        database_name2: <DATABASE2>
+        database_user2: <USER2>
+        database_password2: <PASSWORD2>
+        mailer_transport: gmail
+        mailer_host: mail.gmail.com
+        mailer_user: <GMAILEMAIL>
+        mailer_password: <GMAILPASSWORD>
         secret: 27cf9b3f2d86b1b6bc6aeaacad9941b5cc1f8a20
