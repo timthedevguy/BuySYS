@@ -148,9 +148,10 @@ class SecurityController extends Controller
             'timeout'  => 10.0
         ]);
 
-        $response = $client->request('POST', '/oauth/token', [
+        $response = $client->post('https://login.eveonline.com/oauth/token', [
             'headers' => [
-                'Authorization' => $header
+                'Authorization' => $header,
+                'Content-Type' => 'application/x-www-form-urlencoded'
             ],
             'auth' => [$clientID, $secretKey],
             'query' => [
