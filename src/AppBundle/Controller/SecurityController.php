@@ -157,7 +157,7 @@ class SecurityController extends Controller
             'timeout'  => 10.0
         ]);
 
-        $response = $client->post('https://login.eveonline.com/oauth/token', [
+        $req = new GuzzleHttp\Psr7\Request('POST', 'https://login.eveonline.com/oauth/token', [
             'headers' => [
                 'Authorization' => $header,
                 'Content-Type' => 'application/x-www-form-urlencoded'
@@ -168,6 +168,20 @@ class SecurityController extends Controller
                 'code' => $code
             ]
         ]);
+
+        /*$response = $client->post('https://login.eveonline.com/oauth/token', [
+            'headers' => [
+                'Authorization' => $header,
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ],
+            'auth' => [$clientID, $secretKey],
+            'query' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code
+            ]
+        ]);*/
+        dump($req);
+        $response = $client->send($req);
 
         dump($response);
         dump($response->getBody());
