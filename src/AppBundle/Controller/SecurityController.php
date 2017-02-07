@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Pheal\Pheal;
 use Pheal\Core\Config;
+use zkillboard\crestsso;
 
 use AppBundle\Form\RegisterUserForm;
 use AppBundle\Entity\UserEntity;
