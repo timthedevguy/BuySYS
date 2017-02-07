@@ -107,12 +107,11 @@ class SecurityController extends Controller
     public function registerAction(Request $request)
     {
         $clientID = $this->get('helper')->getSetting('sso_clientid');
-        $secretKey = $this->get('helper')->getSetting('sso_secretkey');
         $callbackURL = $this->generateUrl('register_sso_callback');
         $baseUrl = "https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=";
 
         $session = $request->getSession();
-        $oauth = uniqid('OQ', true);
+        $oauth = uniqid('OA', true);
         $session->set('oauth', $oauth);
 
         $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID . "&state=" . $oauth;
@@ -125,7 +124,16 @@ class SecurityController extends Controller
      */
     public function registerSSOCallbackAction(Request $request)
     {
-        dump($request);
+        $code = $request->query->get('code');
+        $oauth = $request->getSession()->get('oauth');
+        $state = $request->query->get('state');
+
+        if($oauth == $state)
+        {
+            $this->addFlash('error', 'Possible hi-jacking attempt.  OAuth Security codes do not match.  Please try again.');
+            return $this->redirectToRoute('register');
+        }
+
         return $this->render(':security:register.html.twig', array());
     }
 
