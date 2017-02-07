@@ -159,7 +159,7 @@ class SecurityController extends Controller
         $config['query'] = array('grant_type' => 'authorization_code', 'code' => $code);
 
 
-        $req = new \GuzzleHttp\Psr7\Request('GET', '/oauth/token', $config);
+        $req = new \GuzzleHttp\Psr7\Request('POST', '/oauth/token', $config);
 
         /*$response = $client->post('https://login.eveonline.com/oauth/token', [
             'headers' => [
