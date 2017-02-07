@@ -21,7 +21,8 @@
         "3rdpartyeve/phealng":  "~2.0",
         "lifo/typeahead-bundle": "^2.0",
         "guzzlehttp/guzzle": "~6.0",
-        "zkillboard/crestsso": "*"
+        "zkillboard/crestsso": "*",
+        "eightpoints/guzzle-bundle": "^5.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

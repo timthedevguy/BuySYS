@@ -8,6 +8,7 @@ use Pheal\Pheal;
 use Pheal\Core\Config;
 use zkillboard\crestsso;
 use Symfony\Component\HttpFoundation\Session\Session;
+use GuzzleHttp\Client;
 
 use AppBundle\Form\RegisterUserForm;
 use AppBundle\Entity\UserEntity;
@@ -115,7 +116,7 @@ class SecurityController extends Controller
         $session->set('oauth', $oauth);
 
         $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID . "&state=" . $oauth;
-
+        $client   = $this->get('guzzle.client');
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }
 
@@ -128,11 +129,42 @@ class SecurityController extends Controller
         $oauth = $request->getSession()->get('oauth');
         $state = $request->query->get('state');
 
-        if($oauth == $state)
+        if($oauth != $state)
         {
             $this->addFlash('error', 'Possible hi-jacking attempt.  OAuth Security codes do not match.  Please try again.');
             return $this->redirectToRoute('register');
         }
+
+        $clientID = $this->get('helper')->getSetting('sso_clientid');
+        $secretKey = $this->get('helper')->getSetting('sso_secretKey');
+
+        $header = $clientID . ':' . $secretKey;
+        $header = base64_encode($header);
+        $header = 'Basic ' . $header;
+
+
+        $client = new Client([
+            'base_uri' => 'https://login.eveonline.com/oauth/token',
+            'timeout'  => 10.0,
+            'headers' => [
+                'Authorization' => $header
+            ],
+            'auth' => [$clientID, $secretKey],
+            'query' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code
+            ]
+        ]);
+
+        $response = $client->request('POST');
+        dump($response);
+        // GET request with parameters
+        /*$response = $client->get('http://httpbin.org/get', [
+            'headers' => ['X-Foo-Header' => 'value'],
+            'query'   => ['foo' => 'bar']
+        ]);
+        $code = $response->getStatusCode();
+        $body = $response->getBody();*/
 
         return $this->render(':security:register.html.twig', array());
     }
