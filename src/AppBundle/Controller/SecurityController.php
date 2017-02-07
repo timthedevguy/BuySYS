@@ -148,7 +148,7 @@ class SecurityController extends Controller
             'timeout'  => 10.0
         ]);
 
-        $response = $client->request('POST', '/token', [
+        $response = $client->request('POST', '/oauth/token', [
             'headers' => [
                 'Authorization' => $header
             ],
