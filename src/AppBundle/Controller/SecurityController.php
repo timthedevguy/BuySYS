@@ -162,6 +162,7 @@ class SecurityController extends Controller
         ]);
 
         dump($response);
+        dump($response->getBody());
         // GET request with parameters
         /*$response = $client->get('http://httpbin.org/get', [
             'headers' => ['X-Foo-Header' => 'value'],
