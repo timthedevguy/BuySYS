@@ -148,15 +148,6 @@ class SecurityController extends Controller
             ]
         ]);
 
-        /*$req = new \GuzzleHttp\Psr7\Request('POST', '/oauth/token', [
-            'query' => [
-                'grant_type' => 'authorization_code',
-                'code' => $code
-            ]
-        ]);
-
-        $response = $client->send($req);*/
-
         $response = $client->post('/oauth/token', [
             'query' => [
                 'grant_type' => 'authorization_code',
@@ -164,11 +155,11 @@ class SecurityController extends Controller
             ]
         ]);
 
-        dump($response);
-        dump($response->getBody());
-        dump($response->getBody()->getContents());
+        $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
 
-        return $this->render(':security:register.html.twig', array());
+        dump($results);
+
+        return $this->redirectToRoute('register-old');
     }
 
     /**
