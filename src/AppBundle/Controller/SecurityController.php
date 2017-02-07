@@ -159,7 +159,7 @@ class SecurityController extends Controller
 
         dump($results);
 
-        return $this->redirectToRoute('register-old');
+        return $this->render(':security:register.html.twig', array());
     }
 
     /**
