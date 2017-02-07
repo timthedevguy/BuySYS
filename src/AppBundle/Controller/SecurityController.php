@@ -164,7 +164,6 @@ class SecurityController extends Controller
                 'Authorization' => $header,
                 'Content-Type' => 'application/x-www-form-urlencoded'
             ],
-            'auth' => [$clientID, $secretKey],
             'query' => [
                 'grant_type' => 'authorization_code',
                 'code' => $code
