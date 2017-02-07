@@ -153,7 +153,7 @@ class SecurityController extends Controller
         dump($header);
 
         $client = new Client([
-            'base_uri' => 'https://login.eveonline.com/oauth',
+            'base_uri' => 'https://login.eveonline.com/oauth/token',
             'timeout'  => 10.0
         ]);
 
@@ -161,7 +161,7 @@ class SecurityController extends Controller
 
         $req = new \GuzzleHttp\Psr7\Request('POST', 'https://login.eveonline.com/oauth/token', [
             'headers' => [
-                'Authentication' => $header,
+                'Authorization' => $header,
                 'Content-Type' => 'application/x-www-form-urlencoded'
             ],
             'query' => [
