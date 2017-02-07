@@ -146,16 +146,11 @@ class SecurityController extends Controller
         dump($clientID);
         dump($secretKey);
 
-        $header = $clientID . ':' . $secretKey;
-        $header = base64_encode($header);
-        $header = 'Basic ' . $header;
+        $header = 'Basic '.base64_encode($clientID.':'.$secretKey);
 
         dump($header);
 
-        $client = new Client([
-            'base_uri' => 'https://login.eveonline.com/oauth/token',
-            'timeout'  => 10.0
-        ]);
+        $client = new Client(['timeout'  => 10.0]);
 
         $body = 'grant_type=authorization_code&code=' . $code;
 
@@ -163,7 +158,7 @@ class SecurityController extends Controller
             'headers' => [
                 'Authorization' => $header,
                 'Content-Type' => 'application/x-www-form-urlencoded',
-                'User-Agent' => 'Buyback User Agent 1.0'
+                'User-Agent' => $request->headers->get('user-agent')
             ],
             'query' => [
                 'grant_type' => 'authorization_code',
