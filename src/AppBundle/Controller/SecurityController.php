@@ -157,6 +157,8 @@ class SecurityController extends Controller
             'timeout'  => 10.0
         ]);
 
+        $body = 'grant_type=authorization_code&code=' . $code;
+
         $req = new \GuzzleHttp\Psr7\Request('POST', 'https://login.eveonline.com/oauth/token', [
             'headers' => [
                 'Authorization' => $header,
@@ -166,7 +168,8 @@ class SecurityController extends Controller
             'query' => [
                 'grant_type' => 'authorization_code',
                 'code' => $code
-            ]
+            ],
+            'body' => $body
         ]);
 
         /*$response = $client->post('https://login.eveonline.com/oauth/token', [
