@@ -130,10 +130,6 @@ class SecurityController extends Controller
         $oauth = $request->getSession()->get('oauth');
         $state = $request->query->get('state');
 
-        dump($code);
-        dump($oauth);
-        dump($state);
-
         if($oauth != $state)
         {
             $this->addFlash('error', 'Possible hi-jacking attempt.  OAuth Security codes do not match.  Please try again.');
@@ -143,27 +139,14 @@ class SecurityController extends Controller
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $secretKey = $this->get('helper')->getSetting('sso_secretKey');
 
-        dump($clientID);
-        dump($secretKey);
-
-        $header = 'Basic '.base64_encode($clientID.':'.$secretKey);
-
-        dump($header);
-
         $client = new Client([
             'base_uri' => 'https://login.eveonline.com',
             'timeout'  => 10.0,
             'headers' => [
                 'Authorization' => 'Basic '.base64_encode($clientID.':'.$secretKey),
+                'Content-Type' => 'application/x-www-form-urlencoded'
             ]
         ]);
-
-        $body = 'grant_type=authorization_code&code=' . $code;
-
-        $config = array();
-        $config['headers'] = array('Authorization' => 'Basic '.base64_encode($clientID.':'.$secretKey));
-        $config['query'] = array('grant_type' => 'authorization_code', 'code' => $code);
-
 
         $req = new \GuzzleHttp\Psr7\Request('POST', '/oauth/token', [
             'query' => [
@@ -172,29 +155,9 @@ class SecurityController extends Controller
             ]
         ]);
 
-        /*$response = $client->post('https://login.eveonline.com/oauth/token', [
-            'headers' => [
-                'Authorization' => $header,
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ],
-            'auth' => [$clientID, $secretKey],
-            'query' => [
-                'grant_type' => 'authorization_code',
-                'code' => $code
-            ]
-        ]);*/
-        dump($req);
         $response = $client->send($req);
 
         dump($response);
-        dump($response->getBody());
-        // GET request with parameters
-        /*$response = $client->get('http://httpbin.org/get', [
-            'headers' => ['X-Foo-Header' => 'value'],
-            'query'   => ['foo' => 'bar']
-        ]);
-        $code = $response->getStatusCode();
-        $body = $response->getBody();*/
 
         return $this->render(':security:register.html.twig', array());
     }
