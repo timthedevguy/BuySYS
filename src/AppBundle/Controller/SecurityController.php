@@ -143,7 +143,7 @@ class SecurityController extends Controller
         $header = 'Basic ' . $header;
 
 
-        $client = new Client([
+        $client = new GuzzleHttp\Client([
             'base_uri' => 'https://login.eveonline.com/oauth',
             'timeout'  => 10.0
         ]);
