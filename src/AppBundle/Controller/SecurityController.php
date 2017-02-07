@@ -157,7 +157,7 @@ class SecurityController extends Controller
             'timeout'  => 10.0
         ]);
 
-        $req = new GuzzleHttp\Psr7\Request('POST', 'https://login.eveonline.com/oauth/token', [
+        $req = new \GuzzleHttp\Psr7\Request('POST', 'https://login.eveonline.com/oauth/token', [
             'headers' => [
                 'Authorization' => $header,
                 'Content-Type' => 'application/x-www-form-urlencoded'
