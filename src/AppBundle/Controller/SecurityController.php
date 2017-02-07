@@ -104,9 +104,15 @@ class SecurityController extends Controller
      */
     public function registerAction(Request $request)
     {
+        $clientID = $this->get('helper')->getSetting('sso_clientid');
+        $secretKey = $this->get('helper')->getSetting('sso_secretkey');
+        $callbackURL = path('register_sso_callback');
+        $scopes = array();
 
+        $sso = new CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
+        $loginURL = $sso->getLoginURL($_SESSION);
 
-        return $this->render('security/register.html.twig', array());
+        return $this->render('security/register.html.twig', array('login_url' => $loginURL));
     }
 
     /**
@@ -114,8 +120,7 @@ class SecurityController extends Controller
      */
     public function registerSSOCallbackAction(Request $request)
     {
-
-
+        dump($request);
         return $this->render(':security:register.html.twig', array());
     }
 
