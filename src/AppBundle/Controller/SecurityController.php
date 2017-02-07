@@ -161,7 +161,7 @@ class SecurityController extends Controller
 
         $req = new \GuzzleHttp\Psr7\Request('POST', 'https://login.eveonline.com/oauth/token', [
             'headers' => [
-                'Authorization' => $header,
+                'Authentication' => $header,
                 'Content-Type' => 'application/x-www-form-urlencoded'
             ],
             'query' => [
