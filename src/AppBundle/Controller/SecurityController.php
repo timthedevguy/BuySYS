@@ -166,6 +166,7 @@ class SecurityController extends Controller
 
         dump($response);
         dump($response->getBody());
+        dump($response->getBody()->getContents());
 
         return $this->render(':security:register.html.twig', array());
     }
