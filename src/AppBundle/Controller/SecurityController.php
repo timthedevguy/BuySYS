@@ -10,6 +10,7 @@ use zkillboard\crestsso;
 use Symfony\Component\HttpFoundation\Session\Session;
 use GuzzleHttp\Client;
 
+
 use AppBundle\Form\RegisterUserForm;
 use AppBundle\Entity\UserEntity;
 
@@ -143,7 +144,7 @@ class SecurityController extends Controller
         $header = 'Basic ' . $header;
 
 
-        $client = new GuzzleHttp\Client([
+        $client = new Client([
             'base_uri' => 'https://login.eveonline.com/oauth',
             'timeout'  => 10.0
         ]);
