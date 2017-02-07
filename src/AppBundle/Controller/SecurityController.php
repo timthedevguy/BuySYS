@@ -111,10 +111,11 @@ class SecurityController extends Controller
         $callbackURL = $this->generateUrl('register_sso_callback');
         $baseUrl = "https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=";
 
-        $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID;
+        $session = $request->getSession();
+        $oauth = uniqid('OQ', true);
+        $session->set('oauth', $oauth);
 
-        //$sso = new crestsso\CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
-        //$loginURL = $sso->getLoginURL($session);
+        $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID . "&state=" . $oauth;
 
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }
