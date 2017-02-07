@@ -116,7 +116,7 @@ class SecurityController extends Controller
         $session->set('oauth', $oauth);
 
         $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID . "&state=" . $oauth;
-        $client   = $this->get('guzzle.client');
+
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }
 
