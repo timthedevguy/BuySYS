@@ -144,8 +144,11 @@ class SecurityController extends Controller
 
 
         $client = new Client([
-            'base_uri' => 'https://login.eveonline.com/oauth/token',
-            'timeout'  => 10.0,
+            'base_uri' => 'https://login.eveonline.com/oauth',
+            'timeout'  => 10.0
+        ]);
+
+        $response = $client->request('POST', '/token', [
             'headers' => [
                 'Authorization' => $header
             ],
@@ -156,7 +159,6 @@ class SecurityController extends Controller
             ]
         ]);
 
-        $response = $client->request('POST');
         dump($response);
         // GET request with parameters
         /*$response = $client->get('http://httpbin.org/get', [
