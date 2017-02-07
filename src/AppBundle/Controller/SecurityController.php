@@ -167,9 +167,8 @@ class SecurityController extends Controller
             ],
             'query' => [
                 'grant_type' => 'authorization_code',
-                'authorization_code' => $code
-            ],
-            'body' => $body
+                'code' => $code
+            ]
         ]);
 
         /*$response = $client->post('https://login.eveonline.com/oauth/token', [
