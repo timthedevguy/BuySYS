@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Pheal\Pheal;
 use Pheal\Core\Config;
 use zkillboard\crestsso;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 use AppBundle\Form\RegisterUserForm;
 use AppBundle\Entity\UserEntity;
@@ -108,12 +109,14 @@ class SecurityController extends Controller
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $secretKey = $this->get('helper')->getSetting('sso_secretkey');
         $callbackURL = $this->generateUrl('register_sso_callback');
-        $scopes = array();
+        $baseUrl = "https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=";
 
-        $sso = new crestsso\CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
-        $loginURL = $sso->getLoginURL($_SESSION);
+        $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID;
 
-        return $this->render('security/register.html.twig', array('login_url' => $loginURL));
+        //$sso = new crestsso\CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
+        //$loginURL = $sso->getLoginURL($session);
+
+        return $this->render('security/register.html.twig', array('login_url' => $url));
     }
 
     /**
