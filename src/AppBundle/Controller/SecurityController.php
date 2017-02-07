@@ -148,14 +148,21 @@ class SecurityController extends Controller
             ]
         ]);
 
-        $req = new \GuzzleHttp\Psr7\Request('POST', '/oauth/token', [
+        /*$req = new \GuzzleHttp\Psr7\Request('POST', '/oauth/token', [
             'query' => [
                 'grant_type' => 'authorization_code',
                 'code' => $code
             ]
         ]);
 
-        $response = $client->send($req);
+        $response = $client->send($req);*/
+
+        $response = $client->post('/oauth/token', [
+            'query' => [
+                'grant_type' => 'authorization_code',
+                'code' => $code
+            ]
+        ]);
 
         dump($response);
 
