@@ -110,7 +110,7 @@ class SecurityController extends Controller
         $callbackURL = $this->generateUrl('register_sso_callback');
         $scopes = array();
 
-        $sso = new CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
+        $sso = new crestsso\CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
         $loginURL = $sso->getLoginURL($_SESSION);
 
         return $this->render('security/register.html.twig', array('login_url' => $loginURL));
