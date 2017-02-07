@@ -107,7 +107,7 @@ class SecurityController extends Controller
     {
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $secretKey = $this->get('helper')->getSetting('sso_secretkey');
-        $callbackURL = path('register_sso_callback');
+        $callbackURL = $this->generateUrl('register_sso_callback');
         $scopes = array();
 
         $sso = new CrestSSO($clientID, $secretKey, $callbackURL, $scopes);
