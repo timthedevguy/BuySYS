@@ -130,6 +130,10 @@ class SecurityController extends Controller
         $oauth = $request->getSession()->get('oauth');
         $state = $request->query->get('state');
 
+        dump($code);
+        dump($oauth);
+        dump($state);
+
         if($oauth != $state)
         {
             $this->addFlash('error', 'Possible hi-jacking attempt.  OAuth Security codes do not match.  Please try again.');
@@ -139,10 +143,14 @@ class SecurityController extends Controller
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $secretKey = $this->get('helper')->getSetting('sso_secretKey');
 
+        dump($clientID);
+        dump($secretKey);
+
         $header = $clientID . ':' . $secretKey;
         $header = base64_encode($header);
         $header = 'Basic ' . $header;
 
+        dump($header);
 
         $client = new Client([
             'base_uri' => 'https://login.eveonline.com/oauth',
