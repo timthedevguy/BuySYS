@@ -176,7 +176,7 @@ class SecurityController extends Controller
             ]
         ]);
 
-        $nReq = $client->get('/v4/characters/95914159');
+        $nReq = $nClient->get('/v4/characters/95914159');
         $nResults = \GuzzleHttp\json_decode($nReq->getBody()->getContents());
 
         dump($nResults);
