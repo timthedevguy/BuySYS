@@ -126,19 +126,23 @@ class SecurityController extends Controller
      */
     public function registerSSOCallbackAction(Request $request)
     {
+        // Grab our oAuth Keys and Authorization Code
         $code = $request->query->get('code');
         $oauth = $request->getSession()->get('oauth');
         $state = $request->query->get('state');
 
+        // Verify we haven't been hijacked
         if($oauth != $state)
         {
             $this->addFlash('error', 'Possible hi-jacking attempt.  OAuth Security codes do not match.  Please try again.');
             return $this->redirectToRoute('register');
         }
 
+        // Get our ClientID and Secret Key
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $secretKey = $this->get('helper')->getSetting('sso_secretKey');
 
+        // Create new Guzzle Client with default Headers
         $client = new Client([
             'base_uri' => 'https://login.eveonline.com',
             'timeout'  => 10.0,
@@ -148,6 +152,7 @@ class SecurityController extends Controller
             ]
         ]);
 
+        // Create our Response Object
         $response = $client->post('/oauth/token', [
             'query' => [
                 'grant_type' => 'authorization_code',
@@ -155,9 +160,26 @@ class SecurityController extends Controller
             ]
         ]);
 
+        // Decode the response body to JSON
         $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
 
+        //https://esi.tech.ccp.is/latest/swagger.json?datasource=tranquility
+        //https://esi.tech.ccp.is/legacy/swagger.json?datasource=tranquility
+
         dump($results);
+
+        $nClient = new Client([
+            'base_uri' => 'https://esi.tech.ccp.is',
+            'timeout' => 10.0,
+            'headers' => [
+                'Accept' => 'application/json'
+            ]
+        ]);
+
+        $nReq = $client->get('/v4/characters/95914159');
+        $nResults = \GuzzleHttp\json_decode($nReq->getBody()->getContents());
+
+        dump($nResults);
 
         return $this->render(':security:register.html.twig', array());
     }
