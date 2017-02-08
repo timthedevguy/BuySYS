@@ -177,13 +177,13 @@ class SecurityController extends Controller
         ]);
 
         $nReq = $nClient->get('/v4/characters/95914159');
-        $nResults = \GuzzleHttp\json_decode($nReq->getBody()->getContents());
+        $nResults = json_decode($nReq->getBody()->getContents(), true);
 
         dump($nResults);
         dump($nResults['alliance_id']);
 
         $nReq = $nClient->get('/v2/alliances/'.$nResults['alliance_id']);
-        $nResults1 = \GuzzleHttp\json_decode($nReq->getBody()->getContents());
+        $nResults1 = json_decode($nReq->getBody()->getContents(), true);
 
         dump($nResults1);
 
