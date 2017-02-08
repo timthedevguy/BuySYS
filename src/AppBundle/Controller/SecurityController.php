@@ -181,6 +181,11 @@ class SecurityController extends Controller
 
         dump($nResults);
 
+        $nReq = $nClient->get('/v2/alliances/'.$nResults['alliance_id']);
+        $nResults = \GuzzleHttp\json_decode($nReq->getBody()->getContents());
+
+        dump($nResults);
+
         return $this->render(':security:register.html.twig', array());
     }
 
