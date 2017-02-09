@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-        <title>{% block title %}COGG Online Documentation{% endblock %}</title>
+        <title>{% block title %}{{ corpTicker }} Online Documentation{% endblock %}</title>
 
         <link rel="stylesheet" href="{{ asset('/css/docs_bootstrap.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/docs.css') }}" />
@@ -46,7 +46,7 @@
             <nav data-toggle="wy-nav-shift" class="wy-nav-side">
                 <div class="wy-side-scroll">
                     <div class="wy-side-nav-search">
-                        <a href="{{path('pages')}}" class="icon icon-home"> COGG Online Documentation</a>
+                        <a href="{{path('pages')}}" class="icon icon-home"> {{ corpTicker }} Online Documentation</a>
                         <!--<div role="search">
                             <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
                                 <input type="text" name="q" placeholder="Search docs">

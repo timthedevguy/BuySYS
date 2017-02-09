@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-        <title>{% block title %}OgSYS{% endblock %}</title>
+        <title>{% block title %}{{ systemNameShort }}{% endblock %}</title>
 
         <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
@@ -50,7 +50,7 @@
         <div class="container">
             <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1><span class="logo-lg"><b>Og</b>SYS</span><small>Omni Galactic Buyback Program</small></h1>
+                    <h1><span class="logo-lg">{{ systemNameLong }}</span><small>{{ corpName }} Buyback Program</small></h1>
                 </section>
 
             <!-- Main content -->
