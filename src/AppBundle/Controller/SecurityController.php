@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\EveSSO\EveSSO;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -110,14 +111,11 @@ class SecurityController extends Controller
     {
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $callbackURL = $this->generateUrl('register_sso_callback');
-        $baseUrl = "https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri=";
 
         $session = $request->getSession();
-        $oauth = uniqid('OA', true);
-        $session->set('oauth', $oauth);
 
-        $url = $baseUrl . $this->get('request')->getSchemeAndHttpHost() . $callbackURL . '&client_id=' . $clientID . "&state=" . $oauth;
-
+        $url = EveSSO::generateURL($this->get('request')->getSchemeAndHttpHost().$callbackURL, $clientID, $session);
+        dump($session);
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }
 
