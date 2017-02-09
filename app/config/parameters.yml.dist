@@ -2,38 +2,29 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
-
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
-
-    # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
-    # This file is auto-generated during the composer install
-    parameters:
         database_host: localhost
         database_port: 3306
         database_name: amsys_db
         database_user: amsys_user
-        database_password: 44891620a
+        database_password: password
         database_host2: localhost
         database_port2: 3306
-        database_name2: eve_frostline
+        database_name2: eve_db
         database_user2: amsys_user
-        database_password2: 44891620a
+        database_password2: password
         mailer_transport: smtp
-        mailer_host: server18.websitehostserver.net
+        mailer_host: smtp.server
         mailer_port: 465
-        mailer_user: no-reply@binarymethod.com
-        mailer_password: 44891620a
+        mailer_user: no-reply@yourdomain.com
+        mailer_password: password
         mailer_encryption: ssl
         mailer_auth_mode: login
         secret: 27cf9b3f2d86b1b6bc6aeaacad9941b5cc1f8a20
+        system_name_long: '<strong>Am</strong>SYS'
+        system_tab_name: 'Allied Industries Buyback Program'
+        system_name_short: '<strong>A</strong>SYS'
+        corp_ticker: ALLY
+        corp_name: 'Allied Industries'
+        corp_url: 'http://amrep-eve.com/'
+        corp_copyright: 'Copyright 2016, Allied Industries'
+
