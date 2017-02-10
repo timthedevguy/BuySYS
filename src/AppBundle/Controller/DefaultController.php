@@ -27,15 +27,7 @@ class DefaultController extends Controller
 
         $form->handleRequest($request);
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-
         $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser()); //$query->getResult();
-
-        foreach($oSales as $elementKey => $sale) {
-            if($sale->getStatus() == "Estimate") {
-                unset($oSales[$elementKey]); //delete Estimates from list
-            }
-        }
-
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
         
         return $this->render('default/index.html.twig', array(
