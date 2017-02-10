@@ -15,3 +15,7 @@ a fixed price.
 
 #### Installation
 Please see [Installation](https://github.com/binarygod/AmSYS/wiki/Installation) in the Wiki for instructions.
+
+
+#### How to help
+If you feel inclined, you can donate in the form of time (ie: Code) or ISK.  My in game name is 'Fecal Matters'
