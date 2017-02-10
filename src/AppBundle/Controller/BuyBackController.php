@@ -139,50 +139,68 @@ class BuyBackController extends Controller
      */
     public function ajax_EstimateAction(Request $request) {
 
+        //setup model and form
         $buyback = new BuyBackModel();
         $form = $this->createForm(BuyBackForm::class, $buyback);
         $form->handleRequest($request);
 
-        $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
-        $cache = $this->getDoctrine()->getRepository('AppBundle:CacheEntity', 'default');
-        $items = array();
-        $typeids = array();
+        //$types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
+        //$cache = $this->getDoctrine()->getRepository('AppBundle:CacheEntity', 'default');
+        //$typeids = array();
+        //$items = array();
 
+        //parse form input
         $items = $this->get('parser')->GetLineItemsFromPasteData($buyback->getItems());
 
-        if(!$this->get('market')->PopulateLineItems($items))
-        {
-            $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
-            return $template;
+        //check to make sure it parsed correctly
+        if($items == null || count($items) <= 0) {
+            return $this->render('buyback/novalid.html.twig');
         }
 
-        $totalValue = 0;
+        //get market value and buyback values
+        if(!$this->get('market')->PopulateLineItems($items))
+        {
+            return $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
+        }
+
+        //insert into DB and return quote
+
+        //get DB manager
+        $em = $this->getDoctrine()->getManager('default');
+
+        //build transaction
+        $transaction = new TransactionEntity();
+        $transaction->setUser($this->getUser());
+        $transaction->setType("P"); //will reset to PS if accepted with shares
+
+        $transaction->setIsComplete(false);
+        $transaction->setOrderId($transaction->getType() . uniqid());
+        $transaction->setGross(0);
+        $transaction->setNet(0);
+        $transaction->setCreated(new \DateTime("now"));
+        $transaction->setStatus("Estimate");
+        $em->persist($transaction);
+
+
+        //add line items to transaction
         $hasInvalid = false;
-        $ajaxData = array();
 
         /* @var $lineItem LineItemEntity */
         foreach($items as $lineItem)
         {
-            $totalValue += $lineItem->getNetPrice();
-            //$ajaxData .= "{ typeid:" . $lineItem->getTypeId() . ", quantity:" . $lineItem->getQuantity() . "},";
-            $ajaxData[] = array('typeid' => $lineItem->getTypeId(), 'quantity' => $lineItem->getQuantity(),
-                'isvalid' => $lineItem->getIsValid());
+            $em->persist($lineItem);
+            $transaction->addLineitem($lineItem);
+
             if(!$lineItem->getIsValid()) {$hasInvalid = true;}
         }
 
-        //$ajaxData .= "]";
-        //$ajaxData = rtrim($ajaxData, ",");
+        $em->flush();
 
-        if($items != null) {
 
-            $template = $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $totalValue,
-                'ajaxData' => json_encode($ajaxData), 'hasInvalid' => $hasInvalid ));
-        } else {
 
-            $template = $this->render('buyback/novalid.html.twig');
-        }
 
-        return $template;
+        return $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $transaction->getNet(),
+            'hasInvalid' => $hasInvalid, 'orderId' => $transaction->getOrderId() ));
     }
 
     /**
@@ -191,86 +209,48 @@ class BuyBackController extends Controller
     public function ajax_AcceptAction(Request $request) {
 
         // Get our list of Items
-        $items = $request->request->get('items');
+        $total = $request->request->get('total');
+        $order_id = $request->request->get('orderId');
         $shares = $request->request->get('shares');
 
-        // Generate list of unique items to pull from cache
-        $typeids = Array();
+        // Pull data from DB
+        $em = $this->getDoctrine()->getManager('default');
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
-        foreach($items as $item) {
+        //update status
+        $transaction->setStatus("Pending");
 
-            if($item['isvalid'] == 'true') {
-
-                $typeids[] = $item['typeid'];
-            }
+        //update shares if needed
+        if ($shares == 1) {
+            $transaction->setType("PS");
         }
 
-        if(count($typeids) > 0) {
+        $em->flush();
 
-            // Get Type Database
-            $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
+        $share_value = 0;
 
-            // Pull data from Cache
-            $em = $this->getDoctrine()->getManager('default');
-            /*$query = $em->createQuery('SELECT c FROM AppBundle:CacheEntity c WHERE c.typeID IN (:types)')->setParameter('types', $typeids);
-            $cached = $query->getResult();*/
+        return $this->render('buyback/accepted.html.twig', Array('auth_code' => $order_id, 'total_value' => $transaction->getNet(),
+            'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value));
+    }
 
-            $transaction = new TransactionEntity();
-            $transaction->setUser($this->getUser());
+    /**
+     * @Route("/buyback/decline", name="ajax_decline_buyback")
+     */
+    public function ajax_DeclineAction(Request $request) {
 
-            if ($shares == 1) {
-                $transaction->setType("PS");
-            } else {
-                $transaction->setType("P");
-            }
+        // Get our list of Items
+        $order_id = $request->request->get('orderId');
 
-            $transaction->setIsComplete(false);
-            $transaction->setOrderId($transaction->getType() . uniqid());
-            $transaction->setGross(0);
-            $transaction->setNet(0);
-            $transaction->setCreated(new \DateTime("now"));
-            $transaction->setStatus("Pending");
-            $em->persist($transaction);
+        // Pull data from DB
+        $em = $this->getDoctrine()->getManager('default');
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
-            $gross = 0;
-            $net = 0;
+        //delete transaction
+        $em->remove($transaction);
 
-            $lineItems = array();
+        $em->flush();
 
-            foreach ($items as $item) {
-
-                if($item['isvalid'] == 'true') {
-
-                    $lineItem = new LineItemEntity();
-                    $lineItem->setTypeId($item['typeid']);
-                    $lineItem->setQuantity($item['quantity']);
-                    $lineItem->setName($types->findOneByTypeID($item['typeid'])->getTypeName());
-                    //$lineItem->setTax($this->get("helper")->getSetting("buyback_default_tax"));
-
-                    $em->persist($lineItem);
-                    $lineItems[] = $lineItem;
-                }
-            }
-
-            $this->get('market')->PopulateLineItems($lineItems);
-
-            foreach($lineItems as $lineItem) {
-
-                $transaction->addLineitem($lineItem);
-            }
-
-            $share_value = 0;
-
-            $em->flush();
-
-            $template = $this->render('buyback/accepted.html.twig', Array('auth_code' => $transaction->getOrderId(), 'total_value' => $transaction->getNet(),
-                'transaction' => $transaction, 'shares' => $shares, 'share_value' => $share_value));
-        } else {
-
-            $template = $this->render('buyback/novalid.html.twig');
-        }
-
-        return $template;
+        return new Response();
     }
 
     /**

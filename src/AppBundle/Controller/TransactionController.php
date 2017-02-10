@@ -19,25 +19,29 @@ class TransactionController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        $query = $transactions->createQueryBuilder('t')
-            ->where('t.is_complete = 0')
-            ->orderBy('t.created', 'DESC')
-            ->getQuery();
+//        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
+//        $query = $transactions->createQueryBuilder('t')
+//            ->where('t.is_complete = 0')
+//            ->orderBy('t.created', 'DESC')
+//            ->getQuery();
 
         $allTransactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllOrderedByDate();
 
-        $oIncome = 0;
+//        $oIncome = 0;
+//        $cCreate = 0;
         $oExpense = 0;
         $cComplete = 0;
-        $cCreate = 0;
 
-        foreach($allTransactions as $transaction) {
+        foreach($allTransactions as $elementKey => $transaction) {
 
-            if(($transaction->getType() == "P" ) & $transaction->getStatus() == "Pending") {
+            if($transaction->getStatus() == "Estimate") {
+                unset($allTransactions[$elementKey]); //delete Estimates from list
+            } else {
+                if(($transaction->getType() == "P" ) & $transaction->getStatus() == "Pending") {
 
-                $oExpense += $transaction->getNet();
-                $cComplete += 1;
+                    $oExpense += $transaction->getNet();
+                    $cComplete += 1;
+                }
             }
         }
 
