@@ -5,12 +5,12 @@ use Doctrine\ORM\EntityRepository;
 
 class TransactionRepository extends EntityRepository {
 
-    public function findAllOrderedByDate() {
+    public function findAllValidTransactionsOrderedByDate() {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT t FROM AppBundle:TransactionEntity t ORDER BY t.created DESC'
-            )->getResult();
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.status <> :excludeStatus ORDER BY t.created DESC'
+            )->setParameter('excludeStatus', 'Estimate')->getResult();
     }
 
     public function findAllVisibleByUser($user) {
@@ -30,7 +30,7 @@ class TransactionRepository extends EntityRepository {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.is_complete = 0 AND t.user = :user'
-            )->setParameter('user', $user)->setParameter('types', Array('P', 'PS'))->getResult();
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.is_complete = 0 AND t.user = :user AND t.status <> :excludeStatus'
+            )->setParameter('user', $user)->setParameter('types', Array('P', 'PS'))->setParameter('excludeStatus', 'Estimate')->getResult();
     }
 }
