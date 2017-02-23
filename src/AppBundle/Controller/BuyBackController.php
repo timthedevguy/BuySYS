@@ -188,10 +188,12 @@ class BuyBackController extends Controller
         /* @var $lineItem LineItemEntity */
         foreach($items as $lineItem)
         {
-            $em->persist($lineItem);
-            $transaction->addLineitem($lineItem);
-
-            if(!$lineItem->getIsValid()) {$hasInvalid = true;}
+            if($lineItem->getIsValid()) {
+                $em->persist($lineItem);
+                $transaction->addLineitem($lineItem);
+            } else {
+                $hasInvalid = true;
+            }
         }
 
         $em->flush();
