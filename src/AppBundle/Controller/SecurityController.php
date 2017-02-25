@@ -139,32 +139,7 @@ class SecurityController extends Controller
             return $this->redirectToRoute('register');
         }
 
-
-        // Create new Guzzle Client with default Headers
-        $client = new Client([
-            'base_uri' => 'https://login.eveonline.com',
-            'timeout'  => 10.0,
-            'headers' => [
-                'Authorization' => 'Basic '.base64_encode($clientID.':'.$secretKey),
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        ]);
-
-        // Create our Response Object
-        $response = $client->post('/oauth/token', [
-            'query' => [
-                'grant_type' => 'authorization_code',
-                'code' => $code
-            ]
-        ]);
-
-        // Decode the response body to JSON
-        $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
-
-        //https://esi.tech.ccp.is/latest/swagger.json?datasource=tranquility
-        //https://esi.tech.ccp.is/legacy/swagger.json?datasource=tranquility
-
-        dump($results);
+        $evesso->authorize();
 
         $nClient = new Client([
             'base_uri' => 'https://esi.tech.ccp.is',

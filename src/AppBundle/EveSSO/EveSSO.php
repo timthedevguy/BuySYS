@@ -2,6 +2,7 @@
 namespace AppBundle\EveSSO;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
+use GuzzleHttp\Client;
 
 class EveSSO
 {
@@ -60,5 +61,31 @@ class EveSSO
 
         // Return completed URL
         return self::SSO_URL.'?response_type=code&redirect_uri='.$callbackurl.'&client_id='.$clientid.'&state='.$oauth;
+    }
+
+    public function authorize()
+    {
+        // Create new Guzzle Client with default Headers
+        $client = new Client([
+            'base_uri' => 'https://login.eveonline.com',
+            'timeout'  => 10.0,
+            'headers' => [
+                'Authorization' => 'Basic '.base64_encode($this->clientid.':'.$this->secretkey),
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
+        ]);
+
+        // Create our Response Object
+        $response = $client->post('/oauth/token', [
+            'query' => [
+                'grant_type' => 'authorization_code',
+                'code' => $this->auth_code
+            ]
+        ]);
+
+        // Decode the response body to JSON
+        $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
+        dump($results);
+
     }
 }
