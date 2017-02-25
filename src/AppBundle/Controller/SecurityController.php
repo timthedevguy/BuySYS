@@ -3,6 +3,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\EveSSO\EveSSO;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Pheal\Pheal;
@@ -115,7 +116,7 @@ class SecurityController extends Controller
         $session = $request->getSession();
 
         $url = EveSSO::generateURL($this->get('request')->getSchemeAndHttpHost().$callbackURL, $clientID, $session);
-        dump($session);
+
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }
 
@@ -124,21 +125,20 @@ class SecurityController extends Controller
      */
     public function registerSSOCallbackAction(Request $request)
     {
-        // Grab our oAuth Keys and Authorization Code
-        $code = $request->query->get('code');
-        $oauth = $request->getSession()->get('oauth');
-        $state = $request->query->get('state');
-
-        // Verify we haven't been hijacked
-        if($oauth != $state)
-        {
-            $this->addFlash('error', 'Possible hi-jacking attempt.  OAuth Security codes do not match.  Please try again.');
-            return $this->redirectToRoute('register');
-        }
-
         // Get our ClientID and Secret Key
         $clientID = $this->get('helper')->getSetting('sso_clientid');
         $secretKey = $this->get('helper')->getSetting('sso_secretKey');
+
+        try
+        {
+            $evesso = new EveSSO($clientID, $secretKey, $request);
+        }
+        catch(Exception $e)
+        {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('register');
+        }
+
 
         // Create new Guzzle Client with default Headers
         $client = new Client([
