@@ -75,6 +75,8 @@ class EveSSO
 
     public function authorize()
     {
+        $character = null;
+
         try
         {
             // Create new Guzzle Client with Authorization Headers
@@ -97,8 +99,7 @@ class EveSSO
 
             // Decode the response body to JSON
             $results = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-            dump($results);
-            dump($results['access_token']);
+
             // Grab Access Token
             $this->access_token = $results['access_token'];
         }
@@ -122,12 +123,32 @@ class EveSSO
 
             $response = $client->get('/oauth/verify');
 
-            return \GuzzleHttp\json_decode($response->getBody()->getContents());
+            $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
         }
         catch(Exception $e)
         {
-            throw new Exception('EVESSO :: Unable to obtain Character Information');
+            throw new Exception('EVESSO :: Unable to obtain Character ID');
         }
 
+        unset($client);
+        unset($response);
+
+        try
+        {
+            $client = new Client([
+                'base_uri' => 'https://esi.tech.ccp.is',
+                'timeout' => 10.0,
+                'headers' => [
+                    'Accept' => 'application/json'
+                ]
+            ]);
+
+            $response = $client->get('/v4/characters/'.$character['CharacterID']);
+            return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+        }
+        catch(Exception $e)
+        {
+            throw new Exception('EVESSO :: Unable to obtain Character Information.');
+        }
     }
 }

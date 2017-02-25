@@ -144,28 +144,6 @@ class SecurityController extends Controller
         }
 
         dump($character);
-
-        /*$nClient = new Client([
-            'base_uri' => 'https://esi.tech.ccp.is',
-            'timeout' => 10.0,
-            'headers' => [
-                'Accept' => 'application/json'
-            ]
-        ]);
-
-        $nReq = $nClient->get('/v4/characters/95914159');
-        $nResults = json_decode($nReq->getBody()->getContents(), true);
-
-        dump($nResults);
-        dump($nResults['alliance_id']);
-
-        $nReq = $nClient->get('/v2/alliances/'.$nResults['alliance_id']);
-        $nResults1 = json_decode($nReq->getBody()->getContents(), true);
-
-        dump($nResults1);
-
-        return $this->render(':security:register.html.twig', array());*/
-        //return $this->redirectToRoute('register');
     }
 
     /**
