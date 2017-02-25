@@ -142,15 +142,19 @@ class SecurityController extends Controller
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('register');
         }
-
         dump($character);
+        $this->redirectToRoute('register-complete', array('characterid' => $character['characterid'],
+            'charactername' => $character['name']));
     }
 
     /**
-     * @Route("/register-old", name="register-old")
+     * @Route("/register/complete", name="register-complete")
      */
-    public function registerOldAction(Request $request)
+    public function registerCompleteAction(Request $request, $characterid, $charactername)
     {
+        dump($characterid);
+        dump($charactername);
+        dump($request);
         $user = new UserEntity();
         $form = $this->createForm(RegisterUserForm::class, $user);
 

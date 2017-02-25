@@ -77,6 +77,7 @@ class EveSSO
     {
         $character = null;
 
+        // Get our Access Token
         try
         {
             // Create new Guzzle Client with Authorization Headers
@@ -111,6 +112,7 @@ class EveSSO
         unset($client);
         unset($response);
 
+        // Get Character ID
         try
         {
             $client = new Client([
@@ -133,6 +135,7 @@ class EveSSO
         unset($client);
         unset($response);
 
+        // Get Full Character Information
         try
         {
             $client = new Client([
@@ -144,7 +147,10 @@ class EveSSO
             ]);
 
             $response = $client->get('/v4/characters/'.$character['CharacterID']);
-            return \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+            $results = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+            $results['characterid'] = $character['CharacterID'];
+
+            return $results;
         }
         catch(Exception $e)
         {

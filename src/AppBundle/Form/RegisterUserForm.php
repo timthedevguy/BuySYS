@@ -2,6 +2,7 @@
 namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -24,9 +25,8 @@ class RegisterUserForm extends AbstractType
                 'first_options'  => array('label' => 'Password'),
                 'second_options' => array('label' => 'Repeat Password'),
             ))
-            ->add('username', TextType::class)
-            ->add('api_key', TextType::class)
-            ->add('api_code', TextType::class);
+            ->add('characterId', HiddenType::class)
+            ->add('username', HiddenType::class);
     }
 
     /**
