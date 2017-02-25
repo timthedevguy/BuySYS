@@ -11,6 +11,7 @@ class EveSSO
     private $clientid;
     private $secretkey;
     private $auth_code;
+    private $access_token;
 
     public function __construct($clientid, $secretkey, &$request)
     {
@@ -74,27 +75,57 @@ class EveSSO
 
     public function authorize()
     {
-        // Create new Guzzle Client with default Headers
-        $client = new Client([
-            'base_uri' => 'https://login.eveonline.com',
-            'timeout'  => 10.0,
-            'headers' => [
-                'Authorization' => 'Basic '.base64_encode($this->clientid.':'.$this->secretkey),
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        ]);
+        try
+        {
+            // Create new Guzzle Client with Authorization Headers
+            $client = new Client([
+                'base_uri' => 'https://login.eveonline.com',
+                'timeout' => 10.0,
+                'headers' => [
+                    'Authorization' => 'Basic ' . base64_encode($this->clientid . ':' . $this->secretkey),
+                    'Content-Type' => 'application/x-www-form-urlencoded'
+                ]
+            ]);
 
-        // Create our Response Object
-        $response = $client->post('/oauth/token', [
-            'query' => [
-                'grant_type' => 'authorization_code',
-                'code' => $this->auth_code
-            ]
-        ]);
+            // Create our Response Object to get Access Token
+            $response = $client->post('/oauth/token', [
+                'query' => [
+                    'grant_type' => 'authorization_code',
+                    'code' => $this->auth_code
+                ]
+            ]);
 
-        // Decode the response body to JSON
-        $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
-        dump($results);
+            // Decode the response body to JSON
+            $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
+            // Grab Access Token
+            $this->access_token = $results['access_token'];
+        }
+        catch(Exception $e)
+        {
+            throw new Exception('EVESSO :: Unable to obtain Access Token');
+        }
+
+        unset($client);
+        unset($response);
+
+        try
+        {
+            $client = new Client([
+                'base_uri' => 'https://login.eveonline.com',
+                'timeout' => 10.0,
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->access_token
+                ]
+            ]);
+
+            $response = $client->get('/oauth/verify');
+
+            return \GuzzleHttp\json_decode($response->getBody()->getContents());
+        }
+        catch(Exception $e)
+        {
+            throw new Exception('EVESSO :: Unable to obtain Character Information');
+        }
 
     }
 }

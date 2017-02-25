@@ -135,7 +135,7 @@ class SecurityController extends Controller
             $evesso = new EveSSO($clientID, $secretKey, $request);
 
             // Authorize
-            $evesso->authorize();
+            $character = $evesso->authorize();
         }
         catch(Exception $e)
         {
@@ -143,7 +143,7 @@ class SecurityController extends Controller
             return $this->redirectToRoute('register');
         }
 
-
+        dump($character);
 
         /*$nClient = new Client([
             'base_uri' => 'https://esi.tech.ccp.is',
