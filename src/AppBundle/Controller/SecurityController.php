@@ -131,7 +131,11 @@ class SecurityController extends Controller
 
         try
         {
+            // Get EveSSO object
             $evesso = new EveSSO($clientID, $secretKey, $request);
+
+            // Authorize
+            $evesso->authorize();
         }
         catch(Exception $e)
         {
@@ -139,9 +143,9 @@ class SecurityController extends Controller
             return $this->redirectToRoute('register');
         }
 
-        $evesso->authorize();
 
-        $nClient = new Client([
+
+        /*$nClient = new Client([
             'base_uri' => 'https://esi.tech.ccp.is',
             'timeout' => 10.0,
             'headers' => [
@@ -160,7 +164,8 @@ class SecurityController extends Controller
 
         dump($nResults1);
 
-        return $this->render(':security:register.html.twig', array());
+        return $this->render(':security:register.html.twig', array());*/
+        return $this->redirectToRoute('register');
     }
 
     /**

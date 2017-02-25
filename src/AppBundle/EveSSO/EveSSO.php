@@ -53,10 +53,19 @@ class EveSSO
         }
     }
 
+    /**
+     * Generates a properly formatted URL for an EveSSO Login button
+     *
+     * @param string $callbackurl
+     * @param string $clientid
+     * @param Symfony\Component\HttpFoundation\Session\Session $session
+     * @return string
+     */
     public static function generateURL($callbackurl, $clientid, &$session)
     {
         // Generates an oauth code to ensure Session didn't get hijacked
         $oauth = uniqid('OAA', true);
+        // Add OAuth code to session
         $session->set('oauth', $oauth);
 
         // Return completed URL
