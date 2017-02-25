@@ -217,7 +217,7 @@ class SecurityController extends Controller
 
         return $this->render(
             'security/register-old.html.twig', array('form' => $form->createView(),
-            'charactername' => $user->getCharacterName()));
+            'charactername' => $user->getCharacterName(), 'characterid' => $user->getCharacterId()));
     }
 
     /**
