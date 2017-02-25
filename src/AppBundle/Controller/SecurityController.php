@@ -152,9 +152,10 @@ class SecurityController extends Controller
      */
     public function registerCompleteAction(Request $request)
     {
-
-        dump($request);
         $user = new UserEntity();
+        $user->setCharacterId($request->query->get('characterid'));
+        $user->setCharacterName($request->query->get('charactername'));
+
         $form = $this->createForm(RegisterUserForm::class, $user);
 
         $form->handleRequest($request);
@@ -215,9 +216,8 @@ class SecurityController extends Controller
         }
 
         return $this->render(
-            'security/register-old.html.twig',
-            array('form' => $form->createView())
-        );
+            'security/register-old.html.twig', array('form' => $form->createView(),
+            'charactername' => $user->getCharacterName()));
     }
 
     /**
