@@ -155,6 +155,7 @@ class SecurityController extends Controller
         $user = new UserEntity();
         $user->setCharacterId($request->query->get('characterid'));
         $user->setCharacterName($request->query->get('charactername'));
+        $user->setUsername($request->query->get('charactername'));
 
         $form = $this->createForm(RegisterUserForm::class, $user);
 
@@ -162,34 +163,7 @@ class SecurityController extends Controller
 
         if ($form->isValid() && $form->isSubmitted())
         {
-            // Setup new PhealNG access
-            $pheal = new Pheal($user->getApiKey(), $user->getApiCode());
-            $hasMatch = false;
 
-            try
-            {
-                $result = $pheal->Characters();
-                // Check results to see if we find a match
-                foreach($result->characters as $character)
-                {
-                    if(strtolower($character->name) == strtolower($user->getUsername()))
-                    {
-                        $hasMatch = true;
-                        $user->setCharacterId($character->characterID);
-                    }
-                }
-
-                if($hasMatch == false)
-                {
-                    $this->addFlash('error', "Can't find " . $user->getUsername() . " with supplied API information.");
-                    return $this->redirectToRoute('register');
-                }
-
-            } catch (\Pheal\Exceptions\PhealException $e) {
-
-                $this->addFlash('error', 'Something has gone horribly wrong, please contact Lorvulk Munba in game...' + $e->getMessage());
-                return $this->redirectToRoute('register');
-            }
 
             // 3) Encode the password (you could also do this via Doctrine listener)
             $password = $this->get('security.password_encoder')
@@ -206,7 +180,7 @@ class SecurityController extends Controller
 
             // ... do any other work - like send them an email, etc
             // maybe set a "flash" success message for the user
-            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.  You can now delete the API key used to register if you wish.');
+            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.');
 
             return $this->redirectToRoute('login_route');
 

@@ -27,11 +27,12 @@
         <div class="register-box-body">
             <div id="register_main">
                 <p class="login-box-msg">Register a new membership</p>
-                <p>Welcome {{ charactername }}</p>
-                <div class="widget-user-image">
+                <div class="widget-user-image" style="text-align: center;">
                     <img src="https://image.eveonline.com/Character/{{characterid}}_128.jpg" class="img-circle" alt="User Image">
+                    <h3>{{ charactername }}</h3>
                 </div>
-                {{ form_start(form, {'attr' : { 'onsubmit' : 'showProgress()' }}) }}
+                <hr>
+                {{ form_start(form) }}
                     {{ form_errors(form) }}
                     {{ form_row(form.email, {'icon': 'fa fa-envelope','attr': {'placeholder': 'Email'}}) }}
                     {{ form_row(form.plainPassword.first, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Password'}}) }}
@@ -47,29 +48,13 @@
                     </div>
                 {{ form_end(form) }}
             </div>
-            <div id="register_progress" style="display:none;">
-                <div class="progress active">
-                    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-
-                    </div>
-                </div>
-                <p>Contacting CREST to verify Character and API details, please be patient as this can take some time.</p>
-            </div>
         </div><!-- /.form-box -->
     </div><!-- /.register-box -->
 
 
     <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
     <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript">
 
-        function showProgress() {
-
-            $('#register_main').css('display', 'none');
-            $('#register_progress').css('display', 'block');
-        }
-
-    </script>
     {% block javascripts %}{% endblock %}
 
     </body>
