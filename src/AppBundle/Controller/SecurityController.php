@@ -148,12 +148,11 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/register/complete", name="register-complete")
+     * @Route("/register/complete/", name="register-complete")
      */
-    public function registerCompleteAction(Request $request, $characterid, $charactername)
+    public function registerCompleteAction(Request $request)
     {
-        dump($characterid);
-        dump($charactername);
+
         dump($request);
         $user = new UserEntity();
         $form = $this->createForm(RegisterUserForm::class, $user);
