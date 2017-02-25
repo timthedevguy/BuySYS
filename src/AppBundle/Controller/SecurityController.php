@@ -142,8 +142,8 @@ class SecurityController extends Controller
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('register');
         }
-        dump($character);
-        $this->redirectToRoute('register-complete', array('characterid' => $character['characterid'],
+
+        return $this->redirectToRoute('register-complete', array('characterid' => $character['characterid'],
             'charactername' => $character['name']));
     }
 
