@@ -27,7 +27,7 @@
         <div class="register-box-body">
             <div id="register_main">
                 <p class="login-box-msg">Register a new membership</p>
-                <p>Welcome {{ character_name }}</p>
+                <p>Welcome {{ charactername }}</p>
                 {{ form_start(form, {'attr' : { 'onsubmit' : 'showProgress()' }}) }}
                     {{ form_errors(form) }}
                     {{ form_row(form.email, {'icon': 'fa fa-envelope','attr': {'placeholder': 'Email'}}) }}
