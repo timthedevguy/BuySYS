@@ -98,6 +98,7 @@ class EveSSO
             // Decode the response body to JSON
             $results = \GuzzleHttp\json_decode($response->getBody()->getContents());
             dump($results);
+            dump($results['access_token']);
             // Grab Access Token
             $this->access_token = $results['access_token'];
         }
