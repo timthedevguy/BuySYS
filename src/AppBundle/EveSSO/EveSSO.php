@@ -31,7 +31,7 @@ class EveSSO
                     throw new Exception('EVESSO :: Unable to retrieve AuthCode or State from return header.');
                 }
 
-                if( $request->getSession()->get('oauth') != $state)
+                if( $request->getSession()->get('oauth') == $state)
                 {
                     $this->clientid = $clientid;
                     $this->secretkey = $secretkey;
