@@ -52,19 +52,6 @@
             $("#buy_back_form_items").val('');
         });
 
-        $("#buy_back_form_items").bind("paste", function(e) {
-
-            var pData = e.originalEvent.clipboardData.getData('text');
-            var numberOfLineBreaks = (pData.match(/\n/g)||[]).length;
-
-            if(numberOfLineBreaks > 200) {
-
-                $("#more-than-200").css("display", "block");
-                e.preventDefault();
-            } else {
-                $("#more-than-200").css("display", "none");
-            }
-        });
 
     });
 </script>

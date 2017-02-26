@@ -5,7 +5,7 @@
 </script>
 <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button"  id="exitModal" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Buyback Offer</h4>
     </div>
     <div class="modal-body" >
@@ -35,7 +35,7 @@
     </div>
     <div class="modal-footer">
         <input type="hidden" id="give_me_shares" name="give_me_shares" value="0"/>
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Decline</button>
+        <button type="button" id="declineOffer" class="btn btn-danger" data-dismiss="modal">Decline</button>
         <button type="button" id="acceptOffer" class="btn btn-success">Accept</button>
     </div>
 </div>
@@ -50,6 +50,16 @@
         $("#acceptOffer").click(function(e)
         {
             acceptOfferSubmit();
+        });
+
+        $("#declineOffer").click(function(e)
+        {
+            declineOfferSubmit();
+        });
+
+        $("#exitModal").click(function(e)
+        {
+            declineOfferSubmit();
         });
 
         $(function () {
@@ -71,7 +81,7 @@
         $(this).html("Don't copy this!!!!");
     });
 
-    $("#estimated_value").mouseout(function(e) {
+    $("#estimated_value").mouseleave(function(e) {
 
         $(this).html($totalValue);
     });
@@ -86,12 +96,22 @@
 
     function acceptOfferSubmit()
     {
-        $.post('{{path('ajax_accept_buyback')}}', {total: {{total}}, items: {{ajaxData|raw}}, shares: $("#give_me_shares").val() },
+        $.post('{{path('ajax_accept_buyback')}}', {total: {{total}}, orderId: '{{orderId}}', shares: $("#give_me_shares").val() },
             function(response)
             {
                 $( "#base_modal_content" ).html( response );
             }
         , "html");
+    }
+
+    function declineOfferSubmit()
+    {
+        $.post('{{path('ajax_decline_buyback')}}', { orderId: '{{orderId}}' },
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+            , "html");
     }
 </script>
 

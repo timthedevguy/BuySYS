@@ -19,20 +19,13 @@ class TransactionController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        $query = $transactions->createQueryBuilder('t')
-            ->where('t.is_complete = 0')
-            ->orderBy('t.created', 'DESC')
-            ->getQuery();
 
-        $allTransactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllOrderedByDate();
+        $allTransactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllValidTransactionsOrderedByDate();
 
-        $oIncome = 0;
         $oExpense = 0;
         $cComplete = 0;
-        $cCreate = 0;
 
-        foreach($allTransactions as $transaction) {
+        foreach($allTransactions as $elementKey => $transaction) {
 
             if(($transaction->getType() == "P" ) & $transaction->getStatus() == "Pending") {
 

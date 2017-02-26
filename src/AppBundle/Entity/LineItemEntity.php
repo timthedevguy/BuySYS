@@ -156,7 +156,7 @@ class LineItemEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="TransactionEntity", inversedBy="lineitems")
-     * @ORM\JoinColumn(name="transaction_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $transaction;
 
