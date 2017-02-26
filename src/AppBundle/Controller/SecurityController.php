@@ -145,11 +145,12 @@ class SecurityController extends Controller
 
         // TODO: Check Corporation/Alliance Whitelist
 
-        $toEncode['characterid'] = $character['characterid'];
-        $toEncode['charactername'] = $character['name'];
-        $encodedParam = base64_encode(\GuzzleHttp\json_encode($toEncode));
+        // Set temporary session variables
+        $session = $request->getSession();
+        $session->set('character_id', $character['characterid']);
+        $session->set('character_name', $character['name']);
 
-        return $this->redirectToRoute('register-complete', array('character' => $encodedParam));
+        return $this->redirectToRoute('register-complete');
     }
 
     /**
@@ -158,13 +159,21 @@ class SecurityController extends Controller
     public function registerCompleteAction(Request $request)
     {
         $user = new UserEntity();
+        $character = null;
 
-        $character = base64_decode(\GuzzleHttp\json_decode($request->query->get('character'), true));
-        dump($character);
+        $session = $request->getSession();
+
+        // Check Session Variables
+        if($session->get('character_id') == null | $session->get('character_name') == null)
+        {
+            $this->addFlash('error', 'Session variables are missing, start over!');
+            return $this->redirectToRoute('register');
+        }
+
         // We have CharacterID and Character Name from EVE Auth
-        $user->setCharacterId($character['characterid']);
-        $user->setCharacterName($character['charactername']);
-        $user->setUsername($character['charactername']);
+        $user->setCharacterId($session->get('character_id'));
+        $user->setCharacterName($session->get('charactername'));
+        $user->setUsername($session->get('charactername'));
 
         $form = $this->createForm(RegisterUserForm::class, $user);
 
@@ -193,7 +202,6 @@ class SecurityController extends Controller
 
         } elseif ($form->isSubmitted()) {
 
-            dump($form->getErrors());
             $this->addFlash('error', 'Please correct the highlighted errors.');
         }
 
