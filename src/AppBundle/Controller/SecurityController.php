@@ -145,8 +145,11 @@ class SecurityController extends Controller
 
         // TODO: Check Corporation/Alliance Whitelist
 
-        return $this->redirectToRoute('register-complete', array('characterid' => $character['characterid'],
-            'charactername' => $character['name']));
+        $toEncode['characterid'] = $character['characterid'];
+        $toEncode['charactername'] = $character['name'];
+        $encodedParam = base64_encode(\GuzzleHttp\json_encode($toEncode));
+
+        return $this->redirectToRoute('register-complete', array('character' => $encodedParam));
     }
 
     /**
@@ -156,10 +159,12 @@ class SecurityController extends Controller
     {
         $user = new UserEntity();
 
+        $character = base64_decode(\GuzzleHttp\json_decode($request->query->get('character'), true));
+        dump($character);
         // We have CharacterID and Character Name from EVE Auth
-        $user->setCharacterId($request->query->get('characterid'));
-        $user->setCharacterName($request->query->get('charactername'));
-        $user->setUsername($request->query->get('charactername'));
+        $user->setCharacterId($character['characterid']);
+        $user->setCharacterName($character['charactername']);
+        $user->setUsername($character['charactername']);
 
         $form = $this->createForm(RegisterUserForm::class, $user);
 
