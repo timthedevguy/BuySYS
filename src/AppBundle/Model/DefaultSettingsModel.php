@@ -16,4 +16,32 @@ class DefaultSettingsModel
     {
         return $this->maintenanceMode;
     }
+    
+    protected $clientId;
+    
+    public function setClientId($clientId)
+    {
+        $this->clientId = $clientId;
+    
+        return $this;
+    }
+    
+    public function getClientId()
+    {
+        return $this->clientId;
+    }
+
+    protected $secretKey;
+
+    public function setSecretKey($secretKey)
+    {
+        $this->secretKey = $secretKey;
+
+        return $this;
+    }
+
+    public function getSecretKey()
+    {
+        return $this->secretKey;
+    }
 }

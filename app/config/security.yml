@@ -18,20 +18,12 @@ security:
         main:
             anonymous: ~
             form_login:
-                remember_me: true
                 login_path: /login
                 check_path: /login_check
                 success_handler: authentication_handler
             logout:
                 path:   /logout
                 target: /
-            #remember_me:
-            #    key: "amsys_8222013"
-            #    lifetime: 604800 # 1 week in seconds
-            #    path: ~
-            #    domain: ~
-            #    always_remember_me: false
-
             provider: db_provider
 
     access_control:

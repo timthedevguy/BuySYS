@@ -12,8 +12,9 @@ use AppBundle\Entity\TransactionEntity;
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
- * @UniqueEntity("email")
- * @UniqueEntity("username")
+ * @UniqueEntity("email", message="This email is already associated with an account.")
+ * @UniqueEntity("username", message="This character has already been registered.")
+ * @UniqueEntity("characterId", message="This character has already been registered.")
  */
 class UserEntity implements AdvancedUserInterface, \Serializable
 {

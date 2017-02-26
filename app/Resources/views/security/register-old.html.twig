@@ -1,0 +1,61 @@
+{% form_theme form 'forms/my_bootstrap_layout.html.twig' %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Register{% endblock %}</title>
+
+        <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
+        {% block stylesheets %}{% endblock %}
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+    </head>
+    <body class="hold-transition register-page">
+
+    <div class="register-box">
+        <div class="register-logo">
+            <a href="{{ path('homepage') }}"><b>Og</b>SYS</a>
+        </div>
+
+        {{ include('elements/flash.html.twig') }}
+
+        <div class="register-box-body">
+            <div id="register_main">
+                <p class="login-box-msg">Register a new membership</p>
+                <div class="widget-user-image" style="text-align: center;">
+                    <img src="https://image.eveonline.com/Character/{{characterid}}_128.jpg" class="img-circle" alt="User Image">
+                    <h3>{{ charactername }}</h3>
+                </div>
+                <hr>
+                {{ form_start(form) }}
+                    {{ form_errors(form) }}
+                    {{ form_row(form.email, {'icon': 'fa fa-envelope','attr': {'placeholder': 'Email'}}) }}
+                    {{ form_row(form.plainPassword.first, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Password'}}) }}
+                    {{ form_row(form.plainPassword.second, {'icon': 'glyphicon glyphicon-lock','attr': {'placeholder': 'Repeat Password'}}) }}
+                    <hr>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <a class="btn btn-info btn-flat pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Registering" target="_new">Help</a>
+                        </div><!-- /.col -->
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+                        </div><!-- /.col -->
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div><!-- /.form-box -->
+    </div><!-- /.register-box -->
+
+
+    <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
+    <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
+
+    {% block javascripts %}{% endblock %}
+
+    </body>
+</html>

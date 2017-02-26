@@ -1,11 +1,17 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\EveSSO\EveSSO;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Pheal\Pheal;
 use Pheal\Core\Config;
+use zkillboard\crestsso;
+use Symfony\Component\HttpFoundation\Session\Session;
+use GuzzleHttp\Client;
+
 
 use AppBundle\Form\RegisterUserForm;
 use AppBundle\Entity\UserEntity;
@@ -104,58 +110,93 @@ class SecurityController extends Controller
      */
     public function registerAction(Request $request)
     {
+        $clientID = $this->get('helper')->getSetting('sso_clientid');
+        $callbackURL = $this->generateUrl('register_sso_callback');
+
+        $session = $request->getSession();
+
+        $url = EveSSO::generateURL($this->get('request')->getSchemeAndHttpHost().$callbackURL, $clientID, $session);
+
+        return $this->render('security/register.html.twig', array('login_url' => $url));
+    }
+
+    /**
+     * @Route("/register/sso/callback", name="register_sso_callback")
+     */
+    public function registerSSOCallbackAction(Request $request)
+    {
+        // Get our ClientID and Secret Key
+        $clientID = $this->get('helper')->getSetting('sso_clientid');
+        $secretKey = $this->get('helper')->getSetting('sso_secretKey');
+
+        try
+        {
+            // Get EveSSO object
+            $evesso = new EveSSO($clientID, $secretKey, $request);
+
+            // Authorize
+            $character = $evesso->authorize();
+        }
+        catch(Exception $e)
+        {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('register');
+        }
+
+        // TODO: Check Corporation/Alliance Whitelist
+
+        // Set temporary session variables
+        $session = $request->getSession();
+        $session->set('character_id', $character['characterid']);
+        $session->set('character_name', $character['name']);
+
+        return $this->redirectToRoute('register-complete');
+    }
+
+    /**
+     * @Route("/register/complete/", name="register-complete")
+     */
+    public function registerCompleteAction(Request $request)
+    {
         $user = new UserEntity();
+        $character = null;
+
+        $session = $request->getSession();
+
+        // Check Session Variables
+        if($session->get('character_id') == null | $session->get('character_name') == null)
+        {
+            $this->addFlash('error', 'Session variables are missing, start over!');
+            return $this->redirectToRoute('register');
+        }
+
+        // We have CharacterID and Character Name from EVE Auth
+        $user->setCharacterId($session->get('character_id'));
+        $user->setCharacterName($session->get('charactername'));
+        $user->setUsername($session->get('charactername'));
+
         $form = $this->createForm(RegisterUserForm::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted())
         {
-            // Setup new PhealNG access
-            $pheal = new Pheal($user->getApiKey(), $user->getApiCode());
-            $hasMatch = false;
-
-            try
-            {
-                $result = $pheal->Characters();
-                // Check results to see if we find a match
-                foreach($result->characters as $character)
-                {
-                    if(strtolower($character->name) == strtolower($user->getUsername()))
-                    {
-                        $hasMatch = true;
-                        $user->setCharacterId($character->characterID);
-                    }
-                }
-
-                if($hasMatch == false)
-                {
-                    $this->addFlash('error', "Can't find " . $user->getUsername() . " with supplied API information.");
-                    return $this->redirectToRoute('register');
-                }
-
-            } catch (\Pheal\Exceptions\PhealException $e) {
-
-                $this->addFlash('error', 'Something has gone horribly wrong, please contact Lorvulk Munba in game...' + $e->getMessage());
-                return $this->redirectToRoute('register');
-            }
-
-            // 3) Encode the password (you could also do this via Doctrine listener)
+            // Encode the password
             $password = $this->get('security.password_encoder')
                 ->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
+
+            // Setup initial account data
             $user->setRole("ROLE_MEMBER");
             $user->setIsActive(true);
             $user->setLastLogin(new \DateTime());
 
-            // 4) save the User!
+            // Save
             $em = $this->getDoctrine()->getEntityManager('default');
             $em->persist($user);
             $em->flush();
 
-            // ... do any other work - like send them an email, etc
-            // maybe set a "flash" success message for the user
-            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.  You can now delete the API key used to register if you wish.');
+            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.');
 
             return $this->redirectToRoute('login_route');
 
@@ -165,9 +206,8 @@ class SecurityController extends Controller
         }
 
         return $this->render(
-            'security/register.html.twig',
-            array('form' => $form->createView())
-        );
+            'security/register-old.html.twig', array('form' => $form->createView(),
+            'charactername' => $user->getCharacterName(), 'characterid' => $user->getCharacterId()));
     }
 
     /**
@@ -245,14 +285,13 @@ class SecurityController extends Controller
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($user);
                 $em->flush();
-
+                // TODO Chnage to use globals
                 $message = \Swift_Message::newInstance()
-                ->setSubject('OgSYS Password Reset Request')
+                ->setSubject('Password Reset Request')
                 ->setFrom('amsys@alliedindustries-eve.com')
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->renderView(
-                        // app/Resources/views/Emails/registration.html.twig
                         'security/passwordreset.html.twig',
                         array('reset_code' => $reset_code)
                     ),
