@@ -143,6 +143,8 @@ class SecurityController extends Controller
             return $this->redirectToRoute('register');
         }
 
+        // TODO: Check Corporation/Alliance Whitelist
+
         return $this->redirectToRoute('register-complete', array('characterid' => $character['characterid'],
             'charactername' => $character['name']));
     }
@@ -153,6 +155,8 @@ class SecurityController extends Controller
     public function registerCompleteAction(Request $request)
     {
         $user = new UserEntity();
+
+        // We have CharacterID and Character Name from EVE Auth
         $user->setCharacterId($request->query->get('characterid'));
         $user->setCharacterName($request->query->get('charactername'));
         $user->setUsername($request->query->get('charactername'));
@@ -163,29 +167,28 @@ class SecurityController extends Controller
 
         if ($form->isValid() && $form->isSubmitted())
         {
-
-
-            // 3) Encode the password (you could also do this via Doctrine listener)
+            // Encode the password
             $password = $this->get('security.password_encoder')
                 ->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
+
+            // Setup initial account data
             $user->setRole("ROLE_MEMBER");
             $user->setIsActive(true);
             $user->setLastLogin(new \DateTime());
 
-            // 4) save the User!
+            // Save
             $em = $this->getDoctrine()->getEntityManager('default');
             $em->persist($user);
             $em->flush();
 
-            // ... do any other work - like send them an email, etc
-            // maybe set a "flash" success message for the user
             $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.');
 
             return $this->redirectToRoute('login_route');
 
         } elseif ($form->isSubmitted()) {
 
+            dump($form->getErrors());
             $this->addFlash('error', 'Please correct the highlighted errors.');
         }
 
