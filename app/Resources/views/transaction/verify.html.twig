@@ -1,0 +1,58 @@
+
+<div>
+    {% if lineItemComparison.isexactmatch %}
+        <br />
+        <div>
+            <p>  Everything matches perfectly!</p>
+        </div>
+    {% else %}
+        <br />
+        <div class="col-md-6">
+            <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Total Excess</span>
+                    <span class="info-box-number">{{ lineItemComparison.totalexcess|number_format(0,'.',',') }}</span>
+                    <span class="text-muted"></span>
+                </div><!-- /.info-box-content -->
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="info-box">
+                <span class="info-box-icon bg-red"><i class="fa fa-money"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Total Missing</span>
+                    <span class="info-box-number" id="oExpense">{{ lineItemComparison.totalmissing|number_format(0,'.',',') }}</span>
+                    <span class="text-muted"></span>
+                </div><!-- /.info-box-content -->
+            </div>
+        </div>
+        <br />
+
+        <table class="table table-striped images-table">
+            <tr>
+                <th style="width:100px;">Quantity</th>
+                <th>Item</th>
+                <th>Unit Price</th>
+                <th>Net Price</th>
+            </tr>
+            {% for item in lineItemComparison.excesslineitems %}
+                <tr class="success">
+                    <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                    <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                    <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                    <td>{{ item.netprice|number_format(0,'.',',') }}</td>
+                </tr>
+            {% endfor %}
+            {% for item in lineItemComparison.missinglineitems %}
+                <tr class="danger">
+                    <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                    <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                    <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                    <td>{{ item.netprice|number_format(0,'.',',') }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    {% endif %}
+</div>

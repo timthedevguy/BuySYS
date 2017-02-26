@@ -20,7 +20,7 @@
                     {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
                     {{ form_start(form) }}
                         {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:400px;'}}) }}
-                        <div id="buyback_submits">
+                        <div id="buyback_submits" class="right_justify_submits">
                             <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'public_buyback'}) }}" target="_new">Help</a>
                             <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
                             <input type="submit" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">

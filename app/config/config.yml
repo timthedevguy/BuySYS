@@ -38,6 +38,14 @@ twig:
     strict_variables: "%kernel.debug%"
     form_themes:
         - bootstrap_3_layout.html.twig
+    globals:
+        systemNameLong: "%system_name_long%"
+        systemTabName: "%system_tab_name%"
+        systemNameShort: "%system_name_short%"
+        corpTicker: "%corp_ticker%"
+        corpName: "%corp_name%"
+        corpURL: "%corp_url%"
+        corpCopyright: "%corp_copyright%"
 
 # Assetic Configuration
 assetic:

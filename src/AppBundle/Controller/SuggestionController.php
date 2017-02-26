@@ -17,6 +17,7 @@ class SuggestionController extends Controller
     {
         $sm = new SuggestionModel();
         $form = $this->createForm(SuggestionForm::class, $sm);
+        $user = $this->getUser();
 
         // Handle Form
         $form->handleRequest($request);
@@ -27,12 +28,12 @@ class SuggestionController extends Controller
             $message = \Swift_Message::newInstance()
             ->setSubject('Suggestion from Website')
             ->setFrom('buyback.omnigalactic@gmail.com')
-            ->setTo(array('binary.god@gmail.com'))
+            ->setTo(array('binary.god@gmail.com', 'Aarondorn2@gmail.com'))
             ->setBody(
                 $this->renderView(
                     // app/Resources/views/Emails/registration.html.twig
                     'suggestion/message.html.twig',
-                    array('message' => $sm->getMessage())
+                    array('message' => $sm->getMessage(), 'username' => $user->GetUsername())
                 ),
                 'text/html'
             );

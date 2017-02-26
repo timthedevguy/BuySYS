@@ -55,12 +55,12 @@
 	background: #1A2226;
 }
 
-#buyback_submits
+.right_justify_submits
 {
 	text-align: right;
 }
 
-#buyback_submits INPUT
+.right_justify_submits INPUT
 {
 	margin-left: 5px;
 }
@@ -94,7 +94,7 @@ TABLE.table.table-striped.buyback-results-table TD
 
 .buyback-results-container
 {
-	max-height: 300px;
+	max-height: 400px;
 	overflow-y: auto;
 }
 

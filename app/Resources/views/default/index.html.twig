@@ -31,7 +31,7 @@
                         {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
                         {{ form_start(form) }}
                             {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:200px;'}}) }}
-                            <div id="buyback_submits">
+                            <div id="buyback_submits" class="right_justify_submits">
                                 <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Selling Items" target="_new">Help</a>
                                 <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
                                 <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
@@ -81,7 +81,7 @@
                         </thead>
                         <tbody>
                         {% for sale in oSales %}
-                            <tr>
+                            <tr id="row-{{sale.orderid}}">
                                 <td>{{sale.created|date("m/d/Y H:i")}}</td>
                                 <td><a class="fake_link" data-type="{{sale.type}}">{{sale.orderid}}</a></td>
                                 <td>{{sale.net|number_format(0, '.', ',')}}</td>
@@ -226,7 +226,16 @@
         $('.data-table').DataTable();
 
         $('#rSales').DataTable({
-            "order": [[ 0, "desc" ]]
+            "order": [[ 0, "desc" ]],
+
+            // Define custom handler for createdRow event
+            "createdRow" : function( row, data, index ) {
+
+                // Add identity if it specified
+                if( data.hasOwnProperty("id") ) {
+                    row.id = data.id;
+                }
+            }
         });
 
         $(".news_item_link").click(function(e) {
@@ -273,18 +282,25 @@
             }
         });
 
+        bindClickFakeLink();
+    });
+
+    function bindClickFakeLink() {
+
         $(".fake_link[data-type='P'],.fake_link[data-type='PS']").click(function(e) {
 
+            //put spinner in modal
             $('#base_modal').modal({backdrop: "static"});
+            $('#base_modal_content').html('<div class="modal-loading"><i class="fa fa-refresh fa-spin"></i></div>');
 
             $.get('{{path('ajax_view_transaction')}}', {id: $(this).html(), transaction_type: $(this).attr("data-type")},
                 function(response)
                 {
                     $( "#base_modal_content" ).html( response );
                 }
-            , "html");
+                , "html");
         });
-    });
+    }
 </script>
 
 {% endblock %}

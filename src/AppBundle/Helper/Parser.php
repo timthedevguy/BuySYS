@@ -71,6 +71,7 @@ class ParserUtils
     {
         $rawNumber = str_replace('.', '', $number);
         $rawNumber = str_replace(',', '', $rawNumber);
+        $rawNumber = preg_replace('/\s+/u', '', $rawNumber); // Added for regions that use spaces instead of , or .
 
         if ($replaceMultiplySign)
         {
@@ -192,7 +193,7 @@ class UserInputParser extends TabbedParser
     {
         $item = preg_split('/ +/', $line); //split on spaces
 
-        if(is_numeric(ParserUtils::getRawNumber($item[0], true))) //if number is first thing input
+        if (is_numeric(ParserUtils::getRawNumber($item[0], true))) // if number is first thing input
         {
             //build tabbed line
             $formattedLine = ParserUtils::getRawNumber($item[0], true)."\t";
@@ -201,11 +202,20 @@ class UserInputParser extends TabbedParser
                 $formattedLine .= $word." ";
             }
         }
-        else //assume number is last
+        elseif (is_numeric(ParserUtils::getRawNumber($item[count($item) - 1]))) // if number is last input
         {
             //build tabbed line
             $formattedLine = ParserUtils::getRawNumber($item[count($item) - 1])."\t";
             foreach(array_slice($item, 0, count($item) - 1) as $word)
+            {
+                $formattedLine .= $word." ";
+            }
+        }
+        else // no number? default to 1
+        {
+            //build tabbed line
+            $formattedLine = "1\t";
+            foreach($item as $word)
             {
                 $formattedLine .= $word." ";
             }
