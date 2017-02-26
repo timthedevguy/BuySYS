@@ -285,14 +285,13 @@ class SecurityController extends Controller
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($user);
                 $em->flush();
-
+                // TODO Chnage to use globals
                 $message = \Swift_Message::newInstance()
-                ->setSubject('OgSYS Password Reset Request')
+                ->setSubject('Password Reset Request')
                 ->setFrom('amsys@alliedindustries-eve.com')
                 ->setTo($user->getEmail())
                 ->setBody(
                     $this->renderView(
-                        // app/Resources/views/Emails/registration.html.twig
                         'security/passwordreset.html.twig',
                         array('reset_code' => $reset_code)
                     ),
