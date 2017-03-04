@@ -148,7 +148,7 @@ class SecurityController extends Controller
         $em = $this->getDoctrine()->getManager();
         $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
         $canRegister = true;
-        dump($character);
+
         if(count($whitelist) > 0)
         {
             // We have entries, check if the alliance or corporation is allowed
@@ -175,7 +175,7 @@ class SecurityController extends Controller
             $session = $request->getSession();
             $session->set('character_id', $character['character_id']);
             $session->set('character_name', $character['name']);
-            dump($session);
+
             return $this->redirectToRoute('register-complete');
         }
 
@@ -192,7 +192,7 @@ class SecurityController extends Controller
         $character = null;
 
         $session = $request->getSession();
-        dump($session);
+
         // Check Session Variables
         if($session->get('character_id') == null | $session->get('character_name') == null)
         {

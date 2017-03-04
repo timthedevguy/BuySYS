@@ -116,8 +116,6 @@ class AdminController extends Controller
         $type = $request->request->get('type');
         $name = $request->request->get('name');
 
-        //dump($request);
-
         $em = $this->getDoctrine()->getManager();
         $entries = $em->getRepository('AppBundle:RegWhitelistEntity', 'default')->findByEveid($eveid);
 
