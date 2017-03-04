@@ -154,14 +154,18 @@ class SecurityController extends Controller
             // We have entries, check if the alliance or corporation is allowed
             $canRegister = false;
 
-            if(count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0)
+            if(array_key_exists('alliance_id', $character))
             {
-                $canRegister = true;
+                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0) {
+                    $canRegister = true;
+                }
             }
 
-            if(count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['corporation_id'])) != 0)
+            if(array_key_exists('corporation_id', $character))
             {
-                $canRegister = true;
+                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['corporation_id'])) != 0) {
+                    $canRegister = true;
+                }
             }
         }
 
