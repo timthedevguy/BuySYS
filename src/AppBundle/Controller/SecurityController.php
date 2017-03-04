@@ -148,7 +148,7 @@ class SecurityController extends Controller
         $em = $this->getDoctrine()->getManager();
         $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
         $canRegister = true;
-
+        $dump($character);
         if(count($whitelist) > 0)
         {
             // We have entries, check if the alliance or corporation is allowed
