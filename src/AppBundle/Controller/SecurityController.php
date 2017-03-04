@@ -163,7 +163,7 @@ class SecurityController extends Controller
 
             if(array_key_exists('corporation_id', $character))
             {
-                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['corporation_id'])) != 0) {
+                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findCorporation($character['corporation_id'])) != 0) {
                     $canRegister = true;
                 }
             }
