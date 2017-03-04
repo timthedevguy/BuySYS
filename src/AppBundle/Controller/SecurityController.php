@@ -176,7 +176,7 @@ class SecurityController extends Controller
         }
 
         $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
-        $this->redirectToRoute('homepage');
+        return $this->redirectToRoute('homepage');
     }
 
     /**
