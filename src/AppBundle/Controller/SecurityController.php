@@ -143,7 +143,7 @@ class SecurityController extends Controller
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('register');
         }
-
+        dump($character);
         // Check to see if this registration is allowed
         $em = $this->getDoctrine()->getManager();
         $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
