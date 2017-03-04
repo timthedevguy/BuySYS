@@ -148,7 +148,7 @@ class EveSSO
 
             $response = $client->get('/v4/characters/'.$character['CharacterID']);
             $results = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-            $results['characterid'] = $character['CharacterID'];
+            $results['character_id'] = $character['CharacterID'];
 
             return $results;
         }

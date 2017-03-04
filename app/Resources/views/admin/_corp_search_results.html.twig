@@ -1,0 +1,71 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Add Corporation/Alliance</h4>
+</div>
+<div class="modal-body" >
+    <div class="buyback-results-container">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_2-1" data-toggle="tab" aria-expanded="true">Alliances ({{ acount }})</a></li>
+                <li class=""><a href="#tab_2-2" data-toggle="tab" aria-expanded="false">Corporations ({{ ccount }})</a></li>
+                <!--<li class=""><a href="#tab_1-8" data-toggle="tab" aria-expanded="false"><img src="https://image.eveonline.com/Type/2389_32.png"/>Planetary Interaction</a></li>-->
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_2-1">
+                    <table class="table table-striped images-table">
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                        {% for item in alliances %}
+                            <tr class="item-row fake-link" data-id="{{ item.alliance_id }}" data-type="A" data-name="{{ item.alliance_name }}">
+                                <td>
+                                    <img src="https://image.eveonline.com/Alliance/{{ item.alliance_id }}_32.png" style="margin-right: 20px;"> {{ item.alliance_name }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="tab-pane" id="tab_2-2">
+                    <table class="table table-striped images-table">
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                        {% for item in corporations %}
+                            <tr class="item-row fake-link" data-id="{{ item.corporation_id }}" data-type="C" data-name="{{ item.corporation_name }}">
+                                <td>
+                                    <img src="https://image.eveonline.com/Corporation/{{ item.corporation_id }}_32.png" style="margin-right: 20px;"> {{ item.corporation_name }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+</div>
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function (e) {
+
+            $(".item-row").click(function(e) {
+
+                $('#base_modal').modal({backdrop: "static"});
+
+                $.post('{{path('ajax_AddWhitelist')}}', {id: $(this).attr('data-id'), type: $(this).attr('data-type'), name: $(this).attr('data-name')},
+                        function(response)
+                        {
+                            window.location = '{{ path('admin_registration') }}';
+                        }
+                        , "html");
+            });
+        });
+
+    </script>
+
+{% endblock %}

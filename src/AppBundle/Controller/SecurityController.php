@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\EveSSO\EveSSO;
+use AppBundle\ESI\ESI;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -143,14 +144,43 @@ class SecurityController extends Controller
             return $this->redirectToRoute('register');
         }
 
-        // TODO: Check Corporation/Alliance Whitelist
+        // Check to see if this registration is allowed
+        $em = $this->getDoctrine()->getManager();
+        $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
+        $canRegister = true;
 
-        // Set temporary session variables
-        $session = $request->getSession();
-        $session->set('character_id', $character['characterid']);
-        $session->set('character_name', $character['name']);
+        if(count($whitelist) > 0)
+        {
+            // We have entries, check if the alliance or corporation is allowed
+            $canRegister = false;
 
-        return $this->redirectToRoute('register-complete');
+            if(array_key_exists('alliance_id', $character))
+            {
+                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0) {
+                    $canRegister = true;
+                }
+            }
+
+            if(array_key_exists('corporation_id', $character))
+            {
+                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['corporation_id'])) != 0) {
+                    $canRegister = true;
+                }
+            }
+        }
+
+        if($canRegister)
+        {
+            // Set temporary session variables
+            $session = $request->getSession();
+            $session->set('character_id', $character['character_id']);
+            $session->set('character_name', $character['name']);
+
+            return $this->redirectToRoute('register-complete');
+        }
+
+        $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
+        return $this->redirectToRoute('register');
     }
 
     /**
@@ -172,8 +202,8 @@ class SecurityController extends Controller
 
         // We have CharacterID and Character Name from EVE Auth
         $user->setCharacterId($session->get('character_id'));
-        $user->setCharacterName($session->get('charactername'));
-        $user->setUsername($session->get('charactername'));
+        $user->setCharacterName($session->get('character_name'));
+        $user->setUsername($session->get('character_name'));
 
         $form = $this->createForm(RegisterUserForm::class, $user);
 
