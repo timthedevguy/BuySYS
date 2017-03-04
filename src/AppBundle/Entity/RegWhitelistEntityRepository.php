@@ -16,7 +16,7 @@ class RegWhitelistEntityRepository extends EntityRepository
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT p FROM AppBundle:RegWhitelistEntity p WHERE p.type > :ptype AND p.eveid = :pid'
+                'SELECT p FROM AppBundle:RegWhitelistEntity p WHERE p.type = :ptype AND p.eveid = :pid'
             )->setParameter('ptype', 'C')
             ->setParameter('pid', $id)->getResult();
     }
@@ -25,7 +25,7 @@ class RegWhitelistEntityRepository extends EntityRepository
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT p FROM AppBundle:RegWhitelistEntity p WHERE p.type > :ptype AND p.eveid = :pid'
+                'SELECT p FROM AppBundle:RegWhitelistEntity p WHERE p.type = :ptype AND p.eveid = :pid'
             )->setParameter('ptype', 'A')
             ->setParameter('pid', $id)->getResult();
     }
