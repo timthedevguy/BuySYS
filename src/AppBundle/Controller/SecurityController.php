@@ -202,8 +202,8 @@ class SecurityController extends Controller
 
         // We have CharacterID and Character Name from EVE Auth
         $user->setCharacterId($session->get('character_id'));
-        $user->setCharacterName($session->get('charactername'));
-        $user->setUsername($session->get('charactername'));
+        $user->setCharacterName($session->get('character_name'));
+        $user->setUsername($session->get('character_name'));
 
         $form = $this->createForm(RegisterUserForm::class, $user);
 
