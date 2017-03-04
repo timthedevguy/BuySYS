@@ -143,7 +143,7 @@ class SecurityController extends Controller
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('register');
         }
-        dump($character);
+
         // Check to see if this registration is allowed
         $em = $this->getDoctrine()->getManager();
         $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
@@ -176,7 +176,7 @@ class SecurityController extends Controller
         }
 
         $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
-        return $this->redirectToRoute('homepage');
+        return $this->redirectToRoute('register');
     }
 
     /**
