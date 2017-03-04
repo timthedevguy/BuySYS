@@ -5,8 +5,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity()
- * @ORM\Table()
+ * @ORM\Entity(repositoryClass="RegWhitelistEntityRepository")
+ * @ORM\Table(name="whitelist")
  */
 class RegWhitelistEntity
 {

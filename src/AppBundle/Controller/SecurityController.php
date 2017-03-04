@@ -118,9 +118,6 @@ class SecurityController extends Controller
 
         $url = EveSSO::generateURL($this->get('request')->getSchemeAndHttpHost().$callbackURL, $clientID, $session);
 
-
-        ESI::Search(array('corporation', 'alliance'), 'Omni');
-
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }
 
@@ -147,7 +144,31 @@ class SecurityController extends Controller
             return $this->redirectToRoute('register');
         }
 
-        // TODO: Check Corporation/Alliance Whitelist
+        // Check to see if this registration is allowed
+        $em = $this->getDoctrine()->getManager();
+        $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
+
+        if(count($whitelist) > 0)
+        {
+            // We have entries, check if the alliance or corporation is allowed
+            $canRegister = false;
+
+            if(count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0)
+            {
+                $canRegister = true;
+            }
+
+            if(count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['corporation_id'])) != 0)
+            {
+                $canRegister = true;
+            }
+
+            if(!$canRegister)
+            {
+                $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
+                $this->redirectToRoute('register');
+            }
+        }
 
         // Set temporary session variables
         $session = $request->getSession();
