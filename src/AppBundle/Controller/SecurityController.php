@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\EveSSO\EveSSO;
+use AppBundle\ESI\ESI;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -116,6 +117,9 @@ class SecurityController extends Controller
         $session = $request->getSession();
 
         $url = EveSSO::generateURL($this->get('request')->getSchemeAndHttpHost().$callbackURL, $clientID, $session);
+
+
+        ESI::Search(array('corporation', 'alliance'), 'Omni');
 
         return $this->render('security/register.html.twig', array('login_url' => $url));
     }

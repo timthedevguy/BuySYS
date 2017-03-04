@@ -188,3 +188,13 @@ TD .label
 {
 	border-radius: 0px;
 }
+
+.table.images-table TD
+{
+	line-height: 29px;
+}
+
+.top-margin-20
+{
+	margin-top: 20px;
+}
