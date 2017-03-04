@@ -192,7 +192,7 @@ class SecurityController extends Controller
         $character = null;
 
         $session = $request->getSession();
-
+        dump($session);
         // Check Session Variables
         if($session->get('character_id') == null | $session->get('character_name') == null)
         {
