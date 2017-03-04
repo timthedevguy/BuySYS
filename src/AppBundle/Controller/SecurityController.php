@@ -173,9 +173,9 @@ class SecurityController extends Controller
         {
             // Set temporary session variables
             $session = $request->getSession();
-            $session->set('character_id', $character['characterid']);
+            $session->set('character_id', $character['character_id']);
             $session->set('character_name', $character['name']);
-
+            dump($session);
             return $this->redirectToRoute('register-complete');
         }
 
