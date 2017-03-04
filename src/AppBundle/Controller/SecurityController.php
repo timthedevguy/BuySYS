@@ -147,6 +147,7 @@ class SecurityController extends Controller
         // Check to see if this registration is allowed
         $em = $this->getDoctrine()->getManager();
         $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
+        $canRegister = true;
 
         if(count($whitelist) > 0)
         {
@@ -162,20 +163,20 @@ class SecurityController extends Controller
             {
                 $canRegister = true;
             }
-
-            if(!$canRegister)
-            {
-                $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
-                $this->redirectToRoute('register');
-            }
         }
 
-        // Set temporary session variables
-        $session = $request->getSession();
-        $session->set('character_id', $character['characterid']);
-        $session->set('character_name', $character['name']);
+        if($canRegister)
+        {
+            // Set temporary session variables
+            $session = $request->getSession();
+            $session->set('character_id', $character['characterid']);
+            $session->set('character_name', $character['name']);
 
-        return $this->redirectToRoute('register-complete');
+            return $this->redirectToRoute('register-complete');
+        }
+
+        $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
+        $this->redirectToRoute('homepage');
     }
 
     /**
