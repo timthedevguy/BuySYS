@@ -40,18 +40,20 @@ class DefaultController extends Controller
      */
     public function settingsAction(Request $request)
     {
-        $settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
+        // Get Settings Helper
+        $settings = $this->get('helper');
 
-        if($request->getMethod() == 'POST') {
-
-            $em = $this->getDoctrine('default')->getManager();
-
-            $maintenanceMode = $settings->findOneByName('system_maintenance');
-            $maintenanceMode->setValue($request->request->get('maintenance_mode'));
-
+        // Check if POST
+        if($request->getMethod() == 'POST')
+        {
+            // Save our settings and provide Flash
             try
             {
-                $em->flush();
+                // Settings Helper flushes as needed
+                $settings->setSetting('system_maintenance', $request->request->get('maintenance_mode'));
+                $settings->setSetting('sso_clientid', $request->request->get('clientid'));
+                $settings->setSetting('sso_secretkey', $request->request->get('secretkey'));
+
                 $this->addFlash('success', "Settings saved successfully!");
             }
             catch(Exception $e)
@@ -60,11 +62,14 @@ class DefaultController extends Controller
             }
         }
 
+        // Create our Model
         $coreSettings = new DefaultSettingsModel();
-        $coreSettings->setMaintenanceMode($settings->findOneByName('system_maintenance')->getValue());
+        $coreSettings->setMaintenanceMode($settings->getSetting('system_maintenance'));
+        $coreSettings->setClientId($settings->getSetting('sso_clientid'));
+        $coreSettings->setSecretKey($settings->getSetting('sso_secretkey'));
 
-        return $this->render('default/settings.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Core Settings', 'model' => $coreSettings));
+        return $this->render('default/settings.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Core Settings',
+            'model' => $coreSettings));
     }
 
 

@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
             new EveBundle\EveBundle(),
             new Lifo\TypeaheadBundle\LifoTypeaheadBundle(),
+            new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
