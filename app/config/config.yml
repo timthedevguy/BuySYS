@@ -106,7 +106,3 @@ swiftmailer:
     username:   "%mailer_user%"
     password:   "%mailer_password%"
     spool:     { type: memory }
-
-guzzle:
-    # (de)activate logging/profiler; default: %kernel.debug%
-    logging: true
