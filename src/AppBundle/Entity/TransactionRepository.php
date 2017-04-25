@@ -30,7 +30,7 @@ class TransactionRepository extends EntityRepository {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.is_complete = 0 AND t.user = :user AND t.status <> :excludeStatus'
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user AND t.status <> :excludeStatus'
             )->setParameter('user', $user)->setParameter('types', Array('P', 'PS'))->setParameter('excludeStatus', 'Estimate')->getResult();
     }
 }

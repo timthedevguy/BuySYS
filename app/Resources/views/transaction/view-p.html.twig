@@ -60,7 +60,9 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Cancel Transaction</button>
+    {% if transaction.status == 'Pending' %}
+        <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Cancel Transaction</button>
+    {% endif %}
     <button type="button" id="viewtransaction-button" class="btn btn-warning" data-dismiss="modal">Ok</button>
 </div>
 
@@ -84,10 +86,24 @@
                         $("#oSales").toggle();
                     });
 
-                    $("#rSales").DataTable().row("#row-{{transaction.orderid}}").remove().draw(false);
+                    $("#row-{{transaction.orderid}}").toggleClass("danger");                    // update data
+                    var data = [
+                        '{{transaction.created|date("m/d/Y H:i")}}',
+                        '<a class="fake_link" data-type="{{transaction.type}}">{{transaction.orderid}}</a>',
+                        '{{transaction.net|number_format(0, '.', ',')}}',
+                        '<span class="label label-danger pull-right">Cancelled</span>'
+                    ];
 
+
+                    $("#rSales").DataTable().row("#row-{{transaction.orderid}}").data(data).draw(true);
+
+                    //$("#rSales").DataTable().row("#row-{{transaction.orderid}}").remove().draw(false);
+
+                    //set onclick event for new datatable entry
+                    bindClickFakeLink();
                 }
                 , "html");
+
         });
 
 

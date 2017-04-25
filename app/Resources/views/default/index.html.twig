@@ -18,7 +18,7 @@
         <div class="col-md-6">
             <div class="box box-info">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-search"></i> Sell Materials</h3>
+                    <h3 class="box-title"><i class="fa fa-money"></i> Sell Items</h3>
                     <!--<div class="box-tools pull-right">
                         <span class="label label-primary">Label</span>
                     </div>--><!-- /.box-tools -->
@@ -48,27 +48,24 @@
                     The footer of the box
                 </div>--><!-- box-footer -->
             </div><!-- /.box -->
-        </div>
-        <div class="col-md-6">
+
             <div class="box">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-industry"></i> Industry Calculator</h3>
+                    <h3 class="box-title"><i class="fa fa-credit-card"></i> Buy Items</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body">
-                    Future Feature!
+                    Future Feature!  Coming soon!
                 </div><!-- /.box-body -->
                 <!--<div class="box-footer">
                     The footer of the box
                 </div>--><!-- box-footer -->
             </div><!-- /.box -->
-        </div>
-    </div>
 
-    <div class="row">
+        </div>
         <div class="col-md-6">
             <div class="box box-info">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-balance-scale"></i> Outstanding Material Sales</h3>
+                    <h3 class="box-title"><i class="fa fa-balance-scale"></i> My Item Sales</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body">
                     <table class="table table-striped" id="rSales">
@@ -77,14 +74,31 @@
                             <th>Date</th>
                             <th>Order ID</th>
                             <th>Isk Amount</th>
+                            <th>Status</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for sale in oSales %}
-                            <tr id="row-{{sale.orderid}}">
+
+                            {% if sale.status == 'Pending' %}
+                            <tr class="success" id="row-{{sale.orderid}}">
+                            {% elseif sale.status == 'Cancelled' %}
+                                <tr class="danger" id="row-{{sale.orderid}}">
+                            {% else %}
+                                <tr id="row-{{sale.orderid}}">
+                            {% endif %}
                                 <td>{{sale.created|date("m/d/Y H:i")}}</td>
                                 <td><a class="fake_link" data-type="{{sale.type}}">{{sale.orderid}}</a></td>
                                 <td>{{sale.net|number_format(0, '.', ',')}}</td>
+                                <td>
+                                    {% if sale.status == 'Pending' %}
+                                        <span class="label label-success pull-right">{{sale.status}}</span>
+                                    {% elseif sale.status == 'Cancelled' %}
+                                        <span class="label label-danger pull-right">{{sale.status}}</span>
+                                    {% else %}
+                                        <span class="label label-grey pull-right">Complete</span>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -95,6 +109,11 @@
                 </div>
             </div><!-- /.box -->
         </div>
+
+    </div>
+
+    <div class="row">
+
         <!--<div class="col-md-6">
             <div class="box">
                 <div class="box-header with-border">
@@ -234,6 +253,11 @@
                 // Add identity if it specified
                 if( data.hasOwnProperty("id") ) {
                     row.id = data.id;
+                }
+
+                // Add class if it specified
+                if( data.hasOwnProperty("className") ) {
+                    row.className = data.className;
                 }
             }
         });
