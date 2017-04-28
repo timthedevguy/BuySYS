@@ -7,11 +7,13 @@
  */
 
 namespace AppBundle\Controller;
+use AppBundle\Entity\UserPreferencesEntity;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 
-class PreferencesControlloer extends Controller
+class PreferencesController extends Controller
 {
 
 
@@ -23,9 +25,15 @@ class PreferencesControlloer extends Controller
     {
         if($request->getMethod() == 'POST') {
 
-            $themePreference = $request->request->get('email');
+            $preferences = $this->getDoctrine()->getRepository('AppBundle:UserPreferencesEntity', 'default')->findOneBy(array('user' => $this->getUser()));
+
+            $preferences->setDisplayTheme($request->request->get('themeRadios'));
+
+            $this->getDoctrine()->getEntityManager('default')->flush();
+
+            $this->get('session')->set('userPreferences', $preferences);
         }
 
-        return $this->redirectToRoute('confirm_password_reset');
+        return $this->redirectToRoute('homepage');
     }
 }

@@ -5,7 +5,7 @@
     </div>
     <div class="modal-body" >
         <div class="buyback-results-container">
-            <p>Please create a private 'Item Exchange' contract to <b>Omni Galactic</b> for the materials entered here.</p>
+            <p>Please create a private 'Item Exchange' contract to <b>Omni Galactic Xpress Logistics</b> for the materials entered here.</p>
             <ol>
                 <li>Items should be contracted from 8P9-BM Empress Jamyl's Emporium (or other approved locations)</li>
                 <li>Copy and Paste the 'Amount' to the 'I will receive' field in the contract</li>
@@ -42,14 +42,26 @@
 
         $("#buybackacceptclose").click(function(e) {
 
+            //hide modal
             $('#base_modal').modal('hide');
 
-            $oSales = stringToNumber($("#oSales").html());
-            $oSales += 1;
+            //update info boxes
+            var $pendingSales = $("#pendingSales");
+            var $pendingSalesVal = stringToNumber($pendingSales.html());
+            $pendingSalesVal += 1;
 
-            $("#oSales").toggle("puff", function(e) {
-                $("#oSales").html(numberToString($oSales));
-                $("#oSales").toggle();
+            $pendingSales.toggle("puff", function(e) {
+                $pendingSales.html(numberToString($pendingSalesVal));
+                $pendingSales.toggle();
+            });
+
+            var $pendingIncome = $("#pendingIncome")
+            var $pendingIncomeVal = stringToNumber($pendingIncome.html());
+            $pendingIncomeVal += {{ transaction.net }};
+
+            $pendingIncome.toggle("puff", function(e) {
+                $pendingIncome.html(numberToString($pendingIncomeVal));
+                $pendingIncome.toggle();
             });
 
             // Add some data

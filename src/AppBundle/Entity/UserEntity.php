@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 use AppBundle\Entity\TransactionEntity;
+use AppBundle\Entity\UserPrefecEntity;
 
 /**
  * @ORM\Entity
@@ -382,5 +383,21 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     public function getTransaction()
     {
         return $this->transactions;
+    }
+
+    /**
+     * @ORM\OneToOne(targetEntity="UserPreferencesEntity", mappedBy="user")
+     */
+    protected $preferences;
+
+    public function setUserPreferences(\AppBundle\Entity\UserPreferencesEntity $preferences)
+    {
+        $this->preferences = $preferences;
+    }
+
+
+    public function getUserPreferences()
+    {
+        return $this->preferences;
     }
 }

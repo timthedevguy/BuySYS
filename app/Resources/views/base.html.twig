@@ -5,18 +5,30 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <title>{% block title %}{{ systemTabName }}{% endblock %}</title>
 
-        <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
+
+        <!-- *************** the order of the CSS links is important! ***************** -->
         <link rel="stylesheet" href="{{ asset('/css/skin-blue.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
+
+        <!--choose theme-->
+        {% set preferences = app.session.get('userPreferences') %}
+
+        {% if preferences is defined and preferences.displayTheme == "slate" %}
+            <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
+            <link rel="stylesheet" href="{{ asset('/css/bootstrap-slate-modified.css') }}" />
+            <link rel="stylesheet" href="{{ asset('/css/AdminLTE-override-theme.css') }}" />
+        {% else %}
+            <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
+        {% endif %}
+
+        <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/jquery-ui.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/blue.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap3-wysihtml5.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/dataTables.bootstrap.css') }}" />
         <link href="{{ asset('/css/typeaheadbundle.css') }}" type="text/css" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap-toggle.min.css') }}" />
-
         {% block stylesheets %}{% endblock %}
 
         <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
@@ -64,7 +76,7 @@
                     <span class="logo-lg">{{ systemNameLong|raw }}</span>
                 </a>
 
-                <!-- Header Navbar -->
+                <!-- Header Navbar-->
                 {{ include('elements/navTop.html.twig') }}
             </header>
 

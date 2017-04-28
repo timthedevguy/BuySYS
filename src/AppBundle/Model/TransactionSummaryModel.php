@@ -9,7 +9,7 @@ namespace AppBundle\Model;
  * Time: 9:23 AM
  */
 
-class TransactionSummary {
+class TransactionSummaryModel {
 
     protected $totalTransactionAccepted;
     protected $totalTransactionPending;
@@ -21,7 +21,7 @@ class TransactionSummary {
     protected $totalProfitPending;
 
     /**
-     * TransactionSummary constructor.
+     * TransactionSummaryModel constructor.
      *
      * @param mixed $transactions
      */
@@ -30,7 +30,7 @@ class TransactionSummary {
         //loop through provided transactions
         foreach ($transactions as $elementKey => $transaction) {
 
-            if($transaction->getStatus() == "Accepted") { //set accepted values
+            if($transaction->getStatus() == "Complete") { //set accepted values
                 $this->totalTransactionAccepted++;
 
                 if ($transaction->getType() == "P" || $transaction->getType() == "PS" ) {
@@ -51,15 +51,6 @@ class TransactionSummary {
         //set profits as difference between gross and net
         $this->totalProfitAccepted = $this->totalGrossAccepted - $this->totalNetAccepted;
         $this->totalProfitPending = $this->totalGrossPending - $this->totalNetPending;
-
-        dump("totalTransactionAccepted: " . $this->totalTransactionAccepted);
-        dump("totalTransactionPending: " . $this->totalTransactionPending);
-        dump("totalGrossAccepted: " . $this->totalGrossAccepted);
-        dump("totalGrossPending: " . $this->totalGrossPending);
-        dump("totalNetAccepted: " . $this->totalNetAccepted);
-        dump("totalNetPending: " . $this->totalNetPending);
-        dump("totalProfitAccepted: " . $this->totalProfitAccepted);
-        dump("totalProfitPending: " . $this->totalProfitPending);
     }
 
 
