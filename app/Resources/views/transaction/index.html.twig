@@ -72,7 +72,7 @@
                         {% elseif transaction.status == 'Cancelled' %}
                             <tr class="danger" id="row-{{transaction.orderid}}">
                         {% else %}
-                            <tr id="row-{{transaction.orderid}}">
+                            <tr class="bg-gray" id="row-{{transaction.orderid}}">
                         {% endif %}
                             <td>{{transaction.created|date("m/d/Y H:i")}}</td>
                             <td><a class="fake_link">{{transaction.orderid}}</a></td>
