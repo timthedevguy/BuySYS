@@ -1,70 +1,70 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-        <title>{% block title %}{{ systemNameShort }}{% endblock %}</title>
+<head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>{% block title %}{{ systemNameShort }}{% endblock %}</title>
 
-        <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/skin-blue.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/jquery-ui.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/blue.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/bootstrap3-wysihtml5.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('/css/dataTables.bootstrap.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/skin-blue.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/jquery-ui.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/blue.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/bootstrap3-wysihtml5.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/css/dataTables.bootstrap.css') }}" />
 
-        {% block stylesheets %}{% endblock %}
+    {% block stylesheets %}{% endblock %}
 
-        <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
-        <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
-        <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('/js/icheck.min.js') }}"></script>
-        <script src="{{ asset('/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
-        <script src="{{ asset('/js/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('/js/dataTables.bootstrap.min.js') }}"></script>
-        <script src="{{ asset('/js/app.min.js') }}"></script>
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
-        <script type="text/javascript">
+    <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('/js/icheck.min.js') }}"></script>
+    <script src="{{ asset('/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
+    <script src="{{ asset('/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('/js/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('/js/app.min.js') }}"></script>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
 
-            function stringToNumber($str) {
+        function stringToNumber($str) {
 
-                return Number($str.toString().replace(/,/g,''));
-            }
+            return Number($str.toString().replace(/,/g,''));
+        }
 
-            function numberToString($num) {
+        function numberToString($num) {
 
-                return $num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
+            return $num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
 
-        </script>
-    </head>
-    <body class="hold-transition skin-blue sidebar-mini" style="background-color:#D2D6DE;">
-        <div class="container">
-            <!-- Content Header (Page header) -->
-                <section class="content-header">
-                    <h1><span class="logo-lg">{{ systemNameLong }}</span><small>{{ corpName }} Buyback Program</small></h1>
-                </section>
+    </script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini" style="background-color:#D2D6DE;">
+<div class="container">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1><span class="logo-lg">{{ systemNameLong }}</span><small>{{ corpName }} Buyback Program</small></h1>
+    </section>
 
-            <!-- Main content -->
-                <section class="content">
+    <!-- Main content -->
+    <section class="content">
 
-                    {{ include('elements/flash.html.twig') }}
-                    {% block body %}{% endblock %}
+        {{ include('elements/flash.html.twig') }}
+        {% block body %}{% endblock %}
 
-                </section><!-- /.content -->
-        </div>
+    </section><!-- /.content -->
+</div>
 
-        {% block javascripts %}
+{% block javascripts %}
 
 
-        {% endblock %}
-    </body>
+{% endblock %}
+</body>
 </html>
