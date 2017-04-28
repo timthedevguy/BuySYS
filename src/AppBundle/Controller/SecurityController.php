@@ -22,6 +22,7 @@ use AppBundle\Form\ConfirmPasswordResetForm;
 use AppBundle\Model\ChangePasswordModel;
 use AppBundle\Model\ResetPasswordModel;
 use AppBundle\Entity\SettingEntity;
+use AppBundle\Entity\UserPreferencesEntity;
 
 class SecurityController extends Controller
 {
@@ -39,26 +40,16 @@ class SecurityController extends Controller
 
             if($isDown == "0") {
 
-                // Get User Agent string
-                $user_agent = $items = $request->server->get('HTTP_USER_AGENT');
+                $authenticationUtils = $this->get('security.authentication_utils');
 
-                // Check if this is the In Game Browser or not
-                if(!strpos($user_agent, 'EVE-IGB')) {
+                // get the login error if there is one
+                $error = $authenticationUtils->getLastAuthenticationError();
 
-                    $authenticationUtils = $this->get('security.authentication_utils');
+                // last username entered by the user
+                $lastUsername = $authenticationUtils->getLastUsername();
 
-                    // get the login error if there is one
-                    $error = $authenticationUtils->getLastAuthenticationError();
+                return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
 
-                    // last username entered by the user
-                    $lastUsername = $authenticationUtils->getLastUsername();
-
-                    return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
-                } else {
-
-                    // This is the IGB, display the error
-                    return $this->render('security/igb_error.html.twig');
-                }
             } else {
 
                 // In Maintenance Mode, display the message
@@ -221,9 +212,14 @@ class SecurityController extends Controller
             $user->setIsActive(true);
             $user->setLastLogin(new \DateTime());
 
-            // Save
+            //Setup preferences
+            $preferences = new UserPreferencesEntity(); //constructor sets defaults
+
+            // Save User
             $em = $this->getDoctrine()->getEntityManager('default');
-            $em->persist($user);
+            $em->persist($user);//persist user
+            $preferences->setUser($user);
+            $em->persist($preferences);//persist user
             $em->flush();
 
             $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.');
@@ -339,19 +335,6 @@ class SecurityController extends Controller
 
             return $this->redirectToRoute('confirm_password_reset');
         }
-        /*$message = \Swift_Message::newInstance()
-        ->setSubject('AmSYS Password Reset Request')
-        ->setFrom('amsys@alliedindustries-eve.com')
-        ->setTo('binary.god@gmail.com')
-        ->setBody(
-            $this->renderView(
-                // app/Resources/views/Emails/registration.html.twig
-                'registration/passwordreset.html.twig',
-                array('name' => 'tim')
-            ),
-            'text/html'
-        );
-        $this->get('mailer')->send($message);*/
 
         return $this->render('security/reset_password.html.twig', array());
     }

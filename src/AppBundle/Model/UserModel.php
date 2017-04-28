@@ -11,5 +11,20 @@ namespace AppBundle\Model;
 
 class UserModel
 {
+    protected $preferredTheme;
 
+    /**
+     * @return mixed
+     */
+    public function getPreferredTheme()
+    {
+        return $this->preferredTheme;
+    }
+    /**
+     * @param mixed $preferredTheme
+     */
+    public function setPreferredTheme($preferredTheme)
+    {
+        $this->preferredTheme = $preferredTheme;
+    }
 }

@@ -106,13 +106,13 @@ body {
 .content-wrapper,
 .right-side {
   min-height: 100%;
-  background-color: #ecf0f5;
+  /*background-color: #ecf0f5;*/
   z-index: 800;
 }
 .main-footer {
-  background: #fff;
+  /*background: #fff;*/
   padding: 15px;
-  color: #444;
+  /*color: #444;*/
   border-top: 1px solid #d2d6de;
 }
 /* Fixed layout */
@@ -177,14 +177,14 @@ h6,
 }
 /* General Links */
 a {
-  color: #3c8dbc;
+  color: #2e2ab3;
 }
 a:hover,
 a:active,
 a:focus {
   outline: none;
   text-decoration: none;
-  color: #72afd2;
+  color: #4946af;
 }
 /* Page Header */
 .page-header {
@@ -917,7 +917,7 @@ a:focus {
 /*Dropdowns in general*/
 .dropdown-menu {
   box-shadow: none;
-  border-color: #eee;
+  /*border-color: #eee;*/
 }
 .dropdown-menu > li > a {
   color: #777;
@@ -1131,7 +1131,7 @@ a:focus {
   }
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer {
-  background-color: #f9f9f9;
+  /*background-color: #f9f9f9;*/
   padding: 10px;
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer:before,
@@ -1143,7 +1143,7 @@ a:focus {
   clear: both;
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn-default {
-  color: #666666;
+  /*color: #666666;*/
 }
 @media (max-width: 991px) {
   .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn-default:hover {
@@ -1529,7 +1529,8 @@ a:focus {
 .box {
   position: relative;
   border-radius: 3px;
-  background: #ffffff;
+  background-color: #1a2226;
+  /*background: #ffffff;*/
   border-top: 3px solid #d2d6de;
   margin-bottom: 20px;
   width: 100%;
@@ -1718,7 +1719,7 @@ a:focus {
   clear: both;
 }
 .box-header {
-  color: #444;
+  /*color: #444;*/
   display: block;
   padding: 10px;
   position: relative;
@@ -1810,7 +1811,7 @@ a:focus {
   border-bottom-left-radius: 3px;
   border-top: 1px solid #f4f4f4;
   padding: 10px;
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
 }
 .chart-legend {
   margin: 10px 0;
@@ -2007,7 +2008,7 @@ a:focus {
 .info-box {
   display: block;
   min-height: 90px;
-  background: #fff;
+  /*background: #fff;*/
   width: 100%;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   border-radius: 2px;
@@ -2177,7 +2178,7 @@ a:focus {
   border-radius: 3px;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid transparent;
+  /*border: 1px solid transparent;*/
 }
 .btn.uppercase {
   text-transform: uppercase;
@@ -2217,9 +2218,9 @@ a:focus {
   display: block;
 }
 .btn-default {
-  background-color: #f4f4f4;
-  color: #444;
-  border-color: #ddd;
+  /*background-color: #f4f4f4;*/
+  /*color: #444;*/
+  /*border-color: #ddd;*/
 }
 .btn-default:hover,
 .btn-default:active,
@@ -2622,10 +2623,10 @@ a:focus {
 .table > thead > tr > td,
 .table > tbody > tr > td,
 .table > tfoot > tr > td {
-  border-top: 1px solid #f4f4f4;
+  /*border-top: 1px solid #f4f4f4;*/
 }
 .table > thead > tr > th {
-  border-bottom: 2px solid #f4f4f4;
+  /*border-bottom: 2px solid #f4f4f4;*/
 }
 .table tr td .progress {
   margin-top: 5px;
@@ -4736,4 +4737,8 @@ table.text-center th {
   .table-responsive > .table tr td {
     white-space: normal!important;
   }
+}
+
+.modal-dialog {
+  width:55%;
 }

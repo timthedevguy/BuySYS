@@ -2,22 +2,15 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-
-use AppBundle\Entity\TransactionEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="userPreferences")
  */
-class UserEntity implements AdvancedUserInterface, \Serializable
-{
+class UserPreferencesEntity {
 
 
-    public function _construct() {
+    public function __construct() {
 
         $this->displayTheme = "default";
     }
@@ -34,4 +27,56 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     protected $displayTheme;
 
 
+
+    /**
+     * @ORM\OneToOne(targetEntity="UserEntity", inversedBy="preferences")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    protected $user;
+
+    public function setUser(UserEntity $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDisplayTheme()
+    {
+        return $this->displayTheme;
+    }
+
+    /**
+     * @param mixed $displayTheme
+     */
+    public function setDisplayTheme($displayTheme)
+    {
+        $this->displayTheme = $displayTheme;
+    }
 }

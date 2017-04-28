@@ -63,7 +63,7 @@
     {% if transaction.status == 'Pending' %}
         <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Cancel Transaction</button>
     {% endif %}
-    <button type="button" id="viewtransaction-button" class="btn btn-warning" data-dismiss="modal">Ok</button>
+    <button type="button" id="viewtransaction-button" class="btn btn-info" data-dismiss="modal">Ok</button>
 </div>
 
 {% block javascripts %}
@@ -78,29 +78,30 @@
                 function(response)
                 {
 
-                    var $oSales = stringToNumber($("#oSales").html());
-                    $oSales -= 1;
+                    //update info boxes
+                    var $pendingSales = $("#pendingSales");
+                    var $pendingSalesVal = stringToNumber($pendingSales.html());
+                    $pendingSalesVal -= 1;
 
-                    $("#oSales").toggle("puff", function(e) {
-                        $("#oSales").html(numberToString($oSales));
-                        $("#oSales").toggle();
+                    $pendingSales.toggle("fade", function(e) {
+                        $pendingSales.html(numberToString($pendingSalesVal));
+                        $pendingSales.toggle();
                     });
 
-                    $("#row-{{transaction.orderid}}").toggleClass("danger");                    // update data
-                    var data = [
-                        '{{transaction.created|date("m/d/Y H:i")}}',
-                        '<a class="fake_link" data-type="{{transaction.type}}">{{transaction.orderid}}</a>',
-                        '{{transaction.net|number_format(0, '.', ',')}}',
-                        '<span class="label label-danger pull-right">Cancelled</span>'
-                    ];
+                    var $pendingIncome = $("#pendingIncome")
+                    var $pendingIncomeVal = stringToNumber($pendingIncome.html());
+                    $pendingIncomeVal -= {{ transaction.net }};
+
+                    $pendingIncome.toggle("fade", function(e) {
+                        $pendingIncome.html(numberToString($pendingIncomeVal));
+                        $pendingIncome.toggle();
+                    });
 
 
-                    $("#rSales").DataTable().row("#row-{{transaction.orderid}}").data(data).draw(true);
+                    //update UI in table
+                    $("#row-{{transaction.orderid}}").toggleClass("danger");
+                    $("#row-{{transaction.orderid}} .label-success").removeClass("label-success").addClass("label-danger").html("Cancelled");
 
-                    //$("#rSales").DataTable().row("#row-{{transaction.orderid}}").remove().draw(false);
-
-                    //set onclick event for new datatable entry
-                    bindClickFakeLink();
                 }
                 , "html");
 
