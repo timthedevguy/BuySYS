@@ -438,20 +438,11 @@ class Market {
         try
         {
             $typeids = array();
-            $bb_tax = 100;
+            $publicTax = 0;
 
-            if($isPublic)
-            {
-                $bb_tax = $this->helper->getSetting("buyback_default_public_tax");
-            }
-            else
-            {
-                $bb_tax = $this->helper->getSetting("buyback_default_tax");
-            }
-
-            if($isLive == true) {
-
-                $bb_tax = 0;
+            //add guest buyback tax if applicable
+            if($isPublic) {
+                $publicTax = $this->helper->getSetting("buyback_default_public_tax");
             }
 
             foreach($items as $lineItem)
@@ -474,9 +465,13 @@ class Market {
             {
                 if($lineItemA->getIsValid())
                 {
-                    $options = $this->ProcessBuybackRules($lineItemA->getTypeId());
+                    $options = $this->ProcessBuybackRules($lineItemA->getTypeId(), $isPublic);
 
-                    if($isLive != true) {$bb_tax = $options['tax'];}
+                    if($isLive != true) {
+                        $bb_tax = $options['tax'] + $publicTax;
+                    } else {
+                        $bb_tax = 0;
+                    }
 
                     $lineItemA->setMarketPrice($prices[$lineItemA->getTypeId()]);
                     $lineItemA->setGrossPrice($lineItemA->getMarketPrice()*$lineItemA->getQuantity());
@@ -540,6 +535,7 @@ class Market {
 
         $results['name'] = $type->getTypeName();
         $results['typeid'] = $type->getTypeID();
+
 
         return $results;
     }

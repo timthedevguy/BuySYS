@@ -330,7 +330,7 @@ class BuyBackController extends Controller
 
             $items = $this->get('parser')->GetLineItemsFromPasteData($bb->getItems());
 
-            if(!$this->get('market')->PopulateLineItems($items))
+            if(!$this->get('market')->PopulateLineItems($items, true))
             {
                 $template = $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
                 return $template;
@@ -386,7 +386,7 @@ class BuyBackController extends Controller
             $items = array();
             $typeids = array();
 
-            $items = $this->get('parser')->GetLineItemsFromPasteData($bb->getItems());
+            $items = $this->get('parser')->GetLineItemsFromPasteData($bb->getItems(), true);
 
             $em = $this->getDoctrine()->getManager('default');
 
