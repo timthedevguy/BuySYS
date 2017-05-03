@@ -115,26 +115,25 @@
             $.post('{{path('ajax_close_transaction')}}', {id: "{{ transaction.orderid }}"},
                 function(response)
                 {
-                    $("#row-{{transaction.orderid}}").removeClass('success');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").addClass('label-grey');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html('Complete');
+                    //update transaction row
+                    $("#row-{{transaction.orderid}}").removeClass('success')
+                                                    .addClass('bg-gray');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success')
+                                                                        .addClass('label-grey')
+                                                                        .html('Complete');
 
-                    $tExpense = stringToNumber($("#oExpense").html());
-                    $tExpense = $tExpense - {{transaction.net}};
 
-                    $cComplete = stringToNumber($("#cComplete").html());
-                    $cComplete -= 1;
+                    //update info boxes
+                    updateInfoBox($("#netPending"), {{transaction.net * -1}});
+                    updateInfoBox($("#transactionPending"), -1);
+                    updateInfoBox($("#profitPending"), {{(transaction.gross - transaction.net) * -1}});
+                    updateInfoBox($("#totalExpense"), {{transaction.net}});
+                    updateInfoBox($("#totalAccepted"), 1);
+                    updateInfoBox($("#totalProfit"), {{transaction.gross - transaction.net}});
 
-                    $("#oExpense").toggle("puff", function(e) {
-                        $("#oExpense").html(numberToString($tExpense));
-                        $("#oExpense").toggle();
-                    });
+                    //update badging
+                    updatePurchaseQueueBadge(-1);
 
-                    $("#cComplete").toggle("puff", function(e) {
-                        $("#cComplete").html($cComplete);
-                        $("#cComplete").toggle();
-                    });
                 }
             , "html");
         });
@@ -144,27 +143,19 @@
             $.post('{{path('ajax_decline_transaction')}}', {id: "{{ transaction.orderid }}"},
                 function(response)
                 {
-                    $("#row-{{transaction.orderid}}").removeClass('success');
-                    $("#row-{{transaction.orderid}}").addClass('danger');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").addClass('label-danger');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html('Cancelled');
+                    $("#row-{{transaction.orderid}}").removeClass('success')
+                                                    .addClass('danger');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success')
+                                                                        .addClass('label-danger')
+                                                                        .html('Cancelled');
 
-                    $tExpense = stringToNumber($("#oExpense").html());
-                    $tExpense = $tExpense - {{transaction.net}};
+                    //update info boxes
+                    updateInfoBox($("#netPending"), {{transaction.net * -1}});
+                    updateInfoBox($("#transactionPending"), -1);
+                    updateInfoBox($("#profitPending"), {{(transaction.gross - transaction.net) * -1}});
 
-                    $cComplete = stringToNumber($("#cComplete").html());
-                    $cComplete -= 1;
-
-                    $("#oExpense").toggle("puff", function(e) {
-                        $("#oExpense").html(numberToString($tExpense));
-                        $("#oExpense").toggle();
-                    });
-
-                    $("#cComplete").toggle("puff", function(e) {
-                        $("#cComplete").html($cComplete);
-                        $("#cComplete").toggle();
-                    });
+                    //update badging
+                    updatePurchaseQueueBadge(-1);
                 }
             , "html");
         });
@@ -174,29 +165,29 @@
             $.post('{{path('ajax_reopen_transaction')}}', {id: "{{ transaction.orderid }}"},
                 function(response)
                 {
-                    $("#row-{{transaction.orderid}}").removeClass('label-grey');
-                    $("#row-{{transaction.orderid}}").removeClass('danger');
-                    $("#row-{{transaction.orderid}}").addClass('success');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-grey');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-danger');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").addClass('label-success');
-                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html('Pending');
+                    var status = $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html();
 
-                    $tExpense = stringToNumber($("#oExpense").html());
-                    $tExpense = $tExpense + {{transaction.net}};
+                    $("#row-{{transaction.orderid}}").removeClass('label-grey')
+                                                    .removeClass('danger')
+                                                    .addClass('success');
+                    $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-grey')
+                                                                        .removeClass('label-danger')
+                                                                        .addClass('label-success')
+                                                                        .html('Pending');
 
-                    $cComplete = stringToNumber($("#cComplete").html());
-                    $cComplete += 1;
+                    //update info boxes
+                    updateInfoBox($("#netPending"), {{transaction.net}});
+                    updateInfoBox($("#transactionPending"), 1);
+                    updateInfoBox($("#profitPending"), {{transaction.gross - transaction.net}});
 
-                    $("#oExpense").toggle("puff", function(e) {
-                        $("#oExpense").html(numberToString($tExpense));
-                        $("#oExpense").toggle();
-                    });
+                    if (status === 'Complete') {
+                        updateInfoBox($("#totalExpense"), {{ transaction.net * -1 }});
+                        updateInfoBox($("#totalAccepted"), -1);
+                        updateInfoBox($("#totalProfit"), {{ ( transaction.gross - transaction.net ) * -1 }});
+                    }
 
-                    $("#cComplete").toggle("puff", function(e) {
-                        $("#cComplete").html($cComplete);
-                        $("#cComplete").toggle();
-                    });
+                    //update badging
+                    updatePurchaseQueueBadge(1);
                 }
                 , "html");
         });

@@ -77,31 +77,13 @@
             $.post('{{path('ajax_decline_transaction')}}', {id: "{{ transaction.orderid }}"},
                 function(response)
                 {
-
-                    //update info boxes
-                    var $pendingSales = $("#pendingSales");
-                    var $pendingSalesVal = stringToNumber($pendingSales.html());
-                    $pendingSalesVal -= 1;
-
-                    $pendingSales.toggle("fade", function(e) {
-                        $pendingSales.html(numberToString($pendingSalesVal));
-                        $pendingSales.toggle();
-                    });
-
-                    var $pendingIncome = $("#pendingIncome")
-                    var $pendingIncomeVal = stringToNumber($pendingIncome.html());
-                    $pendingIncomeVal -= {{ transaction.net }};
-
-                    $pendingIncome.toggle("fade", function(e) {
-                        $pendingIncome.html(numberToString($pendingIncomeVal));
-                        $pendingIncome.toggle();
-                    });
-
-
                     //update UI in table
                     $("#row-{{transaction.orderid}}").toggleClass("danger");
                     $("#row-{{transaction.orderid}} .label-success").removeClass("label-success").addClass("label-danger").html("Cancelled");
 
+                    //update info boxes
+                    updateInfoBox($("#pendingSales"), -1);
+                    updateInfoBox($("#pendingIncome"), {{ transaction.net * -1 }});
                 }
                 , "html");
 
