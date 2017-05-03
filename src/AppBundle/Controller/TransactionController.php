@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Model\TransactionSummaryModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,22 +21,15 @@ class TransactionController extends Controller
     public function indexAction(Request $request)
     {
 
-        $allTransactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllValidTransactionsOrderedByDate();
+        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsOrderedByDate(500);
+        $last500Summary = new TransactionSummaryModel($last500Transactions);
 
-        $oExpense = 0;
-        $cComplete = 0;
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotals();
 
-        foreach($allTransactions as $elementKey => $transaction) {
-
-            if(($transaction->getType() == "P" ) & $transaction->getStatus() == "Pending") {
-
-                $oExpense += $transaction->getNet();
-                $cComplete += 1;
-            }
-        }
 
         return $this->render('transaction/index.html.twig', array(
-            'page_name' => 'Contract Queue', 'sub_text' => 'Transactions', 'transactions' => $allTransactions, 'oExpense' => $oExpense, 'cComplete' => $cComplete
+            'page_name' => 'Contract Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
+            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
         ));
     }
 
@@ -175,4 +169,16 @@ class TransactionController extends Controller
         return $template;
 
     }
+
+
+    /**
+     * @Route("/admin/transaction/badging", name="ajax_transaction_badging")
+     */
+    public function ajax_getTransactionBadges(Request $request) {
+
+        $purchaseQueueBadge = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->countOpenPurchaseTransactions();
+
+        return new JsonResponse(array('purchaseQueueBadge' => $purchaseQueueBadge));
+    }
+
 }

@@ -46,23 +46,8 @@
             $('#base_modal').modal('hide');
 
             //update info boxes
-            var $pendingSales = $("#pendingSales");
-            var $pendingSalesVal = stringToNumber($pendingSales.html());
-            $pendingSalesVal += 1;
-
-            $pendingSales.toggle("puff", function(e) {
-                $pendingSales.html(numberToString($pendingSalesVal));
-                $pendingSales.toggle();
-            });
-
-            var $pendingIncome = $("#pendingIncome")
-            var $pendingIncomeVal = stringToNumber($pendingIncome.html());
-            $pendingIncomeVal += {{ transaction.net }};
-
-            $pendingIncome.toggle("puff", function(e) {
-                $pendingIncome.html(numberToString($pendingIncomeVal));
-                $pendingIncome.toggle();
-            });
+            updateInfoBox($("#pendingSales"), 1);
+            updateInfoBox($("#pendingIncome"), {{ transaction.net }});
 
             // Add some data
             var data = [

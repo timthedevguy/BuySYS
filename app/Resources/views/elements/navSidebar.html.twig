@@ -4,6 +4,10 @@
 
         $(document).ready(function (e) {
 
+            {% if is_granted('ROLE_ADMIN') %}
+                setBadging();
+            {% endif %}
+
             $("#search-btn").click(function(e) {
 
                 doSearch();
@@ -33,6 +37,16 @@
             $("#search-input").val("");
         }
 
+        function setBadging() {
+            $.post('{{path('ajax_transaction_badging')}}', function(response) {
+
+                    var jsonResponse = JSON.parse(response);
+
+                    updatePurchaseQueueBadge(jsonResponse.purchaseQueueBadge);
+
+                }
+                , "html");
+        }
     </script>
 
 
@@ -104,7 +118,7 @@
 
         {% if is_granted('ROLE_ADMIN') %}
             <li class="header">ACCOUNTING</li>
-            <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Contract Queue</span></a></li>
+            <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Corp Purchase Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
             <li class="header">INVENTORY</li>
             <li class="{{ (page_name == "Inventory" ? 'active' : '') }}"><a href="{{ path('admin_inventory') }}"><i class="fa fa-archive" aria-hidden="true"></i> <span>Inventory</span></a></li>
             <li class="{{ (page_name == "Compare" ? 'active' : '') }}"><a href="{{ path('compare_inventory') }}"><i class="fa fa-compress" aria-hidden="true"></i> <span>Compare</span></a></li>

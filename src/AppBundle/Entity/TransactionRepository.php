@@ -5,12 +5,30 @@ use Doctrine\ORM\EntityRepository;
 
 class TransactionRepository extends EntityRepository {
 
-    public function findAllValidTransactionsOrderedByDate() {
+    public function findValidTransactionsOrderedByDate($limit = 5000) {
 
         return $this->getEntityManager()
             ->createQuery(
                 'SELECT t FROM AppBundle:TransactionEntity t WHERE t.status <> :excludeStatus ORDER BY t.created DESC'
-            )->setParameter('excludeStatus', 'Estimate')->getResult();
+            )->setParameter('excludeStatus', 'Estimate')->setMaxResults($limit)->getResult();
+    }
+
+    public function findAcceptedTransactionTotals() {
+
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(t) as totalTransactionsAccepted, sum(t.gross) as totalGrossAccepted, sum(t.net) as totalNetAccepted
+                      FROM AppBundle:TransactionEntity t WHERE t.status = :status'
+            )->setParameter('status', 'Complete')->getOneOrNullResult();
+    }
+
+    public function countOpenPurchaseTransactions() {
+
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(t) as openPurchaseTransactions
+                      FROM AppBundle:TransactionEntity t WHERE t.status = :status'
+            )->setParameter('status', 'Pending')->getSingleScalarResult();
     }
 
     public function findAllVisibleByUser($user) {

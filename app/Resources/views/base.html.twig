@@ -62,6 +62,38 @@
                 return $num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
 
+
+            function updateInfoBox(element, addedValue) {
+
+                var newVal = stringToNumber(element.html()) + addedValue;
+                var effect = "puff";
+                if (addedValue < 0 ) {
+                    effect = "fade";
+                }
+
+                element.toggle(effect, function(e) {
+                    element.html(numberToString(newVal));
+                    element.toggle();
+                });
+            }
+
+            function updatePurchaseQueueBadge(addedValue) {
+
+                var element = $( "#purchaseQueueBadge" )
+
+                var oldVal = element.html();
+                if (oldVal === "") {
+                    oldVal = 0;
+                }
+
+                var newVal = parseInt(oldVal) + parseInt(addedValue);
+                if (newVal <= 0) {
+                    element.html("");
+                } else {
+                    element.html(numberToString(newVal));
+                }
+            }
+
         </script>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
