@@ -93,15 +93,21 @@
         <!--<li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>-->
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
-                <li><a href="{{ path('quicklook', {'ore_type': 'high'}) }}"><span>High Sec Ore</span></a></li>
-                <li><a href="{{ path('quicklook', {'ore_type': 'other'}) }}"><span>Other High Sec Ore</span></a></li>
-                <li><a href="{{ path('quicklook', {'ore_type': 'low'}) }}"><span>Low Sec Ore</span></a></li>
-                <li><a href="{{ path('quicklook', {'ore_type': 'null'}) }}"><span>Null Sec Ore</span></a></li>
+                <li><a href="#"><span>Ore</span><i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ path('quicklook', {'ore_type': 'all'}) }}"><span>All Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'high'}) }}"><span>High Sec Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'other'}) }}"><span>Other High Sec Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'low'}) }}"><span>Low Sec Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'null'}) }}"><span>Null Sec Ore</span></a></li>
+                    </ul>
+                </li>
                 <li><a href="{{ path('quicklook', {'ore_type': 'ice'}) }}"><span>Ice</span></a></li>
                 <li><a href="{{ path('quicklook', {'ore_type': 'gas'}) }}"><span>Gas</span></a></li>
                 <li><a href="{{ path('quicklook', {'ore_type': 'minerals'}) }}"><span>Minerals</span></a></li>
                 <li><a href="#"><span>Planetary Interaction</span><i class="fa fa-angle-left pull-right"></i></a>
                     <ul class="treeview-menu">
+                        <li><a href="{{ path('quicklook', {'ore_type': 'pAll'}) }}"><span>All Commodities</span></a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'p0'}) }}"><span>P0 Commodities</span></a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'p1'}) }}"><span>P1 Commodities</span></a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'p2'}) }}"><span>P2 Commodities</span></a></li>
