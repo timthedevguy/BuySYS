@@ -84,6 +84,10 @@
                     //update info boxes
                     updateInfoBox($("#pendingSales"), -1);
                     updateInfoBox($("#pendingIncome"), {{ transaction.net * -1 }});
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        updatePurchaseQueueBadge(-1);
+                    {% endif %}
                 }
                 , "html");
 
