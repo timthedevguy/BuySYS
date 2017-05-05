@@ -46,6 +46,8 @@ twig:
         corpName: "%corp_name%"
         corpURL: "%corp_url%"
         corpCopyright: "%corp_copyright%"
+        contractLocation: "%contract_location%"
+        contractCorp: "%contract_corp_name%"
 
 # Assetic Configuration
 assetic:

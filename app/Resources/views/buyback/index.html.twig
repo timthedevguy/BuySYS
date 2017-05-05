@@ -1,4 +1,4 @@
-{% extends 'igb_base.html.twig' %}
+{% extends 'public_base.html.twig' %}
 
 {% block body %}
 <div class="row">
@@ -8,9 +8,9 @@
                 <h3 class="box-title">Step One <small>Paste inventory to box below</small></h3>
             </div><!-- /.box-header -->
             <div class="box-body">
-                <p>Welcome to <b>Og</b>SYS!  We would love to buy your stuff!  In order to help us do this please follow the simple guidlines below and ensure your goods are in one of those stations.</p>
+                <p>Welcome to {{ systemNameLong|raw }}!  We would love to buy your stuff!  In order to help us do this please follow the simple guidelines below.</p>
                 <ol>
-                    <li>Ensure items are in <b>8P9-BM Empress Jamyl's Emporium or other approved locations</b>.</li>
+                    <li>Ensure items are in <b>{{ contractLocation }}</b>.</li>
                     <li>Ensure your inventory view is set to 'Details' or 'List'</li>
                 </ol>
                 <div class="alert alert-error alert-dismissable" id="more-than-200" style="display:none;">
@@ -29,7 +29,7 @@
                 {% else %}
                     <div class="alert alert-danger alert-dismissable">
                         <h4><i class="icon fa fa-ban"></i> EveCentral is Down!</h4>
-                        The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down OgSYS will not accept buyback contracts.
+                        The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down, {{ systemNameShort|raw }} will not accept buyback contracts.
                     </div>
                 {% endif %}
             </div><!-- /.box-body -->
