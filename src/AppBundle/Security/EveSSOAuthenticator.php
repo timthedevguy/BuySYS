@@ -52,15 +52,18 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
     public function getCredentials(Request $request)
     {
 
-//                    $state = $request->query->get('state');
+        $state = $request->query->get('state');
         $auth_code = $request->query->get('code');
 
         //if we have auth_code from SSO, attempt to authenticate user
-        if(!empty($auth_code)) {
+        if(!empty($auth_code) and !empty($state)) {
+
+            if($request->getSession()->get('oauth') != $state) { //make sure session didn't get hijacked
+                throw new AuthenticationException('Session state unknown');
+            }
 
             // Get our Access Token
-            try
-            {
+            try {
                 $client = new Client([
                     'base_uri' => 'https://login.eveonline.com',
                     'timeout' => 10.0,
@@ -85,13 +88,10 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
                 return array(
                     'access_token' => $results['access_token']
                 );
-            }
-            catch(Exception $e)
-            {
-                throw new AuthenticationException('EVESSO :: Unable to obtain Access Token');
+            } catch (Exception $e) {
+                throw new AuthenticationException('Unable to obtain Access Token from EVE SSO');
             }
         }
-
 
         //if no auth_code, return null to call 'start()'
         return null;
@@ -124,7 +124,7 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
         }
         catch(Exception $e)
         {
-            throw new AuthenticationException('EVESSO :: Unable to obtain Character ID');
+            throw new AuthenticationException('Unable to obtain Character ID from Eve SSO');
         }
     }
 
@@ -153,4 +153,5 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
     {
         return false;
     }
+
 }
