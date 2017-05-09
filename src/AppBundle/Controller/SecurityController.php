@@ -48,7 +48,20 @@ class SecurityController extends Controller
                 // last username entered by the user
                 $lastUsername = $authenticationUtils->getLastUsername();
 
-                return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
+                //callback url
+                // Generates an oauth code to ensure Session didn't get hijacked
+                $oauth = uniqid('OAA', true);
+                // Add OAuth code to session
+
+                $request->getSession()->set('oauth', $oauth);
+                $clientID = $this->container->getParameter('sso_client_id');
+                $callbackURL = $this->generateUrl('sso_callback', array(), true);
+
+                // Return completed URL
+                $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID.'&state='.$oauth;
+
+
+                return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error, 'login_url' => $login_url));
 
             } else {
 
@@ -113,65 +126,66 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/register/sso/callback", name="register_sso_callback")
+     * @Route("/sso/callback", name="sso_callback")
      */
-    public function registerSSOCallbackAction(Request $request)
+    public function ssoCallbackAction(Request $request)
     {
-        // Get our ClientID and Secret Key
-        $clientID = $this->get('helper')->getSetting('sso_clientid');
-        $secretKey = $this->get('helper')->getSetting('sso_secretKey');
 
-        try
-        {
-            // Get EveSSO object
-            $evesso = new EveSSO($clientID, $secretKey, $request);
-
-            // Authorize
-            $character = $evesso->authorize();
-        }
-        catch(Exception $e)
-        {
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('register');
-        }
-
-        // Check to see if this registration is allowed
-        $em = $this->getDoctrine()->getManager();
-        $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
-        $canRegister = true;
-
-        if(count($whitelist) > 0)
-        {
-            // We have entries, check if the alliance or corporation is allowed
-            $canRegister = false;
-
-            if(array_key_exists('alliance_id', $character))
-            {
-                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0) {
-                    $canRegister = true;
-                }
-            }
-
-            if(array_key_exists('corporation_id', $character))
-            {
-                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findCorporation($character['corporation_id'])) != 0) {
-                    $canRegister = true;
-                }
-            }
-        }
-
-        if($canRegister)
-        {
-            // Set temporary session variables
-            $session = $request->getSession();
-            $session->set('character_id', $character['character_id']);
-            $session->set('character_name', $character['name']);
-
-            return $this->redirectToRoute('register-complete');
-        }
-
-        $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
-        return $this->redirectToRoute('register');
+//        // Get our ClientID and Secret Key
+//        $clientID = $this->get('helper')->getSetting('sso_clientid');
+//        $secretKey = $this->get('helper')->getSetting('sso_secretKey');
+//
+//        try
+//        {
+//            // Get EveSSO object
+//            $evesso = new EveSSO($clientID, $secretKey, $request);
+//
+//            // Authorize
+//            $character = $evesso->authorize();
+//        }
+//        catch(Exception $e)
+//        {
+//            $this->addFlash('error', $e->getMessage());
+//            return $this->redirectToRoute('register');
+//        }
+//
+//        // Check to see if this registration is allowed
+//        $em = $this->getDoctrine()->getManager();
+//        $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
+//        $canRegister = true;
+//
+//        if(count($whitelist) > 0)
+//        {
+//            // We have entries, check if the alliance or corporation is allowed
+//            $canRegister = false;
+//
+//            if(array_key_exists('alliance_id', $character))
+//            {
+//                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0) {
+//                    $canRegister = true;
+//                }
+//            }
+//
+//            if(array_key_exists('corporation_id', $character))
+//            {
+//                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findCorporation($character['corporation_id'])) != 0) {
+//                    $canRegister = true;
+//                }
+//            }
+//        }
+//
+//        if($canRegister)
+//        {
+//            // Set temporary session variables
+//            $session = $request->getSession();
+//            $session->set('character_id', $character['character_id']);
+//            $session->set('character_name', $character['name']);
+//
+//            return $this->redirectToRoute('register-complete');
+//        }
+//
+//        $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
+        return $this->redirectToRoute('homepage');
     }
 
     /**
