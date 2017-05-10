@@ -8,6 +8,8 @@
 
 namespace AppBundle\Security;
 
+use AppBundle\Entity\UserEntity;
+use AppBundle\Entity\UserPreferencesEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -59,7 +61,7 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
         if(!empty($auth_code) and !empty($state)) {
 
             if($request->getSession()->get('oauth') != $state) { //make sure session didn't get hijacked
-                throw new AuthenticationException('Session state unknown');
+                throw new AuthenticationException('Invalid Session State - Please try again');
             }
 
             // Get our Access Token
@@ -89,7 +91,7 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
                     'access_token' => $results['access_token']
                 );
             } catch (Exception $e) {
-                throw new AuthenticationException('Unable to obtain Access Token from EVE SSO');
+                throw new AuthenticationException('Unable to obtain Access Token from EVE SSO - Please try again later');
             }
         }
 
@@ -112,31 +114,99 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
             $response = $client->get('/oauth/verify');
 
             $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-            $username = $character['CharacterName'];
+            $characterId = $character['CharacterID'];
 
-            $user = $this->em->getRepository('AppBundle:UserEntity')->findOneBy(array('username' => $username));
+            $user = $this->em->getRepository('AppBundle:UserEntity')->findOneBy(array('characterId' => $characterId));
 
+            //if user doesnt exist, create one!
             if(empty($user)) {
-                //TODO: register user if none found!
+                $user = new UserEntity();
+                    $user->setCharacterId($characterId);
+                    $user->setCharacterName($character['CharacterName']);
+                    $user->setUsername($character['CharacterName']);
+                    $user->setIsActive(true);
+                    $user->setLastLogin(new \DateTime());
+                    $user->setRole("ROLE_MEMBER");
+                $preferences = new UserPreferencesEntity(); //constructor sets defaults
+
+                // Save User
+                $this->em->persist($user);//persist user
+                $preferences->setUser($user);
+                $this->em->persist($preferences);//persist user
+                $this->em->flush();
+            } else {
+                //update last login
+                $user->setLastLogin(new \DateTime());
+                $this->em->flush();
             }
 
             return $user;
         }
         catch(Exception $e)
         {
-            throw new AuthenticationException('Unable to obtain Character ID from Eve SSO');
+            throw new AuthenticationException('Unable to obtain Character from Eve SSO - Please try again later\'');
         }
     }
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        //no need to do anything - Eve SSO authenticated user and provided the username
-        return true;
+        //check roles and fail check if user does not have access to app
+        $whitelist = $this->em->getRepository('AppBundle:RegWhitelistEntity')->getCount();
+        $isAuthorized = false;
+
+        if($whitelist > 0)
+        {
+            // We have entries, check if the alliance or corporation is allowed
+            try
+            {
+                $client = new Client([
+                    'base_uri' => 'https://esi.tech.ccp.is',
+                    'timeout' => 10.0,
+                    'headers' => [
+                        'Accept' => 'application/json'
+                    ]
+                ]);
+
+                $response = $client->get('/v4/characters/'.$user->getCharacterId());
+                $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+
+                if(array_key_exists('alliance_id', $character))
+                {
+                    if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findAllianceCount($character['alliance_id']) > 0) {
+                        $isAuthorized = true;
+                    }
+                }
+
+                if(!$isAuthorized and array_key_exists('corporation_id', $character))
+                {
+                    if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findCorporationCount($character['corporation_id']) > 0) {
+                        $isAuthorized = true;
+                    }
+                }
+            }
+            catch(Exception $e)
+            {
+                throw new AuthenticationException('Unable to obtain Corporation Affiliation from Eve ESI - Please try again later');
+            }
+
+        }
+        else
+        {
+            $isAuthorized = true;
+        }
+
+        if (!$isAuthorized) {
+            throw new AuthenticationException('This character is not authorized to use this application.  Please contact an administrator if you believe you should have access.');
+        }
+
+        return $isAuthorized;
 
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
+        //send user to login page with error message
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 
         $url = $this->router->generate('login_route');

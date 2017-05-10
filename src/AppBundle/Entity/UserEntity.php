@@ -13,7 +13,6 @@ use AppBundle\Entity\UserPrefecEntity;
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
- * @UniqueEntity("email", message="This email is already associated with an account.")
  * @UniqueEntity("username", message="This character has already been registered.")
  * @UniqueEntity("characterId", message="This character has already been registered.")
  */
@@ -30,11 +29,11 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     */
     protected $username;
     /**
-    * @ORM\Column(type="text")
+    * @ORM\Column(type="text", nullable=true)
     */
     protected $password;
     /**
-    * @ORM\Column(type="string", length=255)
+    * @ORM\Column(type="string", length=255, nullable=true)
     */
     protected $email;
     /**
@@ -81,7 +80,6 @@ class UserEntity implements AdvancedUserInterface, \Serializable
      }
 
     /**
-     * @Assert\NotBlank()
      * @Assert\Length(max = 4096)
      */
     private $plainPassword;

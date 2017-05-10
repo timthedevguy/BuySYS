@@ -29,7 +29,7 @@
             </div>
 
             {% if error %}
-                <div class="callout callout-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="callout callout-danger">{{ error.message }}</div>
             {% endif %}
             {{ include('elements/flash.html.twig') }}
 
