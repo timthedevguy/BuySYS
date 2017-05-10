@@ -41,6 +41,10 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     */
     protected $role;
     /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    protected $overrideRole = "";
+    /**
     * @ORM\Column(type="boolean")
     */
     protected $isActive;
@@ -154,8 +158,11 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     }
 
     public function getRoles() {
-
-        return explode(",", $this->role);
+        if (!empty($this->overrideRole)) {
+            return explode(",", $this->overrideRole);
+        } else {
+            return explode(",", $this->role);
+        }
     }
 
     public function eraseCredentials() {
@@ -315,6 +322,29 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     public function getRole()
     {
         return $this->role;
+    }
+
+    /**
+     * Get override role
+     *
+     * @return string
+     */
+    public function getOverrideRole()
+    {
+        return $this->overrideRole;
+    }
+    /**
+     * Set override role
+     *
+     * @param string $overrideRole
+     *
+     * @return User
+     */
+    public function setOverrideRole($overrideRole)
+    {
+        $this->overrideRole = $overrideRole;
+
+        return $this;
     }
 
     /**

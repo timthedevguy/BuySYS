@@ -151,49 +151,45 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
     public function checkCredentials($credentials, UserInterface $user)
     {
         //check roles and fail check if user does not have access to app
-        $whitelist = $this->em->getRepository('AppBundle:RegWhitelistEntity')->getCount();
         $isAuthorized = false;
 
-        if($whitelist > 0)
+        if(!in_array('ROLE_DENIED', $user->getRoles()))
         {
-            // We have entries, check if the alliance or corporation is allowed
-            try
-            {
-                $client = new Client([
-                    'base_uri' => 'https://esi.tech.ccp.is',
-                    'timeout' => 10.0,
-                    'headers' => [
-                        'Accept' => 'application/json'
-                    ]
-                ]);
 
-                $response = $client->get('/v4/characters/'.$user->getCharacterId());
-                $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+            $whitelist = $this->em->getRepository('AppBundle:RegWhitelistEntity')->getCount();
+            if ($whitelist > 0) {
+                // We have entries, check if the alliance or corporation is allowed
+                try {
+                    $client = new Client([
+                        'base_uri' => 'https://esi.tech.ccp.is',
+                        'timeout' => 10.0,
+                        'headers' => [
+                            'Accept' => 'application/json'
+                        ]
+                    ]);
+
+                    $response = $client->get('/v4/characters/' . $user->getCharacterId());
+                    $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
 
-                if(array_key_exists('alliance_id', $character))
-                {
-                    if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findAllianceCount($character['alliance_id']) > 0) {
-                        $isAuthorized = true;
+                    if (array_key_exists('alliance_id', $character)) {
+                        if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findAllianceCount($character['alliance_id']) > 0) {
+                            $isAuthorized = true;
+                        }
                     }
+
+                    if (!$isAuthorized and array_key_exists('corporation_id', $character)) {
+                        if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findCorporationCount($character['corporation_id']) > 0) {
+                            $isAuthorized = true;
+                        }
+                    }
+                } catch (Exception $e) {
+                    throw new AuthenticationException('Unable to obtain Corporation Affiliation from Eve ESI - Please try again later');
                 }
 
-                if(!$isAuthorized and array_key_exists('corporation_id', $character))
-                {
-                    if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findCorporationCount($character['corporation_id']) > 0) {
-                        $isAuthorized = true;
-                    }
-                }
+            } else {
+                $isAuthorized = true;
             }
-            catch(Exception $e)
-            {
-                throw new AuthenticationException('Unable to obtain Corporation Affiliation from Eve ESI - Please try again later');
-            }
-
-        }
-        else
-        {
-            $isAuthorized = true;
         }
 
         if (!$isAuthorized) {
@@ -201,7 +197,6 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
         }
 
         return $isAuthorized;
-
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)

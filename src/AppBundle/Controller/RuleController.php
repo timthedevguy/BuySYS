@@ -16,7 +16,7 @@ use AppBundle\Form\AddTypeRuleForm;
 class RuleController extends Controller
 {
     /**
-     * @Route("/admin/settings/rules", name="admin_buyback_rules")
+     * @Route("/system/admin/settings/rules", name="admin_buyback_rules")
      */
     public function indexAction(Request $request)
     {
@@ -132,7 +132,7 @@ class RuleController extends Controller
     }
 
     /**
-     * @Route("/admin/settings/rules/delete/{id}", name="admin_buyback_rules_delete")
+     * @Route("/system/admin/settings/rules/delete/{id}", name="admin_buyback_rules_delete")
      */
     public function deleteAction(Request $request, $id)
     {
@@ -160,7 +160,7 @@ class RuleController extends Controller
     }
 
     /**
-     * @Route("/admin/settings/rules/up/{id}", name="admin_buyback_rules_up")
+     * @Route("/system/admin/settings/rules/up/{id}", name="admin_buyback_rules_up")
      */
     public function upAction(Request $request, $id)
     {
@@ -184,7 +184,7 @@ class RuleController extends Controller
     }
 
     /**
-     * @Route("/admin/settings/rules/down/{id}", name="admin_buyback_rules_down")
+     * @Route("/system/admin/settings/rules/down/{id}", name="admin_buyback_rules_down")
      */
     public function downAction(Request $request, $id)
     {

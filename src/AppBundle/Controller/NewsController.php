@@ -11,7 +11,7 @@ use AppBundle\Entity\NewsEntity;
 class NewsController extends Controller
 {
     /**
-     * @Route("/admin/news", name="admin_news")
+     * @Route("/system/admin/news", name="admin_news")
      */
     public function indexAction(Request $request)
     {
@@ -23,7 +23,7 @@ class NewsController extends Controller
     }
 
     /**
-     * @Route("/admin/news/create", name="ajax_create_news")
+     * @Route("/system/admin/news/create", name="ajax_create_news")
      */
     public function ajax_CreateAction(Request $request)
     {
@@ -48,7 +48,7 @@ class NewsController extends Controller
     }
 
     /**
-     * @Route("/admin/news/edit", name="ajax_edit_news")
+     * @Route("/system/admin/news/edit", name="ajax_edit_news")
      */
     public function ajax_EditAction(Request $request)
     {
@@ -73,7 +73,7 @@ class NewsController extends Controller
     }
 
     /**
-     * @Route("/admin/news/delete", name="ajax_delete_news")
+     * @Route("/system/admin/news/delete", name="ajax_delete_news")
      */
     public function ajax_DeleteAction(Request $request)
     {

@@ -1,138 +1,28 @@
 <?php
 namespace AppBundle\Controller;
 
-use AppBundle\Form\ExclusionForm;
-use AppBundle\Model\GroupRuleModel;
-use AppBundle\Model\TypeRuleModel;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Validator\Constraints\Time;
+//use Symfony\Component\Console\Input\ArrayInput;
+//use Symfony\Component\Console\Output\NullOutput;
+//use Symfony\Component\Validator\Constraints\Time;
+//use Symfony\Bundle\FrameworkBundle\Console\Application;
+//use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use AppBundle\Form\BuyBackForm;
 use AppBundle\Form\BuyBackHiddenForm;
 use AppBundle\Model\BuyBackModel;
-use AppBundle\Model\BuyBackItemModel;
+//use AppBundle\Model\BuyBackItemModel;
 use AppBundle\Entity\LineItemEntity;
-use EveBundle\Entity\TypeEntity;
-use AppBundle\Entity\CacheEntity;
 use AppBundle\Entity\TransactionEntity;
 use AppBundle\Helper\MarketHelper;
-use AppBundle\Model\BuyBackSettingsModel;
-use AppBundle\Entity\ExclusionEntity;
 
 class BuyBackController extends Controller
 {
-    /**
-     * @Route("/admin/settings/buyback", name="admin_buyback_settings")
-     */
-    public function settingsAction(Request $request)
-    {
-        //$settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
 
-        if($request->getMethod() == 'POST') {
-
-            try
-            {
-                $this->get('helper')->setSetting("buyback_source_id", $request->request->get('source_id'));
-                $this->get("helper")->setSetting("buyback_source_type", $request->request->get('source_type'));
-                $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
-                $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
-                $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
-                $this->get("helper")->setSetting("buyback_value_salvage", $request->request->get('value_salvage'));
-                $this->get("helper")->setSetting("buyback_ore_refine_rate", $request->request->get('ore_refine_rate'));
-                $this->get("helper")->setSetting("buyback_ice_refine_rate", $request->request->get('ice_refine_rate'));
-                $this->get("helper")->setSetting("buyback_salvage_refine_rate", $request->request->get('salvage_refine_rate'));
-                $this->get("helper")->setSetting("buyback_default_public_tax", $request->request->get('default_public_tax'));
-
-                $this->addFlash('success', "Settings saved successfully!");
-            }
-            catch(Exception $e)
-            {
-                $this->addFlash('error', "Settings not saved!  Contact Lorvulk Munba.");
-            }
-        }
-
-        $buybacksettings = new BuyBackSettingsModel();
-
-        $buybacksettings->setSourceId($this->get("helper")->getSetting("buyback_source_id"));
-        $buybacksettings->setSourceType($this->get("helper")->getSetting("buyback_source_type"));
-        $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
-        $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
-        $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
-        $buybacksettings->setValueSalvage($this->get("helper")->getSetting("buyback_value_salvage"));
-        $buybacksettings->setOreRefineRate($this->get("helper")->getSetting("buyback_ore_refine_rate"));
-        $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
-        $buybacksettings->setIceRefineRate($this->get("helper")->getSetting("buyback_ice_refine_rate"));
-        $buybacksettings->setSalvageRefineRate($this->get("helper")->getSetting("buyback_salvage_refine_rate"));
-
-        return $this->render('buyback/settings.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
-    }
-
-    /**
-     * @Route("/admin/settings/exclusions", name="admin_buyback_exclusions")
-     */
-    public function exclusionsAction(Request $request)
-    {
-        $mode = $this->get("helper")->getSetting("buyback_whitelist_mode");
-        $form = $this->createForm(ExclusionForm::class);
-
-        if($request->getMethod() == "POST") {
-
-            $form_results = $request->request->get('exclusion_form');
-            $exclusion = new ExclusionEntity();
-            $exclusion->setMarketGroupId($form_results['marketgroupid']);
-            $exclusion->setWhitelist($mode);
-            $group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->
-                findOneByMarketGroupID($exclusion->getMarketGroupId());
-            $exclusion->setMarketGroupName($group->getMarketGroupName());
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($exclusion);
-            $em->flush();
-        }
-
-        $exclusions = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
-
-        return $this->render('buyback/exclusions.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
-            'exclusions' => $exclusions, 'form' => $form->createView()));
-    }
-
-    /**
-     * @Route("/admin/settings/exclusions/delete", name="admin_delete_exclusion")
-     */
-    public function deleteExclusionAction(Request $request)
-    {
-        $exclusion = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->
-            findOneById($request->query->get('id'));
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($exclusion);
-        $em->flush();
-
-        return $this->redirectToRoute('admin_buyback_exclusions');
-    }
-
-    /**
-     * @Route("/admin/settings/mode", name="ajax_admin_buyback_mode")
-     */
-    public function ajax_ExclusionModeAction(Request $request)
-    {
-        $mode = $request->request->get("mode");
-
-        $this->get("helper")->setSetting("buyback_whitelist_mode", $mode);
-
-        $response = new Response();
-        $response->setStatusCode(200);
-
-        return $response;
-    }
 
     /**
      * @Route("/buyback/estimate", name="ajax_estimate_buyback")
