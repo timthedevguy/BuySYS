@@ -7,7 +7,6 @@ security:
         db_provider:
             entity:
                 class: AppBundle:UserEntity
-                property: email
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -17,18 +16,22 @@ security:
 
         main:
             anonymous: ~
-            form_login:
-                login_path: /login
-                check_path: /login_check
-                success_handler: authentication_handler
+#            form_login:
+#                login_path: /login
+#                check_path: /login_check
+#                success_handler: authentication_handler
             logout:
                 path:   /logout
                 target: /
+            guard:
+                authenticators:
+                    - eve_sso_authenticator
             provider: db_provider
 
     access_control:
         - {path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - {path: ^/sso, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/devlogin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/resetpassword, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/guest/buyback, roles: IS_AUTHENTICATED_ANONYMOUSLY }

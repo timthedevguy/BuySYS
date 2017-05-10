@@ -12,21 +12,30 @@ use Doctrine\ORM\EntityRepository;
  */
 class RegWhitelistEntityRepository extends EntityRepository
 {
-    public function findCorporation($id) {
+    public function findCorporationCount($id) {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT p FROM AppBundle:RegWhitelistEntity p WHERE p.type = :ptype AND p.eveid = :pid'
+                'SELECT count(p) FROM AppBundle:RegWhitelistEntity p WHERE p.type = :ptype AND p.eveid = :pid'
             )->setParameter('ptype', 'C')
-            ->setParameter('pid', $id)->getResult();
+            ->setParameter('pid', $id)->getSingleScalarResult();
     }
 
-    public function findAlliance($id) {
+    public function findAllianceCount($id) {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT p FROM AppBundle:RegWhitelistEntity p WHERE p.type = :ptype AND p.eveid = :pid'
+                'SELECT count(p) FROM AppBundle:RegWhitelistEntity p WHERE p.type = :ptype AND p.eveid = :pid'
             )->setParameter('ptype', 'A')
-            ->setParameter('pid', $id)->getResult();
+            ->setParameter('pid', $id)->getSingleScalarResult();
     }
+
+    public function getCount() {
+
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(p) as regCount FROM AppBundle:RegWhitelistEntity p'
+            )->getSingleScalarResult();
+    }
+
 }

@@ -29,4 +29,6 @@ parameters:
         corp_copyright: 'Copyright 2016, Central Omni Galactic Group'
         contract_location: "8P9-BM Empress Jamyl's Emporium"
         contract_corp_name: 'Omni Galactic Xpress Logistics'
+        sso_client_id: 27c58fa9f6b62affb50e33ea252d389e
+        sso_secret_key: 3wsWm7XhNoFL7FFIo2heRxeto8LY2d6pP5ng47yh
 

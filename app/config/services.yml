@@ -23,3 +23,7 @@ services:
     lineItemComparator:
         class: AppBundle\Helper\LineItemComparator
         arguments: ['@market']
+
+    eve_sso_authenticator:
+            class: AppBundle\Security\EveSSOAuthenticator
+            arguments: ['@doctrine.orm.entity_manager', '@router', '%sso_client_id%', '%sso_secret_key%']

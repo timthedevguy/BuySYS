@@ -1,28 +1,10 @@
 <?php
 namespace AppBundle\Controller;
 
-use AppBundle\EveSSO\EveSSO;
-use AppBundle\ESI\ESI;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Pheal\Pheal;
-use Pheal\Core\Config;
-use zkillboard\crestsso;
-use Symfony\Component\HttpFoundation\Session\Session;
-use GuzzleHttp\Client;
 
-
-use AppBundle\Form\RegisterUserForm;
-use AppBundle\Entity\UserEntity;
-
-use AppBundle\Form\ChangePasswordForm;
-use AppBundle\Form\ConfirmPasswordResetForm;
-use AppBundle\Model\ChangePasswordModel;
-use AppBundle\Model\ResetPasswordModel;
-use AppBundle\Entity\SettingEntity;
-use AppBundle\Entity\UserPreferencesEntity;
 
 class SecurityController extends Controller
 {
@@ -40,15 +22,21 @@ class SecurityController extends Controller
 
             if($isDown == "0") {
 
-                $authenticationUtils = $this->get('security.authentication_utils');
-
                 // get the login error if there is one
-                $error = $authenticationUtils->getLastAuthenticationError();
+                $error = $this->get('security.authentication_utils')->getLastAuthenticationError();
 
-                // last username entered by the user
-                $lastUsername = $authenticationUtils->getLastUsername();
+                // Generate an oauth code to ensure Session doesn't get hijacked
+                $oauth = uniqid('OAA', true);
+                $request->getSession()->set('oauth', $oauth);
 
-                return $this->render('security/login.html.twig', array('last_username' => $lastUsername, 'error' => $error));
+                $clientID = $this->container->getParameter('sso_client_id');
+                $callbackURL = $this->generateUrl('sso_callback', array(), true);
+
+                // build SSO URL
+                $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID.'&state='.$oauth;
+
+
+                return $this->render('security/login.html.twig', array('error' => $error, 'login_url' => $login_url));
 
             } else {
 
@@ -57,35 +45,11 @@ class SecurityController extends Controller
             }
         } else {
 
-            // No settings exists, Generate them and then display the login
-            // page again.
+            // No settings exists, Generate them and then display the login page again.
             $this->get("helper")->generateDefaultSettings();
             $this->addFlash("success", 'Generated default settings, login to continue!');
             return $this->redirectToRoute('login_route');
         }
-    }
-
-    /**
-     * @Route("/devlogin", name="devlogin")
-     */
-    public function devloginAction(Request $request)
-    {
-        $authenticationUtils = $this->get('security.authentication_utils');
-
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        return $this->render(
-            'security/login.html.twig',
-            array(
-                // last username entered by the user
-                'last_username' => $lastUsername,
-                'error'         => $error,
-            )
-        );
     }
 
     /**
@@ -98,292 +62,11 @@ class SecurityController extends Controller
     }
 
     /**
-     * @Route("/register", name="register")
+     * @Route("/sso/callback", name="sso_callback")
      */
-    public function registerAction(Request $request)
+    public function ssoCallbackAction(Request $request)
     {
-        $clientID = $this->get('helper')->getSetting('sso_clientid');
-        $callbackURL = $this->generateUrl('register_sso_callback');
-
-        $session = $request->getSession();
-
-        $url = EveSSO::generateURL($this->get('request')->getSchemeAndHttpHost().$callbackURL, $clientID, $session);
-
-        return $this->render('security/register.html.twig', array('login_url' => $url));
+        return $this->redirectToRoute('homepage');
     }
 
-    /**
-     * @Route("/register/sso/callback", name="register_sso_callback")
-     */
-    public function registerSSOCallbackAction(Request $request)
-    {
-        // Get our ClientID and Secret Key
-        $clientID = $this->get('helper')->getSetting('sso_clientid');
-        $secretKey = $this->get('helper')->getSetting('sso_secretKey');
-
-        try
-        {
-            // Get EveSSO object
-            $evesso = new EveSSO($clientID, $secretKey, $request);
-
-            // Authorize
-            $character = $evesso->authorize();
-        }
-        catch(Exception $e)
-        {
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('register');
-        }
-
-        // Check to see if this registration is allowed
-        $em = $this->getDoctrine()->getManager();
-        $whitelist = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
-        $canRegister = true;
-
-        if(count($whitelist) > 0)
-        {
-            // We have entries, check if the alliance or corporation is allowed
-            $canRegister = false;
-
-            if(array_key_exists('alliance_id', $character))
-            {
-                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findAlliance($character['alliance_id'])) != 0) {
-                    $canRegister = true;
-                }
-            }
-
-            if(array_key_exists('corporation_id', $character))
-            {
-                if (count($em->getRepository('AppBundle:RegWhitelistEntity')->findCorporation($character['corporation_id'])) != 0) {
-                    $canRegister = true;
-                }
-            }
-        }
-
-        if($canRegister)
-        {
-            // Set temporary session variables
-            $session = $request->getSession();
-            $session->set('character_id', $character['character_id']);
-            $session->set('character_name', $character['name']);
-
-            return $this->redirectToRoute('register-complete');
-        }
-
-        $this->addFlash('error', 'This character is not allowed to register on this system due to Alliance/Corporation rules.');
-        return $this->redirectToRoute('register');
-    }
-
-    /**
-     * @Route("/register/complete/", name="register-complete")
-     */
-    public function registerCompleteAction(Request $request)
-    {
-        $user = new UserEntity();
-        $character = null;
-
-        $session = $request->getSession();
-
-        // Check Session Variables
-        if($session->get('character_id') == null | $session->get('character_name') == null)
-        {
-            $this->addFlash('error', 'Session variables are missing, start over!');
-            return $this->redirectToRoute('register');
-        }
-
-        // We have CharacterID and Character Name from EVE Auth
-        $user->setCharacterId($session->get('character_id'));
-        $user->setCharacterName($session->get('character_name'));
-        $user->setUsername($session->get('character_name'));
-
-        $form = $this->createForm(RegisterUserForm::class, $user);
-
-        $form->handleRequest($request);
-
-        if ($form->isValid() && $form->isSubmitted())
-        {
-            // Encode the password
-            $password = $this->get('security.password_encoder')
-                ->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
-
-            // Setup initial account data
-            $user->setRole("ROLE_MEMBER");
-            $user->setIsActive(true);
-            $user->setLastLogin(new \DateTime());
-
-            //Setup preferences
-            $preferences = new UserPreferencesEntity(); //constructor sets defaults
-
-            // Save User
-            $em = $this->getDoctrine()->getEntityManager('default');
-            $em->persist($user);//persist user
-            $preferences->setUser($user);
-            $em->persist($preferences);//persist user
-            $em->flush();
-
-            $this->addFlash('success','Created '.$user->getUsername().', login below to conitnue.');
-
-            return $this->redirectToRoute('login_route');
-
-        } elseif ($form->isSubmitted()) {
-
-            $this->addFlash('error', 'Please correct the highlighted errors.');
-        }
-
-        return $this->render(
-            'security/register-old.html.twig', array('form' => $form->createView(),
-            'charactername' => $user->getCharacterName(), 'characterid' => $user->getCharacterId()));
-    }
-
-    /**
-     * @Route("/change_password", name="change_password")
-     */
-    public function changePasswordAction(Request $request)
-    {
-        // 1) build the form
-        //$user = new User();
-        $data = new ChangePasswordModel();
-        $form = $this->createForm(ChangePasswordForm::class, $data);
-
-        // 2) handle the submit (will only happen on POST)
-        $form->handleRequest($request);
-
-        if ($form->isValid() && $form->isSubmitted())
-        {
-            if($this->get('security.password_encoder')->isPasswordValid($this->getUser(), $data->getCurrentPassword()) == true) {
-
-                if($this->get('security.password_encoder')->isPasswordValid($this->getUser(), $data->getNewPassword()) != true)
-                {
-                    $user = $this->getUser();
-
-                    $password = $this->get('security.password_encoder')
-                        ->encodePassword($user, $data->getNewPassword());
-                    $user->setPassword($password);
-
-                    // 4) save the User!
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($user);
-                    $em->flush();
-
-                    $this->addFlash("success", 'Password changed successfully!');
-                    return $this->redirectToRoute('homepage');
-                }
-                else
-                {
-                    $this->addFlash('error', 'Cannot change password to the same password that is currently in use.');
-                }
-            }
-            else
-            {
-                $this->addFlash('error', 'Current password is incorrect or empty.');
-            }
-
-
-
-        } elseif ($form->isSubmitted())
-        {
-            $this->addFlash('error', 'Passwords do not match or are empty.');
-        }
-
-        // Logic
-        return $this->render(
-            'security/change_password.html.twig',
-            array('form' => $form->createView())
-        );
-    }
-
-    /**
-     * @Route("/resetpassword", name="reset_password")
-     */
-    public function passwordResetAction(Request $request)
-    {
-        if($request->getMethod() == 'POST') {
-
-            $email = $request->request->get('email');
-            $reset_code = md5(uniqid());
-            $user = $this->getDoctrine()->getRepository('AppBundle:UserEntity','default')->findOneByEmail($email);
-
-            if($user != null)
-            {
-                $user->setResetCode($reset_code);
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
-                // TODO Chnage to use globals
-                $message = \Swift_Message::newInstance()
-                ->setSubject('Password Reset Request')
-                ->setFrom('amsys@alliedindustries-eve.com')
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->renderView(
-                        'security/passwordreset.html.twig',
-                        array('reset_code' => $reset_code)
-                    ),
-                    'text/html'
-                );
-                $this->get('mailer')->send($message);
-
-                $this->addFlash('success','Email Sent.  Please check your email for further instructions.');
-            }
-            else
-            {
-                $this->addFlash('error','User does not exist.  Please try again');
-                return $this->redirectToRoute('reset_password');
-            }
-
-            return $this->redirectToRoute('confirm_password_reset');
-        }
-
-        return $this->render('security/reset_password.html.twig', array());
-    }
-
-    /**
-     * @Route("/confirmpasswordreset", name="confirm_password_reset")
-     */
-    public function passwordResetConfirmAction(Request $request)
-    {
-        $data = new ResetPasswordModel();
-        $form = $this->createForm(ConfirmPasswordResetForm::class, $data);
-
-        // 2) handle the submit (will only happen on POST)
-        $form->handleRequest($request);
-
-        if ($form->isValid() && $form->isSubmitted())
-        {
-            $user = $this->getDoctrine()->getRepository('AppBundle:UserEntity', 'default')->findOneByResetCode($data->getResetCode());
-
-            if($user != null)
-            {
-                $password = $this->get('security.password_encoder')
-                    ->encodePassword($user, $data->getNewPassword());
-                $user->setPassword($password);
-                $user->setResetCode("");
-
-                // 4) save the User!
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
-
-                $this->addFlash("success", 'Password set successfully!');
-                return $this->redirectToRoute('login_route');
-            }
-            else
-            {
-                $this->addFlash('error', 'Reset Code not found!');
-                return $this->redirectToRoute('confirm_password_reset');
-            }
-        }
-        elseif ($form->isSubmitted())
-        {
-            $this->addFlash('error', 'Could not set new password');
-        }
-
-        // Logic
-        return $this->render(
-            'security/reset_confirm.html.twig',
-            array('form' => $form->createView())
-        );
-    }
 }

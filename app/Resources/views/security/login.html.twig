@@ -29,40 +29,23 @@
             </div>
 
             {% if error %}
-                <div class="callout callout-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="callout callout-danger">{{ error.message }}</div>
             {% endif %}
             {{ include('elements/flash.html.twig') }}
 
             <!-- /.login-logo -->
             <div class="login-box-body">
-                <p class="login-box-msg">Sign in to start your session</p>
-                <form action="{{ path('login_check') }}" method="post">
 
-                    <div class="form-group has-feedback">
-                        <input class="form-control" placeholder="Email" id="username" type="text" value="{{ last_username }}" name="_username">
-                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                    </div>
-                    <div class="form-group has-feedback">
-                        <input class="form-control" placeholder="Password" type="password" id="password" name="_password">
-                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-8">
-                            <a class="btn btn-success pull-left btn-flat" style="margin-right:5px;" href="{{ path('register') }}">Register</a>
-                            <a class="btn btn-warning pull-left btn-flat" href="{{ path('reset_password') }}">Reset Password</a>
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-xs-4">
-                            <button class="btn btn-success btn-block btn-flat" type="submit">Sign In</button>
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                </form>
-                <hr/>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <a href="{{path('guest_buyback')}}" class="btn btn-primary btn-block btn-flat">Sell to us without an Account!</a>
-                    </div>
+                <div id="login_main" style="text-align:center; margin-top:25px;">
+                    <a href="{{ login_url }}"><img src="{{ asset('images/EVE_SSO_Login_Buttons_Large_Black.png') }}"/></a>
+                    <hr />
+                    <p style="margin-top:10px;">
+                        Eve SSO is used only to verify your identity and Corporation/Alliance affiliation
+                    </p>
+                    <p>
+                        <a href="https://support.eveonline.com/hc/en-us/articles/205381192-Single-Sign-On-SSO" target="_blank">Click here for more information on Eve SSO</a>
+                    </p>
+
                 </div>
 
             </div>
@@ -74,14 +57,5 @@
         <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
         <script src="{{ asset('/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('/js/icheck.min.js') }}"></script>
-        <script>
-            $(function () {
-                $('input').iCheck({
-                    checkboxClass: 'icheckbox_square-blue',
-                    radioClass: 'iradio_square-blue',
-                    increaseArea: '20%' // optional
-                });
-            });
-        </script>
     </body>
 </html>
