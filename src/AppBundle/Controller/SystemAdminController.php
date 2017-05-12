@@ -3,7 +3,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Form\ExclusionForm;
 
-use AppBundle\Entity\RegWhitelistEntity;
 use Doctrine\DBAL\Types\TextType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -13,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Model\DefaultSettingsModel;
 use AppBundle\Model\BuyBackSettingsModel;
 use AppBundle\Entity\ExclusionEntity;
-use AppBundle\ESI\ESI;
 
 class SystemAdminController extends Controller
 {
@@ -217,81 +215,6 @@ class SystemAdminController extends Controller
         return $this->redirectToRoute('admin_tools');
     }
 
-    /**
-     * @Route("/system/admin/registration", name="admin_registration")
-     */
-    public function registrationAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $items = $em->getRepository('AppBundle:RegWhitelistEntity')->findAll();
-
-        return $this->render('admin/registration.html.twig', array('page_name' => 'Admin',
-            'sub_text' => 'Control who can register on the System', 'items' => $items));
-    }
-
-    /**
-     * @Route("/system/admin/ajax_CorpSearch", name="ajax_CorpSearch")
-     */
-    public function ajax_CorpSearchAction(Request $request)
-    {
-        $searchString = $request->request->get('searchstring');
-
-        $searchResults = ESI::Search(array('corporation', 'alliance'), $searchString);
-
-        $allianceNames = array();
-        $corporationNames = array();
-
-        if(array_key_exists('alliance', $searchResults))
-        {
-            $allianceNames = ESI::AllianceNames($searchResults['alliance']);
-        }
-
-        if(array_key_exists('corporation', $searchResults))
-        {
-            $corporationNames = ESI::CorporationNames($searchResults['corporation']);
-        }
-
-        return $this->render('admin/_corp_search_results.html.twig', array('corporations' => $corporationNames,
-            'alliances' => $allianceNames, 'acount' => count($allianceNames), 'ccount' => count($corporationNames)));
-    }
-
-    /**
-     * @Route("/system/admin/ajax_AddWhitelist", name="ajax_AddWhitelist")
-     */
-    public function ajax_AddWhitelistAction(Request $request)
-    {
-        $eveid = $request->request->get('id');
-        $type = $request->request->get('type');
-        $name = $request->request->get('name');
-
-        $em = $this->getDoctrine()->getManager();
-        $entries = $em->getRepository('AppBundle:RegWhitelistEntity', 'default')->findByEveid($eveid);
-
-        if(count($entries) == 0)
-        {
-            $entry = new RegWhitelistEntity();
-            $entry->setEveId($eveid);
-            $entry->setName($name);
-            $entry->setType($type);
-
-            $em->persist($entry);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('admin_registration');
-    }
-
-    /**
-     * @Route("/system/admin/registration/delete/{id}", name="admin_registration_delete")
-     */
-    public function registerDeleteAction(Request $request, RegWhitelistEntity $item)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($item);
-        $em->flush();
-
-        return $this->redirectToRoute('admin_registration');
-    }
 
 
 }

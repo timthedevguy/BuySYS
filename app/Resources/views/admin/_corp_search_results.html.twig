@@ -60,7 +60,7 @@
                 $.post('{{path('ajax_AddWhitelist')}}', {id: $(this).attr('data-id'), type: $(this).attr('data-type'), name: $(this).attr('data-name')},
                         function(response)
                         {
-                            window.location = '{{ path('admin_registration') }}';
+                            window.location = '{{ path('admin_authorization') }}';
                         }
                         , "html");
             });

@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\Security\RoleManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,17 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 class UserController extends Controller
 {
 
-    private $rolesArray = Array('ROLE_SYSTEM_ADMIN',
-                                'ROLE_TRANSACTION_ADMIN',
-                                'ROLE_BUY_ADMIN',
-                                'ROLE_SELL_ADMIN',
-                                'ROLE_SRP_ADMIN',
-                                'ROLE_EDITOR',
-                                'ROLE_MEMBER',
-                                'ROLE_ALLY',
-                                'ROLE_GUEST',
-                                'ROLE_DENIED');
-
     /**
      * @Route("/system/admin/users", name="admin_users")
      */
@@ -27,8 +17,8 @@ class UserController extends Controller
     {
         $users = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->findAll();
 
-        return $this->render('users/index.html.twig', array(
-            'page_name' => 'Users', 'sub_text' => '', 'users' => $users, 'roles' => $this->rolesArray
+        return $this->render('access_control/users.html.twig', array(
+            'page_name' => 'Access Control', 'sub_text' => '', 'users' => $users, 'roles' => RoleManager::getRoles()
         ));
     }
 
