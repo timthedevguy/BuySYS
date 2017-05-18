@@ -6,26 +6,86 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="alert alert-info" style="margin-top:20px;">
-            <p>If nothing is configured for automatic or manual authentication, then everyone can sign
-                in and will be granted the 'ROLE_MEMBER' level of access.</p>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
         <div class="box">
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-clipboard" aria-hidden="true"></i> Automatic Authorization</h3>
-                <p />
                 <p style="margin-left: 12px;">
-                    Automatic authorization uses a contact list from a provided API to manage who has access to which roles.</p>
+                    Automatic authorization uses a contact list from a provided API to manage who has access to which roles. <br />
+                    You must provide an API with a managed contact list to pull from.
+                </p>
             </div>
             <div class="box-body">
+
                 <div class="row">
-                    test
+
+                    <div class="col-md-12">
+                        <p>Please provide the API key and vCode for the contact preferences you wish to use</p>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="contact-api-key" name="contact-api-key"
+                               placeholder="Contact API Key">
+
+                        <br />
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" id="contact-api-code" name="contact-api-code"
+                               placeholder="Contact API vcode">
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="button" class="form-control btn btn-primary" id="contact-button"
+                               name="contact-button" value="Test API">
+                    </div>
+
                 </div>
+
+                {% if contactSummary|length > 0 %}
+                    <br /><br />
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <table class="table table-striped images-table top-margin-20">
+                                <thead>
+                                    <tr>
+                                        <th style="width:27%;">Contact Level</th>
+                                        <th style="width:35%;">Applied Role</th>
+                                        <th>Number of Contacts</th>
+                                        <th style="width:7%;">Last Updated</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for id,level in levels %}
+                                        <tr>
+                                            <td>{{ level }}</td>
+                                            <td>
+                                                <select data-id="{{id}}" data-name="{{ level }}" data-type="contact"  name="autoRoleSelect" class="form-control roleSelect" style="height: auto; width:auto;">
+                                                    {% for role in roles %}
+                                                        {% if role == contactSummary[level].selectedRole %}
+                                                            <option value="{{ role }}" selected>{{ role }}</option>
+                                                        {% else %}
+                                                            <option value="{{ role }}">{{ role }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td>{{ contactSummary[level].contactCount }}</td>
+                                            <td>
+                                                {% if contactSummary[level].updatedDate != null %}
+                                                    {{ contactSummary[level].updatedDate|date("m/d/Y") }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -39,7 +99,10 @@
                 <p />
                 <p style="margin-left: 12px;">
                     Manual authorization uses manually configured corporation/alliance affiliations to manage who has access to which roles. <br/>
-                    Manual authorization is additive to Automatic Authoriztion; Manual authorization takes priority if there is a conflict.</p>
+                    Manual authorization is additive to Automatic Authoriztion; A manual authorization takes priority if there is a conflict. <br />
+                    If two manual authorizations affect the same user, the corporation role will take priority over the alliance role. <br />
+                    'Default Access' is lowest priority - it only applies if no other rule affects the user.
+                </p>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -47,7 +110,9 @@
                         <input type="text" class="form-control" id="corp-search-input" name="corp-search-input"
                                placeholder="Search for Alliance/Corporations">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-2">
                         <input type="button" class="form-control btn btn-primary" id="corp-search-button"
                                name="corp-search-input" value="Search">
                     </div>
@@ -56,24 +121,47 @@
                     <div class="col-md-12">
                         <table class="table table-striped images-table top-margin-20">
                             <tr>
-                                <th>Name</th>
+                                <th style="width:27%;">Name</th>
+                                <th style="width:35%;">Applied Role</th>
                                 <th>Type</th>
-                                <th style="width:75px;">Actions</th>
+                                <th style="width:7%;">Actions</th>
                             </tr>
                             {% for item in items %}
-                                {% if item.type == 'A' %}
-                                    <tr>
-                                        <td><img src="https://image.eveonline.com/Alliance/{{ item.eveid }}_32.png" style="margin-right: 20px;"> {{ item.name }}</td>
-                                        <td>Alliance</td>
-                                        <td><a href="{{ path('admin_authorization_delete', {'id': item.id}) }}" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Delete</a></td>
-                                    </tr>
-                                {% elseif item.type == 'C' %}
-                                    <tr>
-                                        <td><img src="https://image.eveonline.com/Corporation/{{ item.eveid }}_32.png" style="margin-right: 20px;"> {{ item.name }}</td>
-                                        <td>Corporation</td>
-                                        <td><a href="{{ path('admin_authorization_delete', {'id': item.id}) }}" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Delete</a></td>
-                                    </tr>
-                                {% endif %}
+                                <tr>
+                                    {% if item.type == 'A' %}
+                                        {% set type = 'Alliance' %}
+                                    {% elseif item.type == 'C' %}
+                                        {% set type = 'Corporation' %}
+                                    {% else %}
+                                        {% set type = item.type %}
+                                    {% endif %}
+
+                                    <td>
+                                        {% if item.eveid != 0 %}
+                                            <img src="https://image.eveonline.com/{{ type }}/{{ item.eveid }}_32.png" style="margin-right: 20px;">
+                                        {% endif %}
+                                        {{ item.name }}
+                                    </td>
+
+                                    <td>
+                                        <select data-id="{{item.eveid}}" data-name="{{ item.name }}" data-type="{{ item.type }}" name="manualRoleSelect" class="form-control roleSelect" style="height: auto; width:auto;">
+                                            {% for role in roles %}
+                                                {% if item.role == role %}
+                                                    <option value="{{ role }}" selected>{{ role }}</option>
+                                                {% else %}
+                                                    <option value="{{ role }}">{{ role }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+
+                                    <td>{{ type }}</td>
+                                    <td>
+                                        {% if item.eveid != 0 %}
+                                            <a href="{{ path('admin_authorization_delete', {'id': item.id}) }}" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Delete</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
                             {% endfor %}
                         </table>
                     </div>
@@ -114,6 +202,21 @@
                 doCorpSearch();
             }
         });
+    });
+
+
+    $('.roleSelect').on('change', function() {
+
+        $eveid = $(this).attr("data-id");
+        $name = $(this).attr("data-name");
+        $type = $(this).attr("data-type");
+
+        $.post('{{path('ajax_update_auth_role')}}', {'role': this.value, 'eveid': $eveid, 'name': $name, 'type': $type},
+            function(response)
+            {
+
+            }
+            , "html");
     });
 
 </script>

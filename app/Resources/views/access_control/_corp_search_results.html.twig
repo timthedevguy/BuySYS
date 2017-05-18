@@ -57,7 +57,7 @@
 
                 $('#base_modal').modal({backdrop: "static"});
 
-                $.post('{{path('ajax_AddWhitelist')}}', {id: $(this).attr('data-id'), type: $(this).attr('data-type'), name: $(this).attr('data-name')},
+                $.post('{{path('ajax_AddManualAuthorization')}}', {id: $(this).attr('data-id'), type: $(this).attr('data-type'), name: $(this).attr('data-name')},
                         function(response)
                         {
                             window.location = '{{ path('admin_authorization') }}';

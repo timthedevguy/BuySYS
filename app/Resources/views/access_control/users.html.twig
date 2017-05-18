@@ -72,13 +72,13 @@
 
             $id = $(this).attr("data-id");
 
-            $.post('{{path('ajax_update_override_role')}}', {'role': this.value, 'id': $id},
+            $.post('{{path('ajax_update_user_override_role')}}', {'role': this.value, 'id': $id},
                 function(response)
                 {
 
                 }
                 , "html");
-        })
+        });
 
         $(".fake-link").click(function(e)
         {

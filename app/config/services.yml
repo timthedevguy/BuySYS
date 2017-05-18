@@ -27,3 +27,7 @@ services:
     eve_sso_authenticator:
             class: AppBundle\Security\EveSSOAuthenticator
             arguments: ['@doctrine.orm.entity_manager', '@router', '%sso_client_id%', '%sso_secret_key%']
+
+    role_manager:
+            class: AppBundle\Security\RoleManager
+            arguments: ['@doctrine.orm.entity_manager']

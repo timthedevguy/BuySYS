@@ -126,77 +126,39 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
                     $user->setUsername($character['CharacterName']);
                     $user->setIsActive(true);
                     $user->setLastLogin(new \DateTime());
-                    $user->setRole("ROLE_MEMBER");
+                    $user->setRole(RoleManager::getDeniedRole()); //don't grant access until we're able to update roles
                 $preferences = new UserPreferencesEntity(); //constructor sets defaults
 
                 // Save User
                 $this->em->persist($user);//persist user
                 $preferences->setUser($user);
                 $this->em->persist($preferences);//persist user
-                $this->em->flush();
             } else {
                 //update last login
                 $user->setLastLogin(new \DateTime());
-                $this->em->flush();
             }
+
+            //update roles as needed
+            $user = (new RoleManager)->updateAutoAppliedRoles($user);
+            $this->em->flush();
 
             return $user;
         }
         catch(Exception $e)
         {
-            throw new AuthenticationException('Unable to obtain Character from Eve SSO - Please try again later\'');
+            throw new AuthenticationException('Unable to obtain Character from Eve SSO - Please try again later');
         }
     }
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        //check roles and fail check if user does not have access to app
-        $isAuthorized = false;
-
-        if(!in_array('ROLE_DENIED', $user->getRoles()))
+        //if they are denied or don't have roles, throw an authentication exception
+        if(empty($user->getRoles()) || in_array(RoleManager::getDeniedRole(), $user->getRoles()))
         {
-
-            $whitelist = $this->em->getRepository('AppBundle:RegWhitelistEntity')->getCount();
-            if ($whitelist > 0) {
-                // We have entries, check if the alliance or corporation is allowed
-                try {
-                    $client = new Client([
-                        'base_uri' => 'https://esi.tech.ccp.is',
-                        'timeout' => 10.0,
-                        'headers' => [
-                            'Accept' => 'application/json'
-                        ]
-                    ]);
-
-                    $response = $client->get('/v4/characters/' . $user->getCharacterId());
-                    $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-
-
-                    if (array_key_exists('alliance_id', $character)) {
-                        if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findAllianceCount($character['alliance_id']) > 0) {
-                            $isAuthorized = true;
-                        }
-                    }
-
-                    if (!$isAuthorized and array_key_exists('corporation_id', $character)) {
-                        if ($this->em->getRepository('AppBundle:RegWhitelistEntity')->findCorporationCount($character['corporation_id']) > 0) {
-                            $isAuthorized = true;
-                        }
-                    }
-                } catch (Exception $e) {
-                    throw new AuthenticationException('Unable to obtain Corporation Affiliation from Eve ESI - Please try again later');
-                }
-
-            } else {
-                $isAuthorized = true;
-            }
-        }
-
-        if (!$isAuthorized) {
             throw new AuthenticationException('This character is not authorized to use this application.  Please contact an administrator if you believe you should have access.');
         }
 
-        return $isAuthorized;
+        return true;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)

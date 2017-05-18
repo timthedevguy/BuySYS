@@ -57,7 +57,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/system/admin/users/updateOverride", name="ajax_update_override_role")
+     * @Route("/system/admin/users/updateOverride", name="ajax_update_user_override_role")
      */
     public function ajax_UpdateOverrideRole(Request $request)
     {
