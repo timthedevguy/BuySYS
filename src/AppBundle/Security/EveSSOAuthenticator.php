@@ -10,6 +10,7 @@ namespace AppBundle\Security;
 
 use AppBundle\Entity\UserEntity;
 use AppBundle\Entity\UserPreferencesEntity;
+use EveBundle\API\SSO;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -35,14 +36,15 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
      */
     private $router;
     private $em;
-    private $ssoClientId;
-    private $ssoSecretKey;
+    private $roleManager;
+    private $eveSSO;
 
-    public function __construct(EntityManager $em, \Symfony\Component\Routing\RouterInterface $router, $ssoClientId, $ssoSecretKey) {
+    public function __construct(EntityManager $em, \Symfony\Component\Routing\RouterInterface $router, RoleManager $roleManager, SSO $eveSSO) {
         $this->router = $router;
         $this->em = $em;
-        $this->ssoClientId = $ssoClientId;
-        $this->ssoSecretKey = $ssoSecretKey;
+        $this->roleManager = $roleManager;
+        $this->eveSSO = $eveSSO;
+
     }
 
     public function start(Request $request, AuthenticationException $authException = null)
@@ -58,39 +60,25 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
         $auth_code = $request->query->get('code');
 
         //if we have auth_code from SSO, attempt to authenticate user
-        if(!empty($auth_code) and !empty($state)) {
+        if(!empty($auth_code) and !empty($state))
+        {
 
-            if($request->getSession()->get('oauth') != $state) { //make sure session didn't get hijacked
+            if($request->getSession()->get('oauth') != $state)
+            { //make sure session didn't get hijacked
                 throw new AuthenticationException('Invalid Session State - Please try again');
             }
 
-            // Get our Access Token
-            try {
-                $client = new Client([
-                    'base_uri' => 'https://login.eveonline.com',
-                    'timeout' => 10.0,
-                    'headers' => [
-                        'Authorization' => 'Basic ' . base64_encode($this->ssoClientId . ':' . $this->ssoSecretKey),
-                        'Content-Type' => 'application/x-www-form-urlencoded'
-                    ]
-                ]);
-
-                // Create our Response Object to get Access Token
-                $response = $client->post('/oauth/token', [
-                    'query' => [
-                        'grant_type' => 'authorization_code',
-                        'code' => $auth_code
-                    ]
-                ]);
-
-                // Decode the response body to JSON
-                $results = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-
+            try
+            {
+                // Get our Access Token
+                $accessToken = $this->eveSSO->getSSOAccessToken($auth_code);
 
                 return array(
-                    'access_token' => $results['access_token']
+                    'access_token' => $accessToken->getAccessTokenValue()
                 );
-            } catch (Exception $e) {
+            }
+            catch (Exception $e)
+            {
                 throw new AuthenticationException('Unable to obtain Access Token from EVE SSO - Please try again later');
             }
         }
@@ -103,27 +91,16 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
     {
         try
         {
-            $client = new Client([
-                'base_uri' => 'https://login.eveonline.com',
-                'timeout' => 10.0,
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $credentials['access_token']
-                ]
-            ]);
+            $characterToken = $this->eveSSO->getSSOCharacterToken($credentials['access_token']);
 
-            $response = $client->get('/oauth/verify');
-
-            $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-            $characterId = $character['CharacterID'];
-
-            $user = $this->em->getRepository('AppBundle:UserEntity')->findOneBy(array('characterId' => $characterId));
+            $user = $this->em->getRepository('AppBundle:UserEntity')->findOneBy(array('characterId' => $characterToken->getCharacterId()));
 
             //if user doesnt exist, create one!
             if(empty($user)) {
                 $user = new UserEntity();
-                    $user->setCharacterId($characterId);
-                    $user->setCharacterName($character['CharacterName']);
-                    $user->setUsername($character['CharacterName']);
+                    $user->setCharacterId($characterToken->getCharacterId());
+                    $user->setCharacterName($characterToken->getCharacterName());
+                    $user->setUsername($characterToken->getCharacterName());
                     $user->setIsActive(true);
                     $user->setLastLogin(new \DateTime());
                     $user->setRole(RoleManager::getDeniedRole()); //don't grant access until we're able to update roles
@@ -139,7 +116,7 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
             }
 
             //update roles as needed
-            $user = (new RoleManager)->updateAutoAppliedRoles($user);
+            $user = $this->roleManager->updateAutoAppliedRoles($user);
             $this->em->flush();
 
             return $user;

@@ -34,4 +34,20 @@ class ContactRepository extends EntityRepository
                       WHERE c.contactId IN (:ids)'
             )->setParameter('ids', $ids)->getOneOrNullResult();
     }
+
+    public function getContactCount() {
+
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(c) as contactCount FROM AppBundle:ContactEntity c'
+            )->getSingleScalarResult();
+    }
+
+    public function deleteAll() {
+
+        return $this->getEntityManager()
+            ->createQuery(
+                'DELETE c FROM AppBundle:ContactEntity c'
+            )->execute();
+    }
 }

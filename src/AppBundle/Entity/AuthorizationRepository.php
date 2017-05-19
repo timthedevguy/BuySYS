@@ -30,19 +30,20 @@ class AuthorizationRepository extends EntityRepository
             ->setParameter('aid', $id)->getSingleScalarResult();
     }
 
-    public function getCount() {
+    public function getManualAuthCount() {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT count(a) as regCount FROM AppBundle:AuthorizationEntity a WHERE a.eveid != -999'
-            )->getSingleScalarResult();
+                'SELECT count(a) as manAuthCount FROM AppBundle:AuthorizationEntity a WHERE a.type != :atype AND a.eveid != -999'
+            )->setParameter('atype', 'contact')
+            ->getSingleScalarResult();
     }
 
     public function findAllManualAuthorizations() {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT a FROM AppBundle:AuthorizationEntity a WHERE a.type != :atype AND a.eveid != -999'
+                'SELECT a FROM AppBundle:AuthorizationEntity a WHERE a.type != :atype'
             )->setParameter('atype', 'contact')
             ->getResult();
     }

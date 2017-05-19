@@ -4,6 +4,16 @@ parameters:
 #    parameter_name: value
 
 services:
+    esi:
+        class: EveBundle\API\ESI
+
+    eve_sso:
+        class: EveBundle\API\SSO
+        arguments: ['%sso_client_id%', '%sso_secret_key%']
+
+    eve_xml_api:
+        class: EveBundle\API\XML
+
     helper:
         class: AppBundle\Helper\Helper
         arguments: [@doctrine]
@@ -24,10 +34,11 @@ services:
         class: AppBundle\Helper\LineItemComparator
         arguments: ['@market']
 
-    eve_sso_authenticator:
-            class: AppBundle\Security\EveSSOAuthenticator
-            arguments: ['@doctrine.orm.entity_manager', '@router', '%sso_client_id%', '%sso_secret_key%']
-
     role_manager:
             class: AppBundle\Security\RoleManager
-            arguments: ['@doctrine.orm.entity_manager']
+            arguments: ['@doctrine.orm.entity_manager', '@esi']
+
+    eve_sso_authenticator:
+            class: AppBundle\Security\EveSSOAuthenticator
+            arguments: ['@doctrine.orm.entity_manager', '@router', '@role_manager', '@eve_sso']
+

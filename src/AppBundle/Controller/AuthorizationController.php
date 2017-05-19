@@ -8,6 +8,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\ContactEntity;
 use AppBundle\Model\ContactSummaryModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use AppBundle\ESI\ESI;
 use AppBundle\Entity\AuthorizationEntity;
 use AppBundle\Security\RoleManager;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 class AuthorizationController extends Controller
 {
@@ -29,6 +31,18 @@ class AuthorizationController extends Controller
         6 => 'Not a Contact'
     );
 
+    private static $standingConversionArray = Array(
+        "10" => '+10',
+        "5" => '+5',
+        "0" => 'Neutral',
+        "-5" => '-5',
+        "-10" => '-10'
+    );
+
+    public static function getContactLevels() {
+        return self::$contactLevelArray;
+    }
+
     /**
      * @Route("/system/admin/authorization", name="admin_authorization")
      */
@@ -36,7 +50,7 @@ class AuthorizationController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $manualItems = $em->getRepository('AppBundle:AuthorizationEntity')->findAllManualAuthorizations();
-        $autoAuths = $em->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
+        $contactAuths = $em->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
         $contactResult = $em->getRepository('AppBundle:ContactEntity')->getContactSummary();
 
 
@@ -63,7 +77,7 @@ class AuthorizationController extends Controller
             }
 
             //set roles
-            foreach ($autoAuths as $auth)
+            foreach ($contactAuths as $auth)
             {
                 $contactSummary[$auth->getName()]->setSelectedRole($auth->getRole());
             }
@@ -76,7 +90,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/ajax_CorpSearch", name="ajax_CorpSearch")
+     * @Route("/system/admin/authorization/ajax_CorpSearch", name="ajax_CorpSearch")
      */
     public function ajax_CorpSearchAction(Request $request)
     {
@@ -102,7 +116,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/ajax_AddManualAuthorization", name="ajax_AddManualAuthorization")
+     * @Route("/system/admin/authorization/insert/manual", name="ajax_AddManualAuthorization")
      */
     public function ajax_AddManualAuthorizationAction(Request $request)
     {
@@ -174,30 +188,67 @@ class AuthorizationController extends Controller
         return new Response("OK");
     }
 
-    public function setDefaultAccessLevels() {
 
-        $em = $this->getDoctrine('default')->getManager();
+    /**
+     * @Route("/system/admin/authorization/insert/contact", name="ajax_update_contacts")
+     */
+    public function ajax_UpdateContacts(Request $request)
+    {
+        $apiKey = $request->request->get('apiKey');
+        $apiCode = $request->request->get('apiCode');
 
-        $defaultEntry = (new AuthorizationEntity())
-            ->setEveId(-999)
-            ->setName("Default Access (Everyone Not Configured)")
-            ->setType("")
-            ->setRole(RoleManager::getDefaultRole());
-
-        $em->persist($defaultEntry);
-        $em->flush();
-
-        foreach(self::$contactLevelArray as $id => $level)
+        if (empty($apiKey) || empty($apiCode))
         {
-            $entry = (new AuthorizationEntity())
-                ->setEveId($id)
-                ->setName($level)
-                ->setType("contact")
-                ->setRole(RoleManager::getDefaultRole());
-
-            $em->persist($entry);
-            $em->flush();
+            return new Response("Missing Input");
         }
+
+        try
+        {
+            $contacts = $this->get('eve_xml_api')->getContacts($apiKey, $apiCode);
+
+            if (!empty($contacts))
+            {
+                //delete from table
+                $this->getDoctrine('default')->getRepository('AppBundle:ContactEntity')->deleteAll();
+
+                //repopulate
+
+                //get authorization levels
+                $em = $this->getDoctrine('default')->getManager();
+                $auths = $this->getDoctrine('default')->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
+
+                $authArray = Array();
+                foreach ($auths as $auth)
+                {
+                    $authArray[$auth->getName()] = $auth;
+                }
+
+                //loop through contacts and add
+                foreach ($contacts as $contact)
+                {
+                    $contactEntity = new ContactEntity();
+                    $formattedContactLevel = self::$standingConversionArray[$contact->getStanding];
+
+                    $contactEntity
+                        ->setContactName($contact->getContactName())
+                        ->setContactId($contact->getContactId())
+                        ->setContactLevel($formattedContactLevel)
+                        ->setContactType($contact->getContactType())
+                        ->setLastUpdatedDate(time())
+                        ->setAuthorization($authArray[$formattedContactLevel]);
+
+                    $em->persist($contactEntity);
+                    $em->flush();
+                }
+
+            }
+        }
+        catch (Exception $e)
+        {
+            return new Response("ERROR: " . $e->getMessage());
+        }
+
+        return new Response("OK");
     }
 
 }

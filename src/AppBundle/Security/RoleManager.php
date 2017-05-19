@@ -9,8 +9,10 @@
 namespace AppBundle\Security;
 
 
+use AppBundle\Controller\AuthorizationController;
 use AppBundle\Entity\AuthorizationEntity;
 use AppBundle\Entity\UserEntity;
+use EveBundle\API\ESI;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\ORM\EntityManager;
 
@@ -20,9 +22,11 @@ class RoleManager
 {
 
     private $em;
+    private $ESI;
 
-    public function __construct(EntityManager $em) {
+    public function __construct(EntityManager $em, ESI $ESI) {
         $this->em = $em;
+        $this->ESI = $ESI;
     }
 
     private static $rolesArray = Array(
@@ -37,6 +41,7 @@ class RoleManager
         'ROLE_GUEST',
         'ROLE_DENIED'
     );
+
     private static $defaultRole = 'ROLE_MEMBER';
     private static $deniedRole = 'ROLE_DENIED';
 
@@ -60,40 +65,18 @@ class RoleManager
     public function updateAutoAppliedRoles(UserEntity $user)
     {
 
-        $authCount = $this->em->getRepository('AppBundle:AuthorizationEntity')->getCount();
+        $manualAuthCount = $this->em->getRepository('AppBundle:AuthorizationEntity')->getManualAuthCount();
+        $contactCount = $this->em->getRepository('AppBundle:ContactEntity')->getContactCount();
         $isRoleSet = false;
 
-        if ($authCount > 0)
+        if ($manualAuthCount > 0 || $contactCount > 0)
         {
-            // We have entries, get corp & alliance info
             try {
-                $characterId = $user->getCharacterId();
-                $corpId = "";
-                $allianceId = "";
+                // We have entries, get character info
+                $character = $this->ESI->getCharacter($user->getCharacterId());
 
-                $client = new Client([
-                    'base_uri' => 'https://esi.tech.ccp.is',
-                    'timeout' => 10.0,
-                    'headers' => [
-                        'Accept' => 'application/json'
-                    ]
-                ]);
-
-                $response = $client->get('/v4/characters/' . $characterId);
-                $character = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-
-
-                if (array_key_exists('alliance_id', $character))
-                {
-                    $allianceId = $character['alliance_id'];
-                }
-                if (array_key_exists('corporation_id', $character))
-                {
-                    $corpId = $character['corporation_id'];
-                }
-
-
-                $manualAuths = $this->em->getRepository('AppBundle:AuthorizationEntity')->findAllManualAuthorizations($corpId, $allianceId);
+                //check manual auths first
+                $manualAuths = $this->em->getRepository('AppBundle:AuthorizationEntity')->getExistingAuthorizations($character->getCorpId(), $character->getAllianceId());
 
                 if (count($manualAuths) > 0)
                 {
@@ -102,11 +85,11 @@ class RoleManager
 
                     foreach($manualAuths as $auth)
                     {
-                        if($auth->getType == 'A')
+                        if($auth->getType() == 'A')
                         {
                             $allianceRole = $auth->getRole();
                         }
-                        elseif($auth->getType == 'C')
+                        elseif($auth->getType() == 'C')
                         {
                             $corpRole = $auth->getRole();
                         }
@@ -123,13 +106,56 @@ class RoleManager
                         $isRoleSet = true;
                     }
                 }
-                else
+
+                if(!$isRoleSet)
                 {
-                    //no manual auths - check contact/auto auth
+                    //nothing set by manual auth, check contacts
+                    $contacts = $this->em->getRepository('AppBundle:ContactEntity')->getExistingContact($character->getId(), $character->getCorpId(), $character->getAllianceId());
+
+                    if(count($contacts) > 0)
+                    {
+                        $pilotRole = null;
+                        $allianceRole = null;
+                        $corpRole = null;
+
+
+                        foreach($contacts as $contact)
+                        {
+                            if($contact->getType() == 'A')
+                            {
+                                $allianceRole = $contact->getAuthorization()->getRole();
+                            }
+                            elseif($contact->getType() == 'C')
+                            {
+                                $corpRole = $contact->getAuthorization()->getRole();
+                            }
+                            elseif($contact->getType() == 'P')
+                            {
+                                $pilotRole = $contact->getAuthorization()->getRole();
+                            }
+                        }
+
+                        if(!empty($pilotRole)) //apply pilot role over corp if found
+                        {
+                            $user->setRole($pilotRole);
+                            $isRoleSet = true;
+                        }
+                        elseif(!empty($corpRole)) //apply corp role over alliance if found
+                        {
+                            $user->setRole($corpRole);
+                            $isRoleSet = true;
+                        }
+                        elseif(!empty($allianceRole))
+                        {
+                            $user->setRole($allianceRole);
+                            $isRoleSet = true;
+                        }
+                    }
                 }
 
             } catch (Exception $e) {
-
+                //not much we can do here if an error occurs while finding roles.  We'll just allow any previously applied roles to remain (not updating roles)
+                $isRoleSet = true;
             }
         }
 
@@ -141,5 +167,30 @@ class RoleManager
         }
 
         return $user;
+    }
+
+
+    public function setDefaultRoles() {
+
+        $defaultEntry = (new AuthorizationEntity())
+            ->setEveId(-999)
+            ->setName("Default Access (Everyone Not Configured)")
+            ->setType("")
+            ->setRole(RoleManager::getDefaultRole());
+
+        $this->em->persist($defaultEntry);
+        $this->em->flush();
+
+        foreach(AuthorizationController::getContactLevels() as $id => $level)
+        {
+            $entry = (new AuthorizationEntity())
+                ->setEveId($id)
+                ->setName($level)
+                ->setType("contact")
+                ->setRole(RoleManager::getDefaultRole());
+
+            $this->em->persist($entry);
+            $this->em->flush();
+        }
     }
 }

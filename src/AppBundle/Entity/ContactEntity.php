@@ -36,6 +36,10 @@ class ContactEntity
 
     /**
      * @ORM\Column(type="string", length=5, nullable=true)
+     *
+     * Pilot = P
+     * Corp = C
+     * Alliance = A
      */
     protected $contactType;
 

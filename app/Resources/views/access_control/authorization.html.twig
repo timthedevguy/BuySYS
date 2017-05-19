@@ -11,7 +11,8 @@
                 <h3 class="box-title"><i class="fa fa-clipboard" aria-hidden="true"></i> Automatic Authorization</h3>
                 <p style="margin-left: 12px;">
                     Automatic authorization uses a contact list from a provided API to manage who has access to which roles. <br />
-                    You must provide an API with a managed contact list to pull from.
+                    You must provide an API with a managed contact list to pull from. <br />
+                    If a pilot has multiple contact matches, the most specific one takes priority (personal contact is higher priority than corp contact, etc.)
                 </p>
             </div>
             <div class="box-body">
@@ -19,12 +20,11 @@
                 <div class="row">
 
                     <div class="col-md-12">
-                        <p>Please provide the API key and vCode for the contact preferences you wish to use</p>
+                        <p>Please provide a Character API key and vCode to pull contacts/standings from</p>
                     </div>
                     <div class="col-md-4">
                         <input type="text" class="form-control" id="contact-api-key" name="contact-api-key"
-                               placeholder="Contact API Key">
-
+                               placeholder="Character API Key">
                         <br />
                     </div>
                     <div class="col-md-8">
@@ -32,7 +32,7 @@
 
                     <div class="col-md-9">
                         <input type="text" class="form-control" id="contact-api-code" name="contact-api-code"
-                               placeholder="Contact API vcode">
+                               placeholder="Character API Verification Code">
                     </div>
                     <div class="col-md-1">
                     </div>
@@ -137,7 +137,7 @@
                                     {% endif %}
 
                                     <td>
-                                        {% if item.eveid != 0 %}
+                                        {% if item.eveid != -999 %}
                                             <img src="https://image.eveonline.com/{{ type }}/{{ item.eveid }}_32.png" style="margin-right: 20px;">
                                         {% endif %}
                                         {{ item.name }}
@@ -157,7 +157,7 @@
 
                                     <td>{{ type }}</td>
                                     <td>
-                                        {% if item.eveid != 0 %}
+                                        {% if item.eveid != -999 %}
                                             <a href="{{ path('admin_authorization_delete', {'id': item.id}) }}" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Delete</a>
                                         {% endif %}
                                     </td>
@@ -188,6 +188,19 @@
         $("#search-input").val("");
     }
 
+    function doContactUpdate() {
+        $( "#base_modal_content" ).html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
+        $('#base_modal').modal({backdrop: "static"});
+
+        $.post('{{path('ajax_update_contacts')}}', {'apiKey': $("#contact-api-key").val(), 'apiCode': $("#contact-api-code").val()},
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+            , "html");
+
+    }
+
     $(document).ready(function (e) {
 
         $("#corp-search-button").click(function(e) {
@@ -202,6 +215,12 @@
                 doCorpSearch();
             }
         });
+
+        $("#contact-button").click(function(e) {
+
+            doContactUpdate();
+        });
+
     });
 
 
