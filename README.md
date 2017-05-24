@@ -1,8 +1,7 @@
 AmSYS
 =====
-AmSYS is an Eve Alliance/Corporation Buyback system.  The system was designed to allow members to sell materials to the
-Alliance/Corporation by copying inventory data from the game to a browser.  The system will then provide the Estimate
-and a 'auth code' (order number).
+AmSYS is an Eve Alliance/Corporation Logistics system.  The system was designed to allow members to interact with 
+Corporation / Alliance programs via a browser.
 
 #### Current Features
 

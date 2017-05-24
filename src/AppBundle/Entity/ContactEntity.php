@@ -19,7 +19,7 @@ class ContactEntity
     /**
      * @ORM\Column(name="contactEntityID", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $contactEntityID;
 
@@ -44,7 +44,7 @@ class ContactEntity
     protected $contactType;
 
     /**
-     * @ORM\Column(type="string", length=5)
+     * @ORM\Column(type="string", length=20)
      */
     protected $contactLevel;
 

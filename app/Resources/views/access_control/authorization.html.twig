@@ -11,7 +11,7 @@
                 <h3 class="box-title"><i class="fa fa-clipboard" aria-hidden="true"></i> Automatic Authorization</h3>
                 <p style="margin-left: 12px;">
                     Automatic authorization uses a contact list from a provided API to manage who has access to which roles. <br />
-                    You must provide an API with a managed contact list to pull from. <br />
+                    You can create an API <a style="color:#6964f7" href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=16">HERE</a>. (select a specific character and set no expiry)<br />
                     If a pilot has multiple contact matches, the most specific one takes priority (personal contact is higher priority than corp contact, etc.)
                 </p>
             </div>
@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-md-4">
                         <input type="text" class="form-control" id="contact-api-key" name="contact-api-key"
-                               placeholder="Character API Key">
+                               placeholder="Character API Key" value="{{ apiKey }}">
                         <br />
                     </div>
                     <div class="col-md-8">
@@ -32,13 +32,18 @@
 
                     <div class="col-md-9">
                         <input type="text" class="form-control" id="contact-api-code" name="contact-api-code"
-                               placeholder="Character API Verification Code">
+                               placeholder="Character API Verification Code" value="{{ apiCode }}">
                     </div>
                     <div class="col-md-1">
                     </div>
                     <div class="col-md-2">
+                        {% if contactSummary|length <= 0 %}
                         <input type="button" class="form-control btn btn-primary" id="contact-button"
-                               name="contact-button" value="Test API">
+                               name="contact-button" value="Check API">
+                        {% else %}
+                            <input type="button" class="form-control btn btn-primary" id="contact-button"
+                                   name="contact-button" value="Update API">
+                        {% endif %}
                     </div>
 
                 </div>
@@ -189,13 +194,26 @@
     }
 
     function doContactUpdate() {
-        $( "#base_modal_content" ).html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
+        $( "#base_modal_content" ).html("<div style='text-align: center; font-size:200%; padding-top: 8%;'>Loading Contacts.  Please be patient, this may take a moment.</div><br /><div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
         $('#base_modal').modal({backdrop: "static"});
 
         $.post('{{path('ajax_update_contacts')}}', {'apiKey': $("#contact-api-key").val(), 'apiCode': $("#contact-api-code").val()},
             function(response)
             {
-                $( "#base_modal_content" ).html( response );
+                $( "#base_modal_content" ).html( "<div style='text-align: center; padding-top: 10%; padding-bottom:10%; font-size: 250%'>" + response + "</div>" );
+
+                var $timeout;
+                if(response.indexOf("ERROR") >= 0) {
+                    $timeout = 2500;
+                } else {
+                    $timeout = 750;
+                }
+
+                setTimeout(
+                    function()
+                    {
+                        location.reload();
+                    }, $timeout)
             }
             , "html");
 
@@ -206,7 +224,7 @@
         $("#corp-search-button").click(function(e) {
 
             doCorpSearch();
-        });
+        })
 
         $("#corp-search-input").keydown(function(e) {
 

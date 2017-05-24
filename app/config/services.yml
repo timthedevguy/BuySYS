@@ -17,12 +17,15 @@ services:
     helper:
         class: AppBundle\Helper\Helper
         arguments: [@doctrine]
+
     market:
         class: AppBundle\Helper\Market
         arguments: ['@doctrine', '@helper']
+
     parser:
         class: AppBundle\Helper\Parser
         arguments: ['@doctrine', '@helper']
+
     authentication_handler:
         class: AppBundle\Helper\AuthenticationHandler
         calls:
@@ -30,15 +33,19 @@ services:
     cache:
         class: AppBundle\Helper\Cache
         arguments: ['@doctrine', '@helper', '@market']
+
     lineItemComparator:
         class: AppBundle\Helper\LineItemComparator
         arguments: ['@market']
 
     role_manager:
             class: AppBundle\Security\RoleManager
-            arguments: ['@doctrine.orm.entity_manager', '@esi']
+            arguments: ['@doctrine.orm.entity_manager', '@esi', '@eve_xml_api']
 
     eve_sso_authenticator:
             class: AppBundle\Security\EveSSOAuthenticator
             arguments: ['@doctrine.orm.entity_manager', '@router', '@role_manager', '@eve_sso']
 
+    cron_tasks:
+        class: AppBundle\Helper\CronTasks
+        arguments: ['@helper', '@role_manager']

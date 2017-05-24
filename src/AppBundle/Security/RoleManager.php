@@ -11,8 +11,11 @@ namespace AppBundle\Security;
 
 use AppBundle\Controller\AuthorizationController;
 use AppBundle\Entity\AuthorizationEntity;
+use AppBundle\Entity\ContactEntity;
 use AppBundle\Entity\UserEntity;
+use AppBundle\Helper\Helper;
 use EveBundle\API\ESI;
+use EveBundle\API\XML;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\ORM\EntityManager;
 
@@ -23,10 +26,12 @@ class RoleManager
 
     private $em;
     private $ESI;
+    private $xmlApi;
 
-    public function __construct(EntityManager $em, ESI $ESI) {
+    public function __construct(EntityManager $em, ESI $ESI, XML $xmlApi) {
         $this->em = $em;
         $this->ESI = $ESI;
+        $this->xmlApi = $xmlApi;
     }
 
     private static $rolesArray = Array(
@@ -40,6 +45,14 @@ class RoleManager
         'ROLE_ALLY',
         'ROLE_GUEST',
         'ROLE_DENIED'
+    );
+
+    private static $standingConversionArray = Array(
+        "10" => '+10',
+        "5" => '+5',
+        "0" => 'Neutral',
+        "-5" => '-5',
+        "-10" => '-10'
     );
 
     private static $defaultRole = 'ROLE_MEMBER';
@@ -114,6 +127,7 @@ class RoleManager
 
                     if(count($contacts) > 0)
                     {
+
                         $pilotRole = null;
                         $allianceRole = null;
                         $corpRole = null;
@@ -121,15 +135,15 @@ class RoleManager
 
                         foreach($contacts as $contact)
                         {
-                            if($contact->getType() == 'A')
+                            if($contact->getContactType() == 'A')
                             {
                                 $allianceRole = $contact->getAuthorization()->getRole();
                             }
-                            elseif($contact->getType() == 'C')
+                            elseif($contact->getContactType() == 'C')
                             {
                                 $corpRole = $contact->getAuthorization()->getRole();
                             }
-                            elseif($contact->getType() == 'P')
+                            elseif($contact->getContactType() == 'P')
                             {
                                 $pilotRole = $contact->getAuthorization()->getRole();
                             }
@@ -192,5 +206,60 @@ class RoleManager
             $this->em->persist($entry);
             $this->em->flush();
         }
+    }
+
+    public function updateContacts($apiKey, $apiCode)
+    {
+        try
+        {
+            $addedContacts = 0;
+
+            $contacts = &$this->xmlApi->getContacts($apiKey, $apiCode);
+
+            if (!empty($contacts))
+            {
+                //delete from table
+                $this->em->getRepository('AppBundle:ContactEntity')->deleteAll();
+
+                //repopulate
+
+                //get authorization levels
+                $auths = $this->em->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
+
+                $authArray = Array();
+                foreach ($auths as $auth)
+                {
+                    $authArray[$auth->getName()] = $auth;
+                }
+
+                //loop through contacts and add
+                foreach ($contacts as $contact)
+                {
+                    $contactEntity = new ContactEntity();
+
+                    $formattedContactLevel = self::$standingConversionArray[$contact->getStanding()];
+
+                    $contactEntity
+                        ->setContactName($contact->getContactName())
+                        ->setContactId($contact->getContactId())
+                        ->setContactLevel($formattedContactLevel)
+                        ->setContactType($contact->getContactType())
+                        ->setLastUpdatedDate(new \DateTime("now"))
+                        ->setAuthorization($authArray[$formattedContactLevel]);
+
+                    $this->em->persist($contactEntity);
+                    $addedContacts++;
+                }
+                $this->em->flush();
+
+            }
+
+        }
+        catch (Exception $e)
+        {
+            throw $e;
+        }
+
+        return $addedContacts;
     }
 }

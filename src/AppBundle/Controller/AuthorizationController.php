@@ -31,14 +31,6 @@ class AuthorizationController extends Controller
         6 => 'Not a Contact'
     );
 
-    private static $standingConversionArray = Array(
-        "10" => '+10',
-        "5" => '+5',
-        "0" => 'Neutral',
-        "-5" => '-5',
-        "-10" => '-10'
-    );
-
     public static function getContactLevels() {
         return self::$contactLevelArray;
     }
@@ -53,6 +45,13 @@ class AuthorizationController extends Controller
         $contactAuths = $em->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
         $contactResult = $em->getRepository('AppBundle:ContactEntity')->getContactSummary();
 
+        $helper = $this->get('helper');
+        $apiKey = $helper->getSetting('ContactAPIKey');
+        $apiCode = null;
+        if (!empty($apiKey))
+        {
+            $apiCode = '*****';
+        }
 
         $contactSummary = Array();
 
@@ -86,7 +85,7 @@ class AuthorizationController extends Controller
 
         return $this->render('access_control/authorization.html.twig', array('page_name' => 'Access Control',
             'sub_text' => '', 'items' => $manualItems, 'roles' => RoleManager::getRoles(), 'levels' => self::$contactLevelArray,
-            'contactSummary' => $contactSummary));
+            'contactSummary' => $contactSummary, 'apiKey' => $apiKey, 'apiCode' => $apiCode));
     }
 
     /**
@@ -201,54 +200,26 @@ class AuthorizationController extends Controller
         {
             return new Response("Missing Input");
         }
+        elseif ($apiCode === '*****')
+        {
+            $apiCode = $this->get('helper')->getSetting('ContactAPICode');
+        }
 
         try
         {
-            $contacts = $this->get('eve_xml_api')->getContacts($apiKey, $apiCode);
+            $addedContacts = $this->get('role_manager')->updateContacts($apiKey, $apiCode);
 
-            if (!empty($contacts))
-            {
-                //delete from table
-                $this->getDoctrine('default')->getRepository('AppBundle:ContactEntity')->deleteAll();
-
-                //repopulate
-
-                //get authorization levels
-                $em = $this->getDoctrine('default')->getManager();
-                $auths = $this->getDoctrine('default')->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
-
-                $authArray = Array();
-                foreach ($auths as $auth)
-                {
-                    $authArray[$auth->getName()] = $auth;
-                }
-
-                //loop through contacts and add
-                foreach ($contacts as $contact)
-                {
-                    $contactEntity = new ContactEntity();
-                    $formattedContactLevel = self::$standingConversionArray[$contact->getStanding];
-
-                    $contactEntity
-                        ->setContactName($contact->getContactName())
-                        ->setContactId($contact->getContactId())
-                        ->setContactLevel($formattedContactLevel)
-                        ->setContactType($contact->getContactType())
-                        ->setLastUpdatedDate(time())
-                        ->setAuthorization($authArray[$formattedContactLevel]);
-
-                    $em->persist($contactEntity);
-                    $em->flush();
-                }
-
-            }
+            //add/update API to settings DB for future use
+            $helper = $this->get('helper');
+            $helper->setSetting('ContactAPIKey', $apiKey);
+            $helper->setSetting('ContactAPICode', $apiCode);
         }
         catch (Exception $e)
         {
-            return new Response("ERROR: " . $e->getMessage());
+            return new Response("ERROR: Unable to retrieve contacts from the provided API");
         }
 
-        return new Response("OK");
+        return new Response("Loaded ".$addedContacts." contacts!");
     }
 
 }

@@ -10,6 +10,7 @@ namespace EveBundle\API;
 
 use EveBundle\Model\Contact;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
 
@@ -18,7 +19,7 @@ class XML
     private static $defaultTimeout = 10.0;
     private static $XML_API_URI = 'https://api.eveonline.com';
 
-    public function getContacts($APIKey, $APICode)
+    public function &getContacts($APIKey, $APICode)
     {
         $contacts = Array();
 
@@ -27,7 +28,7 @@ class XML
             $characterId = $this->getCharacterId($APIKey, $APICode);
 
             $responseXML = $this->makeRequest('/char/ContactList.xml.aspx?keyID='. $APIKey .'&vCode='. $APICode .'&characterID='. $characterId);
-            dump($responseXML);
+
             if (!empty($responseXML))
             {
                 foreach ($responseXML->result->rowset as $rowSet)
@@ -51,16 +52,33 @@ class XML
                     {
                         foreach ($rowSet->row as $contact)
                         {
-                            dump($contact);
-                            break;
-                            if (null !== $contact['characterID'] && $contact['contactName'] && $contact['standing'])
+                            if (null !== $contact['contactID'] && $contact['contactName'] && $contact['standing'])
                             {
+
+                                //fix abnormal standings
+                                $standing = (double) $contact['standing'];
+                                if ($standing < -5)
+                                {
+                                    $standing = -10;
+                                }
+                                elseif ($standing < 0)
+                                {
+                                    $standing = -5;
+                                }
+                                elseif ($standing > 5)
+                                {
+                                    $standing = 10;
+                                }
+                                elseif ($standing > 0) {
+                                    $standing = 5;
+                                }
+
                                 array_push($contacts, new Contact(
-                                    $contact['characterID'],
-                                    $contact['contactName'],
+                                    (String) $contact['contactID'],
+                                    (String) $contact['contactName'],
                                     $contactType,
-                                    $contact['standing'],
-                                    $contact['inWatchlist']
+                                    (String) $standing,
+                                    (String) $contact['inWatchlist']
                                 ));
                             }
                         }
@@ -72,7 +90,7 @@ class XML
         {
             throw $e;
         }
-        dump(empty($contacts));
+
         return $contacts;
     }
 
@@ -80,7 +98,15 @@ class XML
     {
         $characterId = null;
 
-        $responseXML = $this->makeRequest('/account/APIKeyInfo.xml.aspx?keyID='. $APIKey .'&vCode='. $APICode);
+        try
+        {
+            $responseXML = $this->makeRequest('/account/APIKeyInfo.xml.aspx?keyID='. $APIKey .'&vCode='. $APICode);
+        }
+        catch (Exception $e)
+        {
+            throw $e;
+        }
+
         $responseXML->result->rowset;
 
         if (!empty($responseXML))
@@ -118,11 +144,20 @@ class XML
             ]);
 
             $response = $client->get($queryString);
-            $responseXML = new \SimpleXMLElement($response->getBody()->getContents());
 
-            return $responseXML;
+            if($response->getStatusCode() !== 200)
+            {
+                throw new Exception("Bad Request! Error Code: " . $response->getStatusCode());
+            }
 
-        } catch (Exception $e) {
+            return new \SimpleXMLElement($response->getBody()->getContents());
+
+        }
+        catch (RequestException $e) {
+
+            throw new Exception($e->getMessage());
+        }
+        catch (Exception $e) {
             throw $e;
         }
     }
