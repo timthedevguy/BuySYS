@@ -6,16 +6,10 @@ use AppBundle\Entity\UserPreferencesEntity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Model\BuyBackModel;
 use AppBundle\Form\BuyBackForm;
-use AppBundle\Helper\Helper;
-use AppBundle\Model\DefaultSettingsModel;
 use AppBundle\Model\TransactionSummaryModel;
-use AppBundle\Entity\SettingEntity;
-use AppBundle\Model\OreReviewModel;
-use EveBundle\Entity\TypeEntity;
 
 class DefaultController extends Controller
 {
@@ -55,43 +49,5 @@ class DefaultController extends Controller
             'oSales' => $oSales, 'salesSummary'=> $salesSummary, 'oPurchases' => $oPurchases, 'purchasesSummary' => $purchasesSummary,
             'news' => $news, 'eveCentralOK' => $eveCentralOK ));
     }
-
-    /**
-     * @Route("/admin/settings", name="admin_core_settings")
-     */
-    public function settingsAction(Request $request)
-    {
-        // Get Settings Helper
-        $settings = $this->get('helper');
-
-        // Check if POST
-        if($request->getMethod() == 'POST')
-        {
-            // Save our settings and provide Flash
-            try
-            {
-                // Settings Helper flushes as needed
-                $settings->setSetting('system_maintenance', $request->request->get('maintenance_mode'));
-                $settings->setSetting('sso_clientid', $request->request->get('clientid'));
-                $settings->setSetting('sso_secretkey', $request->request->get('secretkey'));
-
-                $this->addFlash('success', "Settings saved successfully!");
-            }
-            catch(Exception $e)
-            {
-                $this->addFlash('error', "Settings not saved!  Contact Lorvulk Munba.");
-            }
-        }
-
-        // Create our Model
-        $coreSettings = new DefaultSettingsModel();
-        $coreSettings->setMaintenanceMode($settings->getSetting('system_maintenance'));
-        $coreSettings->setClientId($settings->getSetting('sso_clientid'));
-        $coreSettings->setSecretKey($settings->getSetting('sso_secretkey'));
-
-        return $this->render('default/settings.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Core Settings',
-            'model' => $coreSettings));
-    }
-
 
 }

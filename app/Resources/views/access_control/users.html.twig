@@ -8,18 +8,33 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-users"></i> Users</h3>
             </div><!-- /.box-header -->
-            <div class="box-body no-padding">
+            <div class="box-body">
                 <table class="table table-striped" id="users-table">
+                    <thead>
                     <tr>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
+                        <th>Character Name</th>
+                        <th>Manual Role (Overrides Auto-Applied Role) <a href="https://github.com/binarygod/AmSYS/wiki/5.-User-Roles" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                        <th>Auto-Applied Role</th>
                         <th>Active</th>
+                        <th>Last Login</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     {% for user in users %}
                         <tr>
                             <td>{{user.username}}</td>
-                            <td>{{user.maskedemail}}</td>
+                            <td>
+                                <select data-id="{{user.id}}" name="overrideRole" class="form-control overrideRoleSelect" style="height: auto; width:auto;">
+                                    <option value=""></option>
+                                    {% for overrideRole in roles %}
+                                        {% if overrideRole == user.overrideRole %}
+                                            <option value="{{ overrideRole }}" selected>{{ overrideRole }}</option>
+                                        {% else %}
+                                            <option value="{{ overrideRole }}">{{ overrideRole }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
                             <td>{{user.role}}</td>
                             <td>
                                 {% if user.isActive == 1 %}
@@ -28,8 +43,10 @@
                                     <i data-id="{{user.id}}" class="fa fa-ban text-danger toggle-active fake-link"></i>
                                 {% endif %}
                             </td>
+                            <td>{{ user.lastlogin|date }}</td>
                         </tr>
                     {% endfor %}
+                    </tbody>
                 </table>
             </div><!-- /.box-body -->
             <!--<div class="box-footer">
@@ -46,6 +63,22 @@
 <script type="text/javascript">
 
     $(document).ready(function (e) {
+
+        $('#users-table').DataTable({
+            "order": [[0, "desc"]]
+        });
+
+        $('.overrideRoleSelect').on('change', function() {
+
+            $id = $(this).attr("data-id");
+
+            $.post('{{path('ajax_update_user_override_role')}}', {'role': this.value, 'id': $id},
+                function(response)
+                {
+
+                }
+                , "html");
+        });
 
         $(".fake-link").click(function(e)
         {

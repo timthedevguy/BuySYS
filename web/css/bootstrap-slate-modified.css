@@ -7290,6 +7290,10 @@ a.list-group-item-danger.active:focus {
     color: #ffffff;
 }
 
+.main-footer a {
+    color: #6964f7;
+}
+
 
 .skin-blue .splitBackground
 {

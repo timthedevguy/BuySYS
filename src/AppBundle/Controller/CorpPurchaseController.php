@@ -13,10 +13,10 @@ use AppBundle\Model\BuyBackModel;
 use AppBundle\Form\BuyBackForm;
 use AppBundle\Entity\TranactionEntity;
 
-class TransactionController extends Controller
+class CorpPurchaseController extends Controller
 {
     /**
-     * @Route("/admin/transactions", name="admin_transactions")
+     * @Route("/admin/buy/transactions", name="admin_transactions")
      */
     public function indexAction(Request $request)
     {
@@ -34,7 +34,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * @Route("/admin/transaction/process", name="ajax_process_transaction")
+     * @Route("/admin/buy/transaction/process", name="ajax_process_transaction")
      */
     public function ajax_ProcessAction(Request $request)
     {
@@ -56,7 +56,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * @Route("/admin/transaction/close", name="ajax_close_transaction")
+     * @Route("/admin/buy/transaction/close", name="ajax_close_transaction")
      */
     public function ajax_CloseAction(Request $request)
     {
@@ -96,7 +96,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * @Route("/admin/transaction/reopen", name="ajax_reopen_transaction")
+     * @Route("/admin/buy/transaction/reopen", name="ajax_reopen_transaction")
      */
     public function ajax_ReopenAction(Request $request)
     {
@@ -137,7 +137,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * @Route("/admin/transaction/validate", name="ajax_validate_transaction")
+     * @Route("/admin/buy/transaction/validate", name="ajax_validate_transaction")
      */
     public function ajax_ValidateTransaction(Request $request)
     {

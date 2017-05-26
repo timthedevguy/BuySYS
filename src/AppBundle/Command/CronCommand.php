@@ -1,14 +1,14 @@
 <?php
 namespace AppBundle\Command;
 
-use AppBundle\Controller\AuthorizationController;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
 
-class PopulateDbCommand extends ContainerAwareCommand
+class CronCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -16,8 +16,9 @@ class PopulateDbCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:settings:populate')
-            ->setDescription('Populate Database with default settings')
+            ->setName('amsys:cron:run')
+            ->setDescription('Executes a task that is configured to run on a schedule')
+            ->addArgument('taskName', InputArgument::REQUIRED, 'The name of the task to execute')
         ;
     }
 
@@ -26,10 +27,9 @@ class PopulateDbCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $helper = $this->getContainer()->get('helper');
-        $helper->generateDefaultSettings();
+        $taskName = $input->getArgument('taskName');
 
-        $roleManager = $this->getContainer()->get('role_manager');
-        $roleManager->setDefaultRoles();
+        $cron = $this->getContainer()->get('cron_tasks');
+        $cron->runTask($taskName);
     }
 }
