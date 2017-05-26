@@ -13,7 +13,7 @@ Corporation / Alliance programs via a browser.
 a fixed price.
 
 #### Installation
-Please see [Installation](https://github.com/binarygod/AmSYS/wiki/Installation) in the Wiki for instructions.
+Please see [Installation](https://github.com/binarygod/AmSYS/wiki/1.-Installation) in the Wiki for instructions.
 
 
 #### How to help
