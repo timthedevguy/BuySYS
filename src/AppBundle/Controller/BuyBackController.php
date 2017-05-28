@@ -34,11 +34,6 @@ class BuyBackController extends Controller
         $form = $this->createForm(BuyBackForm::class, $buyback);
         $form->handleRequest($request);
 
-        //$types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata');
-        //$cache = $this->getDoctrine()->getRepository('AppBundle:CacheEntity', 'default');
-        //$typeids = array();
-        //$items = array();
-
         //parse form input
         $items = $this->get('parser')->GetLineItemsFromPasteData($buyback->getItems());
 
