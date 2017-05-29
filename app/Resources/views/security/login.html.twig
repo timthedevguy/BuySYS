@@ -25,7 +25,8 @@
         <div class="login-box">
             <div class="login-logo">
               <a href="{{path('homepage')}}">
-                <b>Og</b>SYS</a>
+                  {{ systemNameLong|raw }}
+              </a>
             </div>
 
             {% if error %}
