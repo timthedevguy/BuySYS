@@ -539,4 +539,134 @@ class Market {
 
         return $results;
     }
+
+    /**
+     * Get Adjusted Market Prices for provided TypeIds.  All Buyback rules are
+     * applied to achieve the result.  Information is pulled from Cache.
+     *
+     * @param array $typeIds Array of TypeIds
+     * @return array Array of TypeId keys with Adjust Market Price values
+     */
+    public function GetAdjustedMarketPriceForTypes($typeIds)
+    {
+        // Get Market Prices
+    }
+
+    /**
+     * Get Market Prices for provided TypeIds.  No Buyback rules are processed,
+     * raw EveCentral Data is the result.  Cache is updated as needed.
+     *
+     * @param array $typeIds Array of TypeIds
+     * @return array Array of TypeId Keys with market Price values
+     */
+    public function GetMarketPricesForTypes($typeIds)
+    {
+        $results = array();
+
+        // Get only Unique TypeIds
+        $uniqueTypeIds = array_values(array_unique($typeIds));
+
+        $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
+
+        // Get current cache entries
+        $em = $this->doctrine->getManager('default');
+        $cached = $cache->findAllByTypeIds($uniqueTypeIds);
+
+        // If record isn't stale then remove it from the list to pull
+        foreach($cached as $cacheItem)
+        {
+            if(date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900))
+            {
+                // Add existing cache entry
+                $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+                dump('Removing '.$cacheItem->getTypeId());
+                // Remove the item so it doesn't get refreshed
+                unset($uniqueTypeIds[array_search($cacheItem->getTypeID(), $uniqueTypeIds)]);
+            }
+        }
+
+        $uniqueTypeIds = array_values($uniqueTypeIds);
+
+        // Update Cache for remaining TypeIds
+        if(count($uniqueTypeIds) > 0)
+        {
+            // Get Eve Central Settings
+            $bb_source_id = $this->helper->getSetting("buyback_source_id");
+            $bb_source_type = $this->helper->getSetting("buyback_source_type");
+            $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+
+            // Get updated Stats from Eve Central
+            $eveCentralResults = $this->GetEveCentralDataForTypes($uniqueTypeIds, $bb_source_id);
+
+            // Parse eve central data
+            foreach($eveCentralResults as $eveCentralResult)
+            {
+                // Get the Cache Item
+                $cacheItem = $cache->findOneByTypeID($eveCentralResult[$bb_source_type]["forQuery"]["types"][0]);
+
+                if(!$cacheItem)
+                {
+                    // If CacheItem is Null then create and populate it
+                    $cacheItem = new CacheEntity();
+                    $cacheItem->setTypeId($eveCentralResult[$bb_source_type]["forQuery"]["types"][0]);
+                    $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
+                    $cacheItem->setLastPull(new \DateTime("now"));
+                    $em->persist($cacheItem);
+                }
+                else
+                {
+                    $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
+                    $cacheItem->setLastPull(new \DateTime("now"));
+                }
+
+                $em->flush();
+
+                $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get raw EveCentral Data from Eve Central.
+     *
+     * @param array $typeIds
+     * @param string $fromSystemId
+     * @return array Array of Json data from Eve Central
+     */
+    public function GetEveCentralDataForTypes(array $typeIds, string $fromSystemId)
+    {
+        $results = array();
+
+        if(count($typeIds) > 0)
+        {
+            // Lookup in batches of 20
+            for($i = 0; $i < count($typeIds); $i += 20)
+            {
+                $limit = $i+20;
+                if($limit > count($typeIds)) {$limit = count($typeIds);}
+
+                $lookup = array();
+
+                for($j = $i; $j < $limit; $j++)
+                {
+                    $lookup[] = $typeIds[$j];
+                }
+
+                // Build EveCentral Query string
+                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $lookup) . "&usesystem=" . $fromSystemId;
+
+                // Query EveCentral and grab results
+                $json = file_get_contents($queryString);
+                $json_array = json_decode($json, true);
+
+                // Combine batches to one result set
+                $results = array_merge($results, $json_array);
+            }
+        }
+
+        // Return results
+        return $results;
+    }
 }

@@ -29,20 +29,20 @@ class BuyBackController extends Controller
      */
     public function ajax_EstimateAction(Request $request) {
 
-        //setup model and form
+        // Setup model and form
         $buyback = new BuyBackModel();
         $form = $this->createForm(BuyBackForm::class, $buyback);
         $form->handleRequest($request);
 
-        //parse form input
+        // Parse form input
         $items = $this->get('parser')->GetLineItemsFromPasteData($buyback->getItems());
 
-        //check to make sure it parsed correctly
+        // Check to make sure it parsed correctly
         if($items == null || count($items) <= 0) {
             return $this->render('buyback/novalid.html.twig');
         }
 
-        //get market value and buyback values
+        // Get market value and buyback values
         if(!$this->get('market')->PopulateLineItems($items))
         {
             return $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
