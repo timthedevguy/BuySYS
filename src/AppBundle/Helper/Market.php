@@ -542,14 +542,80 @@ class Market {
 
     /**
      * Get Adjusted Market Prices for provided TypeIds.  All Buyback rules are
-     * applied to achieve the result.  Information is pulled from Cache.
+     * applied to achieve the result.
      *
      * @param array $typeIds Array of TypeIds
      * @return array Array of TypeId keys with Adjust Market Price values
      */
     public function GetAdjustedMarketPriceForTypes($typeIds)
     {
-        // Get Market Prices
+        // Get System Settings
+        $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
+        $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
+        $bb_tax = $this->helper->getSetting("buyback_default_tax");
+
+        // Get Raw Market Prices
+        $prices = $this->GetMarketPricesForTypes($typeIds);
+
+        // Fancy SQL to get Types, GroupID, MarketID and Refining Skill in one go
+        $evedataConnection = $this->doctrine->getManager('evedata')->getConnection();
+        $sqlQuery = 'SELECT 
+                        invTypes.typeID, 
+                        invTypes.groupID,
+                        invTypes.marketGroupID,
+                        (SELECT valueInt 
+                            FROM 
+                              dgmTypeAttributes
+                            WHERE
+                              dgmTypeAttributes.typeID = invTypes.typeID
+                            AND
+                              dgmTypeAttributes.attributeID = 790
+                        ) as refineSkill
+                     FROM
+                        invTypes
+                     WHERE
+                        invTypes.typeID
+                     IN
+                        (?)';
+        // Run the SQL Statement
+        $types = $evedataConnection->executeQuery($sqlQuery, array($typeIds),
+            array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY))->fetchAll();
+
+        // For each Type
+        foreach($types as $type)
+        {
+            $buybackRules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')
+                ->findAllByTypeAndGroup($type['typeID'], $type['groupID'], $type['marketGroupID']);
+
+            $options = array();
+            $options['tax'] = $bb_tax;
+            $options['price'] = 0;
+            $options['isrefined'] = false;
+
+            // Should this item be valued by refined mats?
+            if(($bb_value_minerals == 1 & $type['refineSkill'] != null) |
+                ($bb_value_salvage == 1 & $type['refineSkill'] == null))
+            {
+                // Set Is Refined
+                $options['isrefined'] = true;
+
+                // Change base price to the refined price
+
+            }
+
+        }
+        // Get Rules
+        // Compile rules
+        // For each item
+            // If item is refined
+                // calculate refining value
+            // Apply rules to price
+        // Return prices
+
+
+        //$types = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')->findAllForTypeIds($typeIds);
+
+        return $types;
     }
 
     /**
@@ -579,7 +645,7 @@ class Market {
             {
                 // Add existing cache entry
                 $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
-                dump('Removing '.$cacheItem->getTypeId());
+
                 // Remove the item so it doesn't get refreshed
                 unset($uniqueTypeIds[array_search($cacheItem->getTypeID(), $uniqueTypeIds)]);
             }

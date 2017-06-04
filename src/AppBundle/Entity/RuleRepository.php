@@ -87,4 +87,24 @@ class RuleRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    public function findAllForTypeIds(array $typeids)
+    {
+        $types = $this->getEntityManager('evedata')
+            ->createQuery(
+                'SELECT 
+                        invTypes.typeID, 
+                        invTypes.groupID,
+                        invTypes.marketGroupID,
+                        (SELECT valueInt FROM dgmTypeAttributes WHERE dgmTypeAttributes.typeID = invTypes.typeID AND dgmTypeAttributes.attributeID = 790) as refineSkill
+                     FROM
+                        invTypes
+                     WHERE
+                        invTypes.typeID
+                     IN
+                        :types;'
+            )->setParameter('types', $typeids)->getResult();
+
+        return $types;
+    }
 }

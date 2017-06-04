@@ -30,9 +30,9 @@ class TestCommand extends ContainerAwareCommand
     {
         /** @var Market $market */
         $market = $this->getContainer()->get('market');
-        $typeids = array('17843', '621', '17715');
+        $typeids = array('17843', '621', '17715', '1228');
 
-        $results = $market->GetMarketPricesForTypes($typeids);
+        $results = $market->GetAdjustedMarketPriceForTypes($typeids);
         dump($results);
     }
 }
