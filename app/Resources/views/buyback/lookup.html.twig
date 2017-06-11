@@ -277,16 +277,18 @@
                                     <th>Name</th>
                                     <th>Raw Quantity</th>
                                     <th>Refined Quantity</th>
-                                    <th>Value<th>
+                                    <th>Value</th>
+                                    <th>Totals</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for type in details.types %}
+                                {% for type in refineDetails %}
                                     <tr>
-                                        <td><img src="https://image.eveonline.com/Type/{{type.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{type.typeid}}">{{type.name}}</span></td>
-                                        <td>{{type.quantity|number_format(0, '.', ',') }}</td>
-                                        <td>{{type.refinedquantity|number_format(0, '.', ',') }}</td>
-                                        <td>{{type.marketprice|number_format(0, '.', ',') }}</td>
+                                        <td><img src="https://image.eveonline.com/Type/{{ type['typeid'] }}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ type['typeid'] }}">{{ type['name'] }}</span></td>
+                                        <td>{{ type['quantity']['base']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ type['quantity']['adjusted']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ type['price']['adjusted']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ (type['quantity']['adjusted'] * type['price']['adjusted'])|number_format(0, '.', ',') }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -295,7 +297,8 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td>{{value|number_format(0, '.', ',')}}</td>
+                                    <td></td>
+                                    <td>{{ refinedPrice|number_format(0, '.', ',') }}</td>
                                 </tr>
                             </tfooter>
                         </table>
@@ -329,6 +332,7 @@
             </div>
 
             <p>Green box denotes the price that is used in all market lookups/calculations and buybacks</p>
+            <div class="alert alert-info">Please Note: All prices on this screen are raw, they do not account for taxes!!!</div>
         </div>
     </div>
     <div class="modal-footer">

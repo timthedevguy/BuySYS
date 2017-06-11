@@ -143,7 +143,8 @@ class BuyBackController extends Controller
     /**
      * @Route("/market/lookup", name="ajax_lookup_price")
      */
-    public function ajax_LookupAction(Request $request) {
+    public function ajax_LookupAction(Request $request)
+    {
 
         if(is_numeric($request->request->get('id'))) {
 
@@ -173,10 +174,29 @@ class BuyBackController extends Controller
             $options = $this->get('market')->getMergedBuybackRuleForType($typeId);
             $value = $this->get('market')->GetMarketPriceByComposition($type, $options, $priceDetails);
 
+            // Figure out Refining Details
+            $refineMaterials = $this->get('market')->getRefinedMaterialsForType($typeId,$options['refineskill']);
+            $materialNames = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')
+                ->findNamesForTypes(array_keys($refineMaterials));
+            $materialPrices = $this->get('market')->getBuybackPricesForTypes(array_keys($refineMaterials));
+            dump($materialPrices);
+            $refineDetails = array();
+            $refinedPrice = 0;
+
+            foreach($refineMaterials as $materialTypeId => $refineDetail)
+            {
+                $refineDetails[$materialTypeId]['typeid'] = $materialTypeId;
+                $refineDetails[$materialTypeId]['name'] = $materialNames[$materialTypeId];
+                $refineDetails[$materialTypeId]['price'] = $materialPrices[$materialTypeId];
+                $refineDetails[$materialTypeId]['quantity'] = $refineMaterials[$materialTypeId];
+
+                $refinedPrice += ceil($refineMaterials[$materialTypeId]['adjusted'] * $materialPrices[$materialTypeId]['market']);
+            }
+
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
                                         'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
-                                        'details' => $priceDetails, 'market_group' => $market_group, 'options' => $options,
+                                        'details' => $priceDetails, 'market_group' => $market_group, 'options' => $options, 'refinedPrice' => $refinedPrice, 'refineDetails' => $refineDetails,
                 'group' => $group));
             return $template;
 

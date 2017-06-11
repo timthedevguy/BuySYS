@@ -32,7 +32,7 @@ class TestCommand extends ContainerAwareCommand
         $market = $this->getContainer()->get('market');
         $typeids = array('17843', '621', '17715', '1228');
 
-        $results = $market->getAdjustedMarketPriceForTypes(array('16269'));
+        $results = $market->getBuybackPricesForTypes(array('16269'));
         dump($results);
     }
 }

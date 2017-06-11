@@ -121,7 +121,7 @@ class QuicklookController extends Controller
     private function getQuickReview($typeIds) {
 
         $results = array();
-        $marketPrices = $this->get("market")->getAdjustedMarketPriceForTypes($typeIds);
+        $marketPrices = $this->get("market")->getBuybackPricesForTypes($typeIds);
 
         foreach($typeIds as $typeId) {
 
@@ -130,8 +130,8 @@ class QuicklookController extends Controller
             $oreModel->setTypeId($typeId);
             $oreModel->setName($eveType->getTypeName());
             $oreModel->setVolume($eveType->getVolume());
-            $oreModel->setIskPer($marketPrices[$typeId]);
-            $oreModel->setIskPerM($marketPrices[$typeId]/$oreModel->getVolume());
+            $oreModel->setIskPer($marketPrices[$typeId]['adjusted']);
+            $oreModel->setIskPerM($marketPrices[$typeId]['adjusted']/$oreModel->getVolume());
             $oreModel->setCanUnits(27500/$oreModel->getVolume());
             $oreModel->setCanPrice(27500*$oreModel->getIskPerM());
 

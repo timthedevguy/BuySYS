@@ -456,7 +456,9 @@ class Market
      * Get array of refined goods for specified type.  Only returns the
      * Material TypeID and the Quantity after refining penalty.
      *
-     * Returned array[TypeID => Quantity]
+     * Returned array[TypeID]
+     *  ['base']        float Base Materials Quantity
+     *  ['adjusted']    float Refined Materials Quantity
      *
      * @param $typeId
      * @param $refiningSkill
@@ -481,16 +483,17 @@ class Market
                 $refineRate = $this->helper->getSetting('buyback_salvage_refine_rate');
                 break;
         }
-        dump($refineRate);
+
         // Get refined Materials
         $materials = $this->doctrine->getRepository('EveBundle:TypeMaterialsEntity','evedata')->findByTypeID($typeId);
-        dump($materials);
+
         // Calculate the return
         foreach($materials as $material)
         {
-            $results[$material->getMaterialTypeID()] = floor($material->getQuantity() * ($refineRate / 100));
+            $results[$material->getMaterialTypeID()]['base'] = floor($material->getQuantity());
+            $results[$material->getMaterialTypeID()]['adjusted'] = floor($material->getQuantity() * ($refineRate / 100));
         }
-        dump($results);
+
         return $results;
     }
 
@@ -617,22 +620,22 @@ class Market
      * @param $rawPrice Raw Price
      * @return mixed Final Market Price
      */
-    public function getAdjustedMarketPriceForTypes($typeIds)
+    /*public function getAdjustedMarketPriceForTypes($typeIds)
     {
         // Get Cached Prices for Items
-        $prices = $this->getRawMarketPricesForTypes($typeIds);
-        dump($prices);
+        $prices = $this->getBuybackPricesForTypes($typeIds);
+
         foreach($prices as $typeId => $price)
         {
             $mergedRule = $this->getMergedBuybackRuleForType($typeId);
-            dump($mergedRule);
+
             // Is the refined flag set?
             if($mergedRule['isrefined'] == true)
             {
                 // Gets the refined materials
                 $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
                 // Get the prices
-                $materialPrices = $this->getRawMarketPricesForTypes(array_keys($materials));
+                $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
                 dump($materialPrices);
                 // Set market price to 0
                 $prices[$typeId] = 0;
@@ -643,7 +646,7 @@ class Market
                     $prices[$typeId] += $materialPrices[$materialTypeId] * $quantity;
                 }
             }
-            dump($prices);
+
             // Process the rest of the rules
             if($mergedRule['price'] == 0)
             {
@@ -655,20 +658,23 @@ class Market
                 $prices[$typeId] = ceil($mergedRule['price']);
             }
         }
-        dump($prices);
+
         return $prices;
-    }
+    }*/
 
     /**
-     * Get Market Prices for provided TypeIds.  Buyback rules
-     * are not processed.
+     * Get Market/Adjusted prices from Cache, will update cache as needed.  This is the main method that should
+     * be used to get pricing information as it will pull raw data and pull adjusted price by processing all
+     * buyback rules.
      *
-     * Return array[int TypeID => string Raw Eve Central Price]
+     * Return array[int TypeID]
+     *  ['market']      float Raw Eve Central Market Price
+     *  ['adjusted']    float Price after all Buyback Rules
      *
      * @param array $typeIds Array of TypeIds
      * @return array Array of TypeId Keys with market Price values
      */
-    public function getRawMarketPricesForTypes($typeIds)
+    public function getBuybackPricesForTypes($typeIds)
     {
         $results = array();
 
@@ -688,7 +694,8 @@ class Market
             if(date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900))
             {
                 // Add existing cache entry
-                $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+                $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
+                $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
 
                 // Remove the item so it doesn't get refreshed
                 unset($uniqueTypeIds[array_search($cacheItem->getTypeID(), $uniqueTypeIds)]);
@@ -713,23 +720,57 @@ class Market
             foreach($eveCentralResults as $eveCentralResult)
             {
                 // Get the Cache Item
-                $cacheItem = $cacheRepository->findOneByTypeID($eveCentralResult[$bb_source_type]["forQuery"]["types"][0]);
+                $typeId = $eveCentralResult[$bb_source_type]["forQuery"]["types"][0];
+                $cacheItem = $cacheRepository->findOneByTypeID($typeId);
 
                 if(!$cacheItem)
                 {
                     // If CacheItem is Null then create and populate it
                     $cacheItem = new CacheEntity();
-                    $cacheItem->setTypeId($eveCentralResult[$bb_source_type]["forQuery"]["types"][0]);
+                    $cacheItem->setTypeId($typeId);
                     $em->persist($cacheItem);
                 }
 
                 // Set Final stats
                 $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
                 $cacheItem->setLastPull(new \DateTime("now"));
+                $cacheItem->setAdjusted(0.0);
+
+                $mergedRule = $this->getMergedBuybackRuleForType($typeId);
+                $adjustedPrice = $cacheItem->getMarket();
+
+                // Is the refined flag set?
+                if($mergedRule['isrefined'] == true)
+                {
+                    // Gets the refined materials
+                    $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
+                    // Get the prices
+                    $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
+                    // Is refined so reset the adjusted price
+                    $adjustedPrice = 0;
+
+                    // Get new price
+                    foreach($materials as $materialTypeId => $quantity)
+                    {
+                        $adjustedPrice += ($materialPrices[$materialTypeId]['market'] * $quantity['adjusted']);
+                    }
+                }
+
+                // Process the rest of the rules
+                if($mergedRule['price'] == 0)
+                {
+                    // Price isn't set so calculate the taxes
+                    $cacheItem->setAdjusted(ceil($adjustedPrice * ((100 - $mergedRule['tax']) / 100)));
+                }
+                else
+                {
+                    $cacheItem->setAdjusted(ceil($mergedRule['price']));
+                }
 
                 $em->flush();
 
-                $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
+                $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
+                $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
             }
         }
 
