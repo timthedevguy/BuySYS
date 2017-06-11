@@ -286,8 +286,8 @@
                             <div class="col-md-6">
                                 {% if options['isrefined'] == true %}
                                     <div class="alert alert-warning">
-                                        This item is refined using Ore Skills, Ore is refined in batches of 100 units,
-                                        this table is displaying 1/100th of the value of a full refined batch.
+                                        This item is refined using Ore Skills, this table is assuming that the full
+                                        portion size of {{ options['portionSize'] }} units is being refined.
                                     </div>
                                 {% endif %}
                             </div>

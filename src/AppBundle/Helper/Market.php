@@ -124,11 +124,11 @@ class Market
             $results[$material->getMaterialTypeID()]['adjusted'] = floor($material->getQuantity() * ($refineRate / 100));
 
             // If this is Ore then return 1/100th of the batch size
-            if($refiningSkill == "Ore")
+            /*if($refiningSkill == "Ore")
             {
                 $results[$material->getMaterialTypeID()]['adjusted'] = floor($results[$material->getMaterialTypeID()]['adjusted'] / 100);
                 $results[$material->getMaterialTypeID()]['base'] = floor($results[$material->getMaterialTypeID()]['base']/100);
-            }
+            }*/
         }
 
         return $results;
@@ -164,6 +164,7 @@ class Market
                         invTypes.typeID,
                         invTypes.typeName,
                         invTypes.groupID,
+                        invTypes.portionSize,
                         invTypes.marketGroupID,
                         (SELECT valueInt 
                             FROM 
@@ -190,6 +191,7 @@ class Market
         $options['price'] = 0;
         $options['isrefined'] = false;
         $options['rules'] = "0";
+        $options['portionSize'] = $type['portionSize'];
 
         // Set Refine Skill and Salvage Flag
         if($type['refineSkill'] != null)
@@ -343,12 +345,19 @@ class Market
                         $adjustedPrice += ($materialPrices[$materialTypeId]['market'] * $quantity['adjusted']);
                     }
                 }
-
+                dump('PreTax: '.$cacheItem->getTypeId().' '.$adjustedPrice);
                 // Process the rest of the rules
                 if($mergedRule['price'] == 0)
                 {
                     // Price isn't set so calculate the taxes
-                    $cacheItem->setAdjusted(ceil($adjustedPrice * ((100 - $mergedRule['tax']) / 100)));
+                    $cacheItem->setAdjusted(floor($adjustedPrice * ((100 - $mergedRule['tax']) / 100)));
+                    dump('PostTax: '.$cacheItem->getTypeId().' '.$cacheItem->getAdjusted());
+                    if($mergedRule['isrefined'] == true & $mergedRule['refineskill'] == "Ore")
+                    {
+                        // Adjust Price by portion size
+                        $cacheItem->setAdjusted(floor($cacheItem->getAdjusted()/$mergedRule['portionSize']));
+                    }
+                    dump('PostOre: '.$cacheItem->getTypeId().' '.$cacheItem->getAdjusted());
                 }
                 else
                 {
