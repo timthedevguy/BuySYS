@@ -15,6 +15,9 @@ class Market
 {
     private $doctrine;
 
+    // -10%, +10%, -10 ISK, +10 ISK
+    // /^(?'operand'[\+\-])\s*(?'value'\d*)\s*(?'type'%|ISK)\s*$/gm
+
     public function __construct($doctrine, Helper $helper)
     {
         $this->doctrine = $doctrine;
@@ -246,55 +249,6 @@ class Market
 
         return $options;
     }
-
-    /**
-     * Takes raw Market Price and applies all rules/refining steps
-     *
-     * @param array $typeIds TypeId
-     * @param $rawPrice Raw Price
-     * @return mixed Final Market Price
-     */
-    /*public function getAdjustedMarketPriceForTypes($typeIds)
-    {
-        // Get Cached Prices for Items
-        $prices = $this->getBuybackPricesForTypes($typeIds);
-
-        foreach($prices as $typeId => $price)
-        {
-            $mergedRule = $this->getMergedBuybackRuleForType($typeId);
-
-            // Is the refined flag set?
-            if($mergedRule['isrefined'] == true)
-            {
-                // Gets the refined materials
-                $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
-                // Get the prices
-                $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
-                dump($materialPrices);
-                // Set market price to 0
-                $prices[$typeId] = 0;
-
-                // Get new price
-                foreach($materials as $materialTypeId => $quantity)
-                {
-                    $prices[$typeId] += $materialPrices[$materialTypeId] * $quantity;
-                }
-            }
-
-            // Process the rest of the rules
-            if($mergedRule['price'] == 0)
-            {
-                // Price isn't set so calculate the taxes
-                $prices[$typeId] = ceil($prices[$typeId] * ((100 - $mergedRule['tax']) / 100));
-            }
-            else
-            {
-                $prices[$typeId] = ceil($mergedRule['price']);
-            }
-        }
-
-        return $prices;
-    }*/
 
     /**
      * Get Market/Adjusted prices from Cache, will update cache as needed.  This is the main method that should

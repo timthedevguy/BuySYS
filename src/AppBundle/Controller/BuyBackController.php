@@ -191,7 +191,7 @@ class BuyBackController extends Controller
             $materialNames = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')
                 ->findNamesForTypes(array_keys($refineMaterials));
             $materialPrices = $this->get('market')->getBuybackPricesForTypes(array_keys($refineMaterials));
-            dump($materialPrices);
+
             $refineDetails = array();
             $refinedPrice = 0;
 
