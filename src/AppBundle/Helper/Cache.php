@@ -67,19 +67,19 @@ class Cache
         if($eveCentralOK == true)
         {
             // Begin Updating the Cache
-            $this->market->UpdateCache($mineralOres);
-            $this->market->UpdateCache($highSecOres);
-            $this->market->UpdateCache($otherHighSecOres);
-            $this->market->UpdateCache($lowSecOres);
-            $this->market->UpdateCache($nullSecOres);
-            $this->market->UpdateCache($gasOres);
-            $this->market->UpdateCache($p0Ores);
-            $this->market->UpdateCache($p1Ores);
-            $this->market->UpdateCache($p2Ores);
-            $this->market->UpdateCache($p3Ores);
-            $this->market->UpdateCache($p4Ores);
-            $this->market->UpdateCache($iceMinerals);
-            $this->market->UpdateCache($iceOres);
+            $this->market->forceCacheUpdateForTypes($mineralOres);
+            $this->market->forceCacheUpdateForTypes($highSecOres);
+            $this->market->forceCacheUpdateForTypes($otherHighSecOres);
+            $this->market->forceCacheUpdateForTypes($lowSecOres);
+            $this->market->forceCacheUpdateForTypes($nullSecOres);
+            $this->market->forceCacheUpdateForTypes($gasOres);
+            $this->market->forceCacheUpdateForTypes($p0Ores);
+            $this->market->forceCacheUpdateForTypes($p1Ores);
+            $this->market->forceCacheUpdateForTypes($p2Ores);
+            $this->market->forceCacheUpdateForTypes($p3Ores);
+            $this->market->forceCacheUpdateForTypes($p4Ores);
+            $this->market->forceCacheUpdateForTypes($iceMinerals);
+            $this->market->forceCacheUpdateForTypes($iceOres);
 
             return true;
         }

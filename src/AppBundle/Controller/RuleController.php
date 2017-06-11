@@ -84,7 +84,7 @@ class RuleController extends Controller
                 $em->flush();
             } else {
 
-                $results = $this->get('market')->ProcessBuybackRules($form_results['typeid']);
+                $results = $this->get('market')->getMergedBuybackRuleForType($form_results['typeid']);
             }
         }
 

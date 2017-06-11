@@ -154,7 +154,7 @@ class BuyBackController extends Controller
             $bb_source_stat = $this->get('helper')->getSetting("buyback_source_stat");
             $bb_source_id =  $this->get('helper')->getSetting("buyback_source_id");
 
-            $amarrData = $this->get('market')->GetEveCentralData($typeId, $bb_source_id);
+            $amarrData = $this->get('market')->GetEveCentralData($typeId, "30002187");
             $jitaData = $this->get('market')->GetEveCentralData($typeId, "30000142");
             $dodixieData = $this->get('market')->GetEveCentralData($typeId, "30002659");
             $rensData = $this->get('market')->GetEveCentralData($typeId, "30002510");
@@ -166,7 +166,7 @@ class BuyBackController extends Controller
                 ->findOneByGroupID($type->getGroupID())->getGroupName();
             $priceDetails = array();
             $priceDetails['types'] = array();
-            $options = $this->get('market')->ProcessBuybackRules($typeId);
+            $options = $this->get('market')->getMergedBuybackRuleForType($typeId);
             $value = $this->get('market')->GetMarketPriceByComposition($type, $options, $priceDetails);
             $isPricedByMinerals = $this->get('market')->IsPricedByMinerals($typeId);
 
