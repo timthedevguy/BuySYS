@@ -13,7 +13,6 @@ use EveBundle\Entity\DgmTypeAttributesEntity;
  */
 class Market
 {
-
     private $doctrine;
 
     public function __construct($doctrine, Helper $helper)
@@ -62,222 +61,6 @@ class Market
         }
     }
 
-    /* GetEveCentralData
-     *
-     * Get EveCentralD Data for TypeIds from System SourceID
-     * A SourceID of Zero will use Buyback Default
-     * Returns: Json Array of Market Data
-     */
-    public function GetEveCentralData($typeIds, $bb_source_id = "0")
-    {
-        $results = array();
-
-        // If $typeIds is not an array, then make it an array
-        if(!is_array($typeIds))
-        {
-            $tmp = $typeIds;
-            $typeIds = array();
-            $typeIds[] = $tmp;
-        }
-
-        if(count($typeIds) > 0)
-        {
-            // Get Buyback System setting
-            if($bb_source_id == 0)
-            {
-                $bb_source_id = $this->helper->getSetting("buyback_source_id");
-            }
-
-            // Lookup in batches of 20
-            for($i = 0; $i < count($typeIds); $i += 20)
-            {
-                $limit = $i+20;
-                if($limit > count($typeIds)) {$limit = count($typeIds);}
-
-                $lookup = array();
-
-                for($j = $i; $j < $limit; $j++)
-                {
-                    $lookup[] = $typeIds[$j];
-                }
-
-                // Build EveCentral Query string
-                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $lookup) . "&usesystem=" . $bb_source_id;
-
-                // Query EveCentral and grab results
-                $json = file_get_contents($queryString);
-        		$json_array = json_decode($json, true);
-
-                // Combine batches to one result set
-                $results = array_merge($results, $json_array);
-            }
-        }
-
-        // Return results
-        return $results;
-    }
-
-    /**
-     * Used to get array of Market Prices.  Will pull from cache and update
-     * cache as needed.  Takes in to account ore composition if Buyback
-     * settings dictate it.
-     * @param array $typeIds Array of TypeIds
-     * @return array Array of Prices
-     */
-    public function GetMarketPrices($typeIds)
-    {
-        $results = array();
-
-        // If $typeIds is not an array, then make it an array
-        if(!is_array($typeIds))
-        {
-            $tmp = $typeIds;
-            $typeIds = array();
-            $typeIds[] = $tmp;
-        }
-
-        try
-        {
-            // Get only Unique TypeIds
-            $dirtyTypeIds = array_values(array_unique($typeIds));
-
-            $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
-
-            // Get current cache entries
-            $em = $this->doctrine->getManager('default');
-            $cached = $cache->findAllByTypeIds($typeIds);
-
-            // If record isn't stale then remove it from the list to pull
-            foreach($cached as $cacheItem)
-            {
-                if(date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900)) {
-
-                    unset($dirtyTypeIds[array_search($cacheItem->getTypeID(), $dirtyTypeIds)]);
-                }
-            }
-
-            $dirtyTypeIds = array_values($dirtyTypeIds);
-
-            // If we have dirty cache pull new data
-            if(count($dirtyTypeIds) > 0)
-            {
-                // Get Settings
-                $bb_source_id = $this->helper->getSetting("buyback_source_id");
-                $bb_source_type = $this->helper->getSetting("buyback_source_type");
-                $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
-                $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
-                $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
-
-                // Get updated Stats from Eve Central
-                $json_array = $this->GetEveCentralData($dirtyTypeIds);
-
-                // Parse eve central data
-                foreach($json_array as $market_results)
-                {
-                    $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
-        			$cacheItem = $cache->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
-                    $options = $this->getMergedBuybackRuleForType($type->getTypeID());
-
-                    if(!$cacheItem)
-                    {
-                        $cacheItem = new CacheEntity();
-                        $cacheItem->setTypeId($market_results[$bb_source_type]["forQuery"]["types"][0]);
-                        $cacheItem->setMarket('0');
-                        $cacheItem->setLastPull(new \DateTime("now"));
-                        $em->persist($cacheItem);
-                        $em->flush();
-                    }
-
-                    // TODO Add Rules Code here
-
-                    // Is refining option turned on?
-                    if($options['isrefined'] == true & $options['price'] == '0') {
-
-                        // Get our Composite price
-                        $calcValue = $this->GetMarketPriceByComposition($type, $options);
-
-                        if($calcValue >= 0)
-                        {
-                            // Set Market Value to Value of refined goods
-                            $cacheItem->setMarket($calcValue);
-                        }
-                        elseif($calcValue == -1)
-                        {
-                            // Set Market Value to Eve Central Data
-                            $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
-                        }
-                    } else if($options['price'] != '0') {
-
-                        // Set hardcoded price
-                        $cacheItem->setMarket($options['price']);
-                    } else {
-                        // Set Market Value to Eve Central Data
-                        $cacheItem->setMarket($market_results[$bb_source_type][$bb_source_stat]);
-                    }
-
-                    $cacheItem->setLastPull(new \DateTime("now"));
-                    $em->flush();
-
-                    $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
-        		}
-            }
-
-            foreach($cached as $cacheItem)
-            {
-                $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
-            }
-
-            return $results;
-
-        } catch(Exception $e) {
-
-            return $e;
-        }
-    }
-
-    public function GetLiveMarketPrices($typeIds) {
-
-        $results = array();
-
-        // If $typeIds is not an array, then make it an array
-        if(!is_array($typeIds))
-        {
-            $tmp = $typeIds;
-            $typeIds = array();
-            $typeIds[] = $tmp;
-        }
-
-        try
-        {
-            // Get only Unique TypeIds
-            $dirtyTypeIds = array_values(array_unique($typeIds));
-
-            // If we have dirty cache pull new data
-            if(count($dirtyTypeIds) > 0) {
-
-                // Get Settings
-                $bb_source_type = $this->helper->getSetting("buyback_source_type");
-                $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
-
-                // Get updated Stats from Eve Central
-                $json_array = $this->GetEveCentralData($dirtyTypeIds);
-
-                // Parse eve central data
-                foreach ($json_array as $market_results) {
-                    $type = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($market_results[$bb_source_type]["forQuery"]["types"][0]);
-
-                    $results[$type->getTypeId()] = $market_results[$bb_source_type][$bb_source_stat];
-                }
-            }
-
-            return $results;
-
-        } catch(Exception $e) {
-
-            return $e;
-        }
-    }
-
     /**
      * Checks if Eve Central API is responding by checking
      * the response header
@@ -294,162 +77,6 @@ class Market
         }
 
         return false;
-    }
-
-    /**
-     * Returns cached price, if price doesn't exist we don't care
-     * @param array $typeIds Array of TypeIds
-     * @return array[typeid] = market price
-     */
-    public function GetCachedMarketPrices($typeIds)
-    {
-        $results = array();
-
-        // If $typeIds is not an array, then make it an array
-        if(!is_array($typeIds))
-        {
-            $tmp = $typeIds;
-            $typeIds = array();
-            $typeIds[] = $tmp;
-        }
-
-        $cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
-        $em = $this->doctrine->getManager('default');
-        $cacheEntities = $cache->findAllByTypeIds($typeIds);
-
-        foreach($cacheEntities as $cacheItem)
-        {
-            $results[$cacheItem->getTypeId()] = $cacheItem->getMarket();
-        }
-
-        return $results;
-    }
-
-    /* GetMarketPriceByComposition
-     *
-     * Get Market price by ore mineral composition
-     */
-    public function GetMarketPriceByComposition($type, $options, &$details = array())
-    {
-        // TODO Maybe add rule code here
-        // Set Default to Salvage Rate
-        $bb_refine_rate = $this->helper->getSetting("buyback_salvage_refine_rate");
-        $details['name'] = $type->getTypeName();
-        $details['typeid'] = $type->getTypeId();
-        $details['refineskill'] = 'Salvage Refine Rate';
-
-        // Value by Reprocessing Rate
-        $typeMaterials = array();
-        $typeMaterials = $this->doctrine->getRepository('EveBundle:TypeMaterialsEntity','evedata')->findByTypeID($type->getTypeId());
-        $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
-            array('typeID' => $type->getTypeId(), 'attributeID' => '790')
-        );
-
-        if(!$refineSkill == null)
-        {
-            if($refineSkill == 18025)
-            {
-                // Ice Reprocessing
-                $bb_refine_rate = $this->helper->getSetting("buyback_ice_refine_rate");
-                $details['refineskill'] = 'Ice Refine Rate';
-            }
-            else
-            {
-                // Ore Reprocessing
-                $bb_refine_rate = $this->helper->getSetting("buyback_ore_refine_rate");
-                $details['refineskill'] = 'Ore Refine Rate';
-            }
-        }
-
-        $marketPrice = 0;
-
-        if(count($typeMaterials) > 0)
-        {
-            $details['materialcount'] = count($typeMaterials);
-            $details['types'] = array();
-
-            foreach($typeMaterials as $typeMaterial)
-            {
-                $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
-                $mineralCost = $this->GetMarketPrices($typeMaterial->getMaterialTypeId())[$typeMaterial->getMaterialTypeId()];
-                $marketPrice += floor((($mineralCost * $refinedAmount)/$type->getPortionSize()));
-
-                $mDetails = array();
-                $mDetails['typeid'] = $typeMaterial->getMaterialTypeId();
-                $mDetails['name'] = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeMaterial->getMaterialTypeId())->getTypeName();
-                $mDetails['quantity'] = $typeMaterial->getQuantity();
-                $mDetails['refinedquantity'] = $refinedAmount;
-                $mDetails['marketprice'] = floor((($mineralCost * $refinedAmount)/$type->getPortionSize()));
-
-                $details['types'][$typeMaterial->getMaterialTypeId()] = $mDetails;
-            }
-
-            return $marketPrice;
-        }
-
-        return -1;
-    }
-
-    public function GetMarketPriceByCompositionByTypeId($typeid) {
-
-        $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeid);
-        $details = array();
-        return $this->GetMarketPriceByComposition($type,$details);
-    }
-
-    public function PopulateLineItems(&$items, $isPublic = false, $isLive = false)
-    {
-        try
-        {
-            $typeids = array();
-            $publicTax = 0;
-
-            //add guest buyback tax if applicable
-            if($isPublic) {
-                $publicTax = $this->helper->getSetting("buyback_default_public_tax");
-            }
-
-            foreach($items as $lineItem)
-            {
-                if($lineItem->getIsValid())
-                {
-                    $typeids[] = $lineItem->getTypeId();
-                }
-            }
-
-            if($isLive == true) {
-
-                $prices = $this->GetLiveMarketPrices($typeids);
-            } else {
-
-                $prices = $this->GetMarketPrices($typeids);
-            }
-
-            foreach($items as $lineItemA)
-            {
-                if($lineItemA->getIsValid())
-                {
-                    $options = $this->getMergedBuybackRuleForType($lineItemA->getTypeId(), $isPublic);
-
-                    if($isLive != true) {
-                        $bb_tax = $options['tax'] + $publicTax;
-                    } else {
-                        $bb_tax = 0;
-                    }
-
-                    $lineItemA->setMarketPrice($prices[$lineItemA->getTypeId()]);
-                    $lineItemA->setGrossPrice($lineItemA->getMarketPrice()*$lineItemA->getQuantity());
-                    $lineItemA->setNetPrice(($lineItemA->getMarketPrice()*((100-$bb_tax)/100))*$lineItemA->getQuantity());
-                    $lineItemA->setTax($bb_tax);
-                }
-            }
-        }
-        catch (Exception $e)
-        {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -492,6 +119,13 @@ class Market
         {
             $results[$material->getMaterialTypeID()]['base'] = floor($material->getQuantity());
             $results[$material->getMaterialTypeID()]['adjusted'] = floor($material->getQuantity() * ($refineRate / 100));
+
+            // If this is Ore then return 1/100th of the batch size
+            if($refiningSkill == "Ore")
+            {
+                $results[$material->getMaterialTypeID()]['adjusted'] = floor($results[$material->getMaterialTypeID()]['adjusted'] / 100);
+                $results[$material->getMaterialTypeID()]['base'] = floor($results[$material->getMaterialTypeID()]['base']/100);
+            }
         }
 
         return $results;
@@ -732,7 +366,7 @@ class Market
                 }
 
                 // Set Final stats
-                $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
+                $cacheItem->setMarket(ceil($eveCentralResult[$bb_source_type][$bb_source_stat]));
                 $cacheItem->setLastPull(new \DateTime("now"));
                 $cacheItem->setAdjusted(0.0);
 
@@ -747,7 +381,7 @@ class Market
                     // Get the prices
                     $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
                     // Is refined so reset the adjusted price
-                    $adjustedPrice = 0;
+                    $adjustedPrice = 0.0;
 
                     // Get new price
                     foreach($materials as $materialTypeId => $quantity)

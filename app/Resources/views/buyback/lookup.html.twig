@@ -15,6 +15,7 @@
     </div>
     <div class="modal-body" >
         <div class="buyback-results-container">
+            <div class="alert alert-info">Please Note: All prices on this screen are raw, they do not account for taxes!!!</div>
             <div class="nav nav-tabs">
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#tab_2-1" data-toggle="tab" aria-expanded="true">Amarr</a></li>
@@ -269,8 +270,28 @@
                     </div>
                     {% if details != null %}
                     <div class="tab-pane" id="tab_2-6">
-                        <p>Refined using: {{ options['refineskill'] }}</p>
-                        <p>Priced by Minerals?: {{ (options['isrefined']) ? 'Yes' : 'No' }}</p>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col-md-6">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <th>Refined Using:</th>
+                                        <td>{{ options['refineskill'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Priced by Refining:</th>
+                                        <td>{{ (options['isrefined']) ? 'Yes' : 'No' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                {% if options['isrefined'] == true %}
+                                    <div class="alert alert-warning">
+                                        This item is refined using Ore Skills, Ore is refined in batches of 100 units,
+                                        this table is displaying 1/100th of the value of a full refined batch.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                         <table class="table table-striped images-table">
                             <thead>
                                 <tr>
@@ -287,7 +308,7 @@
                                         <td><img src="https://image.eveonline.com/Type/{{ type['typeid'] }}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ type['typeid'] }}">{{ type['name'] }}</span></td>
                                         <td>{{ type['quantity']['base']|number_format(0, '.', ',') }}</td>
                                         <td>{{ type['quantity']['adjusted']|number_format(0, '.', ',') }}</td>
-                                        <td>{{ type['price']['adjusted']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ type['price']['market']|number_format(0, '.', ',') }}</td>
                                         <td>{{ (type['quantity']['adjusted'] * type['price']['adjusted'])|number_format(0, '.', ',') }}</td>
                                     </tr>
                                 {% endfor %}
@@ -332,7 +353,6 @@
             </div>
 
             <p>Green box denotes the price that is used in all market lookups/calculations and buybacks</p>
-            <div class="alert alert-info">Please Note: All prices on this screen are raw, they do not account for taxes!!!</div>
         </div>
     </div>
     <div class="modal-footer">

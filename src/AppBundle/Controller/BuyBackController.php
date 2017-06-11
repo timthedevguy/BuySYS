@@ -42,10 +42,22 @@ class BuyBackController extends Controller
             return $this->render('buyback/novalid.html.twig');
         }
 
-        // Get market value and buyback values
-        if(!$this->get('market')->PopulateLineItems($items))
+        $typeIds = array();
+
+        // Grab our TypeID's to pull pricing for
+        foreach($items as $item)
         {
-            return $this->render('elements/error_modal.html.twig', Array( 'message' => "No Prices Found"));
+            $typeIds[] = $item->getTypeId();
+        }
+
+        $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds);
+
+        foreach($items as $item)
+        {
+            $item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
+            $item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
+            $item->setNetPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['adjusted']);
+            $item->setTax(0);
         }
 
         //insert into DB and return quote
@@ -172,7 +184,7 @@ class BuyBackController extends Controller
             $priceDetails = array();
             $priceDetails['types'] = array();
             $options = $this->get('market')->getMergedBuybackRuleForType($typeId);
-            $value = $this->get('market')->GetMarketPriceByComposition($type, $options, $priceDetails);
+
 
             // Figure out Refining Details
             $refineMaterials = $this->get('market')->getRefinedMaterialsForType($typeId,$options['refineskill']);
@@ -195,7 +207,7 @@ class BuyBackController extends Controller
 
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
                                         'source_type' => $bb_source_type, 'source_stat' => $bb_source_stat, 'typeid' => $type->getTypeID(),
-                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData, 'value' => $value,
+                                        'jita' => $jitaData, 'dodixie' => $dodixieData, 'rens' => $rensData, 'hek' => $hekData,
                                         'details' => $priceDetails, 'market_group' => $market_group, 'options' => $options, 'refinedPrice' => $refinedPrice, 'refineDetails' => $refineDetails,
                 'group' => $group));
             return $template;
