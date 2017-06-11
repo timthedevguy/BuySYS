@@ -121,22 +121,17 @@ class QuicklookController extends Controller
     private function getQuickReview($typeIds) {
 
         $results = array();
-        $marketPrices = $this->get("market")->GetCachedMarketPrices($typeIds);
+        $marketPrices = $this->get("market")->getAdjustedMarketPriceForTypes($typeIds);
 
         foreach($typeIds as $typeId) {
-
-            //$tax = $this->get("helper")->getSetting("buyback_default_tax");
-            $options = $this->get('market')->getMergedBuybackRuleForType($typeId);
-            $tax = $options['tax'];
-            $marketPrice = $marketPrices[$typeId]*((100-$tax)/100);
 
             $eveType = $this->getDoctrine('evedata')->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($typeId);
             $oreModel = new OreReviewModel();
             $oreModel->setTypeId($typeId);
             $oreModel->setName($eveType->getTypeName());
             $oreModel->setVolume($eveType->getVolume());
-            $oreModel->setIskPer($marketPrice);
-            $oreModel->setIskPerM($marketPrice/$oreModel->getVolume());
+            $oreModel->setIskPer($marketPrices[$typeId]);
+            $oreModel->setIskPerM($marketPrices[$typeId]/$oreModel->getVolume());
             $oreModel->setCanUnits(27500/$oreModel->getVolume());
             $oreModel->setCanPrice(27500*$oreModel->getIskPerM());
 

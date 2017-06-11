@@ -30,16 +30,16 @@ class Market
      */
     public function forceCacheUpdateForTypes($typeIds)
     {
-        $jsonData = $this->GetEveCentralData($typeIds);
-
         // Get Settings
+        $bb_source_id = $this->helper->getSetting("buyback_source_id");
         $bb_source_type = $this->helper->getSetting("buyback_source_type");
         $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+
+        $jsonData = $this->getEveCentralDataForTypes($typeIds, $bb_source_id);
 
         foreach ($jsonData as $jsonItem)
         {
             // Query DB for matching CacheEntity
-            $type = $this->doctrine->getRepository('EveBundle:TypeEntity','evedata')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
             $cacheItem = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default')->findOneByTypeID($jsonItem[$bb_source_type]["forQuery"]["types"][0]);
 
             if (!$cacheItem)
@@ -235,25 +235,6 @@ class Market
         }
     }
 
-    public function IsPricedByMinerals($typeId) {
-
-        $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
-        $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
-
-        $refineSkill = $this->doctrine->getRepository('EveBundle:DgmTypeAttributesEntity','evedata')->findBy(
-            array('typeID' => $typeId, 'attributeID' => '790')
-        );
-
-        // Is refining option turned on?
-        if(($bb_value_minerals == 1 & $refineSkill != null) |
-            ($bb_value_salvage == 1 & $refineSkill == null))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     public function GetLiveMarketPrices($typeIds) {
 
         $results = array();
@@ -298,10 +279,12 @@ class Market
     }
 
     /**
-     * Checks if Eve Central API is responding
+     * Checks if Eve Central API is responding by checking
+     * the response header
+     *
      * @return bool
      */
-    public function IsEveCentralAlive()
+    public function isEveCentralAlive()
     {
         $header_check = get_headers("https://api.eve-central.com/api/marketstat?typeid=34");
 
@@ -498,16 +481,16 @@ class Market
                 $refineRate = $this->helper->getSetting('buyback_salvage_refine_rate');
                 break;
         }
-
+        dump($refineRate);
         // Get refined Materials
         $materials = $this->doctrine->getRepository('EveBundle:TypeMaterialsEntity','evedata')->findByTypeID($typeId);
-
+        dump($materials);
         // Calculate the return
         foreach($materials as $material)
         {
             $results[$material->getMaterialTypeID()] = floor($material->getQuantity() * ($refineRate / 100));
         }
-
+        dump($results);
         return $results;
     }
 
@@ -521,8 +504,9 @@ class Market
      *  ['isrefined']   boolean Refined Flag
      *  ['name']        string Type Name
      *  ['typeid']      int Type ID
-     *  ['issalvage']   boolean Is this item Salvage? (Only present if Refined Flag = true)
-     *  ['refineskill'] string Refining Skill (Only present if Refined Flag = true)
+     *  ['issalvage']   boolean Is this item Salvage?
+     *  ['refineskill'] string Refining Skill
+     *  ['rules']       string List of applied Rules
      *
      * @param $typeId
      * @return array Merged Buyback Rule
@@ -565,12 +549,11 @@ class Market
         $options['tax'] = $bb_tax;
         $options['price'] = 0;
         $options['isrefined'] = false;
+        $options['rules'] = "0";
 
-        // Should this item be valued by refined mats?
-        if($bb_value_minerals == 1 & $type['refineSkill'] != null)
+        // Set Refine Skill and Salvage Flag
+        if($type['refineSkill'] != null)
         {
-            // Set is Refined
-            $options['isrefined'] = true;
             $options['issalvage'] = false;
 
             if($type['refineSkill'] == 18025)
@@ -582,12 +565,18 @@ class Market
                 $options['refineskill'] = 'Ore';
             }
         }
-        else if($bb_value_salvage == 1 & $type['refineSkill'] == null)
+        elseif ($type['refineSkill'] == null)
+        {
+            $options['issalvage'] = true;
+            $options['refineskill'] = 'Salvage';
+        }
+
+        // Should this item be valued by refined mats?
+        if($bb_value_minerals == 1 & $type['refineSkill'] != null |
+            $bb_value_salvage == 1 & $type['refineSkill'] == null)
         {
             // Set is Refined
             $options['isrefined'] = true;
-            $options['issalvage'] = true;
-            $options['refineskill'] = 'Salvage';
         }
 
         foreach($buybackRules as $buybackRule)
@@ -632,11 +621,11 @@ class Market
     {
         // Get Cached Prices for Items
         $prices = $this->getRawMarketPricesForTypes($typeIds);
-
+        dump($prices);
         foreach($prices as $typeId => $price)
         {
             $mergedRule = $this->getMergedBuybackRuleForType($typeId);
-
+            dump($mergedRule);
             // Is the refined flag set?
             if($mergedRule['isrefined'] == true)
             {
@@ -644,7 +633,7 @@ class Market
                 $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
                 // Get the prices
                 $materialPrices = $this->getRawMarketPricesForTypes(array_keys($materials));
-
+                dump($materialPrices);
                 // Set market price to 0
                 $prices[$typeId] = 0;
 
@@ -654,7 +643,7 @@ class Market
                     $prices[$typeId] += $materialPrices[$materialTypeId] * $quantity;
                 }
             }
-
+            dump($prices);
             // Process the rest of the rules
             if($mergedRule['price'] == 0)
             {
@@ -666,7 +655,7 @@ class Market
                 $prices[$typeId] = ceil($mergedRule['price']);
             }
         }
-
+        dump($prices);
         return $prices;
     }
 

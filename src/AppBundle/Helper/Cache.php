@@ -61,7 +61,7 @@ class Cache
         //$market = $this->getContainer()->get('market');
         //$helper = $this->getContainer()->get('helper');
 
-        $eveCentralOK = $this->market->IsEveCentralAlive();
+        $eveCentralOK = $this->market->isEveCentralAlive();
         $this->helper->setSetting("eveCentralOK", $eveCentralOK);
 
         if($eveCentralOK == true)
