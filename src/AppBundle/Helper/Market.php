@@ -9,12 +9,14 @@ use EveBundle\Entity\MarketGroupsEntity;
 use EveBundle\Entity\DgmTypeAttributesEntity;
 
 /**
- * Market Helper provides all market data lookup functions
+ * Market Helper provides the needed logic to value an item using all provided buyback rules
  */
 class Market
 {
     private $doctrine;
-
+    // TODO: Whitelist/Blacklist rules for Buyback Rules
+    // TODO: Remove Whitelist/Blacklist seperate system
+    // TODO: Add +/- %/ISK values to Buyback Rules
     // -10%, +10%, -10 ISK, +10 ISK
     // /^(?'operand'[\+\-])\s*(?'value'\d*)\s*(?'type'%|ISK)\s*$/gm
 
@@ -157,6 +159,7 @@ class Market
         $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
         $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
         $bb_tax = $this->helper->getSetting("buyback_default_tax");
+        $bb_deny_all = $this->helper->getSetting("buyback_default_buyaction_deny");
 
         // Fancy SQL to get Types, GroupID, MarketID and Refining Skill in one go
         $evedataConnection = $this->doctrine->getManager('evedata')->getConnection();
@@ -192,6 +195,15 @@ class Market
         $options['isrefined'] = false;
         $options['rules'] = "0";
         $options['portionSize'] = $type['portionSize'];
+
+        if($bb_deny_all == 1)
+        {
+            $options['canbuy'] = false;
+        }
+        else
+        {
+            $options['canbuy'] = true;
+        }
 
         // Set Refine Skill and Salvage Flag
         if($type['refineSkill'] != null)
@@ -241,6 +253,16 @@ class Market
                         $options['isrefined'] = true;
                     }
                     break;
+                case 'canbuy':
+                    if($buybackRule->getValue() == 0)
+                    {
+                        $options['canbuy']  = false;
+                    }
+                    else
+                    {
+                        $options['canbuy'] = true;
+                    }
+                    break;
             }
 
             $options['rules'] = $options['rules'].', '.$buybackRule->getSort();
@@ -278,11 +300,11 @@ class Market
         $cachedItems = $cacheRepository->findAllByTypeIds($uniqueTypeIds);
 
         // If record isn't stale then remove it from the list to pull
-        foreach($cachedItems as $cacheItem)
-        {
+        foreach($cachedItems as $cacheItem) {
+
             // Is the Timestamp later than now + 15 minutes
-            if(date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900))
-            {
+            if (date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900)) {
+
                 // Add existing cache entry
                 $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
                 $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
@@ -296,8 +318,8 @@ class Market
         $uniqueTypeIds = array_values($uniqueTypeIds);
 
         // Update Cache for remaining TypeIds
-        if(count($uniqueTypeIds) > 0)
-        {
+        if(count($uniqueTypeIds) > 0) {
+
             // Get Eve Central Settings
             $bb_source_id = $this->helper->getSetting("buyback_source_id");
             $bb_source_type = $this->helper->getSetting("buyback_source_type");
@@ -307,14 +329,14 @@ class Market
             $eveCentralResults = $this->getEveCentralDataForTypes($uniqueTypeIds, $bb_source_id);
 
             // Parse eve central data
-            foreach($eveCentralResults as $eveCentralResult)
-            {
+            foreach ($eveCentralResults as $eveCentralResult) {
+
                 // Get the Cache Item
                 $typeId = $eveCentralResult[$bb_source_type]["forQuery"]["types"][0];
                 $cacheItem = $cacheRepository->findOneByTypeID($typeId);
 
-                if(!$cacheItem)
-                {
+                if (!$cacheItem) {
+
                     // If CacheItem is Null then create and populate it
                     $cacheItem = new CacheEntity();
                     $cacheItem->setTypeId($typeId);
@@ -322,52 +344,59 @@ class Market
                 }
 
                 // Set Final stats
-                $cacheItem->setMarket(ceil($eveCentralResult[$bb_source_type][$bb_source_stat]));
+                $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
                 $cacheItem->setLastPull(new \DateTime("now"));
                 $cacheItem->setAdjusted(0.0);
 
                 $mergedRule = $this->getMergedBuybackRuleForType($typeId);
                 $adjustedPrice = $cacheItem->getMarket();
 
-                // Is the refined flag set?
-                if($mergedRule['isrefined'] == true)
-                {
-                    // Gets the refined materials
-                    $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
-                    // Get the prices
-                    $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
-                    // Is refined so reset the adjusted price
-                    $adjustedPrice = 0.0;
+                // Check if we can even buy this item
+                if ($mergedRule['canbuy'] == true) {
 
-                    // Get new price
-                    foreach($materials as $materialTypeId => $quantity)
-                    {
-                        $adjustedPrice += ($materialPrices[$materialTypeId]['market'] * $quantity['adjusted']);
+                    // Is the refined flag set?
+                    if ($mergedRule['isrefined'] == true) {
+
+                        // Gets the refined materials
+                        $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
+                        // Get the prices
+                        $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
+                        // Is refined so reset the adjusted price
+                        $adjustedPrice = 0.0;
+
+                        // Get new price
+                        foreach ($materials as $materialTypeId => $quantity) {
+
+                            $adjustedPrice += ($materialPrices[$materialTypeId]['market'] * $quantity['adjusted']);
+                        }
                     }
-                }
-                dump('PreTax: '.$cacheItem->getTypeId().' '.$adjustedPrice);
-                // Process the rest of the rules
-                if($mergedRule['price'] == 0)
-                {
-                    // Price isn't set so calculate the taxes
-                    $cacheItem->setAdjusted(floor($adjustedPrice * ((100 - $mergedRule['tax']) / 100)));
-                    dump('PostTax: '.$cacheItem->getTypeId().' '.$cacheItem->getAdjusted());
-                    if($mergedRule['isrefined'] == true & $mergedRule['refineskill'] == "Ore")
-                    {
-                        // Adjust Price by portion size
-                        $cacheItem->setAdjusted(floor($cacheItem->getAdjusted()/$mergedRule['portionSize']));
+
+                    // Process the rest of the rules
+                    if ($mergedRule['price'] == 0) {
+
+                        // Price isn't set so calculate the taxes
+                        $cacheItem->setAdjusted($adjustedPrice * ((100 - $mergedRule['tax']) / 100));
+
+                        // If this is Ore then change to partial value based on Portion Size
+                        if ($mergedRule['isrefined'] == true & $mergedRule['refineskill'] == "Ore") {
+
+                            // Adjust Price by portion size
+                            $cacheItem->setAdjusted($cacheItem->getAdjusted() / $mergedRule['portionSize']);
+                        }
+                    } else {
+
+                        $cacheItem->setAdjusted($mergedRule['price']);
                     }
-                    dump('PostOre: '.$cacheItem->getTypeId().' '.$cacheItem->getAdjusted());
-                }
-                else
-                {
-                    $cacheItem->setAdjusted(ceil($mergedRule['price']));
-                }
 
-                $em->flush();
+                    $em->flush();
 
-                $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
-                $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
+                    $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
+                    $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
+                } else {
+
+                    $results[$cacheItem->getTypeId()]['market'] = -1;
+                    $results[$cacheItem->getTypeId()]['adjusted'] = -1;
+                }
             }
         }
 

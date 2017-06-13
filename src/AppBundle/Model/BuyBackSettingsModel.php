@@ -142,4 +142,18 @@ class BuyBackSettingsModel
     {
         return $this->salvageRefineRate;
     }
+
+    protected $defaultBuybackActionDeny;
+
+    public function setDefaultBuybackActionDeny($defaultBuybackActionDeny)
+    {
+        $this->defaultBuybackActionDeny = $defaultBuybackActionDeny;
+
+        return $this;
+    }
+
+    public function getDefaultBuybackActionDeny()
+    {
+        return $this->defaultBuybackActionDeny;
+    }
 }

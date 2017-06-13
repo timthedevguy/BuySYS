@@ -21,9 +21,8 @@ class RuleController extends Controller
     public function indexAction(Request $request)
     {
         $results = null;
-        //$groupModel = new GroupRuleModel();
-        //$typeModel = new TypeRuleModel();
 
+        // Create Forms for the Page
         $groupForm = $this->createForm(AddGroupRuleForm::class);
         $marketGroupForm = $this->createForm(AddMarketGroupRuleForm::class);
         $typeForm = $this->createForm(AddTypeRuleForm::class);
@@ -31,60 +30,78 @@ class RuleController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        if($request->getMethod() == "POST") {
+        // Process POSTs
+        if($request->getMethod() == "POST")
+        {
+            $form_results = null;
+            $rule = new RuleEntity();
 
-            $form_results = $request->request->get('test_rule_form');
-
-            if($form_results == null) {
-
-                $form_results = $request->request->get('add_type_rule_form');
-                $rule = new RuleEntity();
-
-                if ($form_results == null) {
-
-                    // Submitted form is Group Form
-                    $form_results = $request->request->get('add_group_rule_form');
-
-                    if($form_results == null) {
-
-                        // Submited Form is MarketGroup Form
-                        $form_results = $request->request->get('add_marketgroup_rule_form');
-                        $rule->setTarget('marketgroup');
-                        $rule->setTargetId($form_results['marketgroupid']);
-                        $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->
-                        findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
-
-                        $this->addFlash('success', "Added new Market Group rule");
-                    } else {
-
-                        // Submited Form is Group Form
-                        $rule->setTarget('group');
-                        $rule->setTargetId($form_results['groupid']);
-                        $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')->
-                        findOneByGroupID($form_results['groupid'])->getGroupName());
-
-                        $this->addFlash('success', "Added new Group rule");
-                    }
-
-                } else {
-
-                    // Submitted form was Type Form
+            if($request->request->has('test_rule_form'))
+            {
+                $form_results = $request->request->get('test_rule_form');
+                $results = $this->get('market')->getMergedBuybackRuleForType($form_results['typeid']);
+            }
+            else
+            {
+                if ($request->request->has('add_type_rule_form'))
+                {
+                    $form_results = $request->request->get('add_type_rule_form');
                     $rule->setTarget('type');
                     $rule->setTargetId($form_results['typeid']);
-                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->
-                    findOneByTypeID($form_results['typeid'])->getTypeName());
-
-                    $this->addFlash('success', "Added new Item rule");
+                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')
+                        ->findOneByTypeID($form_results['typeid'])->getTypeName());
+                }
+                elseif ($request->request->has('add_group_rule_form'))
+                {
+                    $form_results = $request->request->get('add_group_rule_form');
+                    $rule->setTarget('group');
+                    $rule->setTargetId($form_results['groupid']);
+                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')
+                        ->findOneByGroupID($form_results['groupid'])->getGroupName());
+                }
+                elseif ($request->request->has('add_market_group_rule_form'))
+                {
+                    $form_results = $request->request->get('add_market_group_rule_form');
+                    $rule->setTarget('marketgroup');
+                    $rule->setTargetId($form_results['marketgroupid']);
+                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')
+                        ->findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
                 }
 
                 $rule->setSort($this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->getNextSort());
                 $rule->setAttribute($form_results['attribute']);
-                $rule->setValue($form_results['value']);
-                $em->persist($rule);
-                $em->flush();
-            } else {
 
-                $results = $this->get('market')->getMergedBuybackRuleForType($form_results['typeid']);
+                $isValid = false;
+
+                if ($rule->getAttribute() == 'canbuy' | $rule->getAttribute() == 'isrefined')
+                {
+                    if (preg_match('/^yes$|^true$/mi', $form_results['value']))
+                    {
+                        $rule->setValue(1);
+                        $isValid = true;
+                    }
+                    elseif (preg_match('/^no$|^false$/mi', $form_results['value']))
+                    {
+                        $rule->setValue(0);
+                        $isValid = true;
+                    }
+                    else
+                    {
+                        $this->addFlash('error', 'Value has to be either 0 or 1, true or false, yes or no.');
+                    }
+                }
+                elseif ($rule->getAttribute() == 'tax' | $rule->getAttribute() == 'price')
+                {
+                    $rule->setValue($form_results['value']);
+                    $isValid = true;
+                }
+
+                if ($isValid)
+                {
+                    $this->addFlash('success', 'Rule added successfully!');
+                    $em->persist($rule);
+                    $em->flush();
+                }
             }
         }
 
@@ -100,30 +117,45 @@ class RuleController extends Controller
         $rule->setValue($this->get("helper")->getSetting("buyback_default_tax"));
 
         $builtIn[] = $rule;
+        $rule = new RuleEntity();
+        $rule->setSort('0');
+        $rule->setTargetName('Anything Refinable');
+        $rule->setTarget('Global Rule');
+        $rule->setAttribute('Is Refined');
+        $rule->setValue('No');
 
-        if($this->get("helper")->getSetting("buyback_value_minerals") == 1) {
-
-            $rule = new RuleEntity();
-            $rule->setSort('0');
-            $rule->setTargetName('Anything Refinable');
-            $rule->setTarget('Global Rule');
-            $rule->setAttribute('Is Refined');
+        if($this->get("helper")->getSetting("buyback_value_minerals") == 1)
+        {
             $rule->setValue('Yes');
-
-            $builtIn[] = $rule;
         }
 
-        if($this->get("helper")->getSetting("buyback_value_salvage") == 1) {
+        $builtIn[] = $rule;
+        $rule = new RuleEntity();
+        $rule->setSort('0');
+        $rule->setTargetName('Anything Salvageable');
+        $rule->setTarget('Global Rule');
+        $rule->setAttribute('Is Refined');
+        $rule->setValue('No');
 
-            $rule = new RuleEntity();
-            $rule->setSort('0');
-            $rule->setTargetName('Anything Salvageable');
-            $rule->setTarget('Global Rule');
-            $rule->setAttribute('Is Refined');
+        if($this->get("helper")->getSetting("buyback_value_salvage") == 1)
+        {
             $rule->setValue('Yes');
-
-            $builtIn[] = $rule;
         }
+
+        $builtIn[] = $rule;
+        $rule = new RuleEntity();
+        $rule->setSort('0');
+        $rule->setTargetName('Any');
+        $rule->setTarget('Global Rule');
+        $rule->setAttribute('Can Buy');
+        $rule->setValue('Yes');
+
+        if($this->get('helper')->getSetting('buyback_default_buyaction_deny') == 1)
+        {
+            $rule->setValue('No');
+        }
+
+        $builtIn[] = $rule;
 
         return $this->render('rules/index.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
             'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules,

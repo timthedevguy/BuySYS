@@ -57,12 +57,13 @@ class SystemAdminController extends Controller
                 $this->get("helper")->setSetting("buyback_ice_refine_rate", $request->request->get('ice_refine_rate'));
                 $this->get("helper")->setSetting("buyback_salvage_refine_rate", $request->request->get('salvage_refine_rate'));
                 $this->get("helper")->setSetting("buyback_default_public_tax", $request->request->get('default_public_tax'));
+                $this->get("helper")->setSetting("buyback_default_buyaction_deny", $request->request->get('default_buyaction_deny'));
 
                 $this->addFlash('success', "Settings saved successfully!");
             }
             catch(Exception $e)
             {
-                $this->addFlash('error', "Settings not saved!  Contact Lorvulk Munba.");
+                $this->addFlash('error', "Settings not saved!  Contact Fecals Matters.");
             }
         }
 
@@ -78,6 +79,7 @@ class SystemAdminController extends Controller
         $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
         $buybacksettings->setIceRefineRate($this->get("helper")->getSetting("buyback_ice_refine_rate"));
         $buybacksettings->setSalvageRefineRate($this->get("helper")->getSetting("buyback_salvage_refine_rate"));
+        $buybacksettings->setDefaultBuybackActionDeny($this->get("helper")->getSetting("buyback_default_buyaction_deny"));
 
         return $this->render('buyback/settings.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
@@ -139,44 +141,6 @@ class SystemAdminController extends Controller
         $response->setStatusCode(200);
 
         return $response;
-    }
-
-
-    /**
-     * @Route("/system/admin/settings", name="admin_core_settings")
-     */
-    public function settingsAction(Request $request)
-    {
-        // Get Settings Helper
-        $settings = $this->get('helper');
-
-        // Check if POST
-        if($request->getMethod() == 'POST')
-        {
-            // Save our settings and provide Flash
-            try
-            {
-                // Settings Helper flushes as needed
-                $settings->setSetting('system_maintenance', $request->request->get('maintenance_mode'));
-                $settings->setSetting('sso_clientid', $request->request->get('clientid'));
-                $settings->setSetting('sso_secretkey', $request->request->get('secretkey'));
-
-                $this->addFlash('success', "Settings saved successfully!");
-            }
-            catch(Exception $e)
-            {
-                $this->addFlash('error', "Settings not saved!  Contact Lorvulk Munba.");
-            }
-        }
-
-        // Create our Model
-        $coreSettings = new DefaultSettingsModel();
-        $coreSettings->setMaintenanceMode($settings->getSetting('system_maintenance'));
-        $coreSettings->setClientId($settings->getSetting('sso_clientid'));
-        $coreSettings->setSecretKey($settings->getSetting('sso_secretkey'));
-
-        return $this->render('default/settings.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Core Settings',
-            'model' => $coreSettings));
     }
 
     /**

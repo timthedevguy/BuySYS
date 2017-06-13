@@ -21,7 +21,8 @@ class AddGroupRuleForm extends AbstractType
                 'choices' => array(
                     'tax' => 'Tax Percent',
                     'price' => 'Set Price',
-                    'refined' => 'Is Refined'
+                    'refined' => 'Is Refined',
+                    'canbuy' => 'Can Buy'
                 )
             ))
             ->add('value', TextType::class)

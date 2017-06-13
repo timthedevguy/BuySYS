@@ -27,8 +27,8 @@ class BuyBackController extends Controller
     /**
      * @Route("/buyback/estimate", name="ajax_estimate_buyback")
      */
-    public function ajax_EstimateAction(Request $request) {
-
+    public function ajax_EstimateAction(Request $request)
+    {
         // Setup model and form
         $buyback = new BuyBackModel();
         $form = $this->createForm(BuyBackForm::class, $buyback);
@@ -54,10 +54,23 @@ class BuyBackController extends Controller
 
         foreach($items as $item)
         {
-            $item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
-            $item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
-            $item->setNetPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['adjusted']);
-            $item->setTax(0);
+            // Check if price is -1, means Can Buy is False
+            if($typePrices[$item->getTypeId()]['market'] == -1) {
+
+                // Set to all 0 and mark as invalid
+                $item->setMarketPrice(0);
+                $item->setGrossPrice(0);
+                $item->setNetPrice(0);
+                $item->setTax(0);
+                $item->setIsValid(false);
+            } else {
+
+                // Set prices
+                $item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
+                $item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
+                $item->setNetPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['adjusted']);
+                $item->setTax(0);
+            }
         }
 
         //insert into DB and return quote
@@ -78,7 +91,6 @@ class BuyBackController extends Controller
         $transaction->setStatus("Estimate");
         $em->persist($transaction);
 
-
         //add line items to transaction
         $hasInvalid = false;
 
@@ -95,9 +107,6 @@ class BuyBackController extends Controller
 
         $em->flush();
 
-
-
-
         return $this->render('buyback/results.html.twig', Array ( 'items' => $items, 'total' => $transaction->getNet(),
             'hasInvalid' => $hasInvalid, 'orderId' => $transaction->getOrderId() ));
     }
@@ -105,8 +114,8 @@ class BuyBackController extends Controller
     /**
      * @Route("/buyback/accept", name="ajax_accept_buyback")
      */
-    public function ajax_AcceptAction(Request $request) {
-
+    public function ajax_AcceptAction(Request $request)
+    {
         // Get our list of Items
         $total = $request->request->get('total');
         $order_id = $request->request->get('orderId');
@@ -135,8 +144,8 @@ class BuyBackController extends Controller
     /**
      * @Route("/buyback/decline", name="ajax_decline_buyback")
      */
-    public function ajax_DeclineAction(Request $request) {
-
+    public function ajax_DeclineAction(Request $request)
+    {
         // Get our list of Items
         $order_id = $request->request->get('orderId');
 
@@ -202,7 +211,7 @@ class BuyBackController extends Controller
                 $refineDetails[$materialTypeId]['price'] = $materialPrices[$materialTypeId];
                 $refineDetails[$materialTypeId]['quantity'] = $refineMaterials[$materialTypeId];
 
-                $refinedPrice += ceil($refineMaterials[$materialTypeId]['adjusted'] * $materialPrices[$materialTypeId]['market']);
+                $refinedPrice += $refineMaterials[$materialTypeId]['adjusted'] * $materialPrices[$materialTypeId]['market'];
             }
 
             $template = $this->render('buyback/lookup.html.twig', Array ( 'type_name' => $type->getTypeName(), 'amarr' => $amarrData, 'source_system' => $bb_source_id,
