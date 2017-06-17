@@ -14,8 +14,7 @@ use EveBundle\Entity\DgmTypeAttributesEntity;
 class Market
 {
     private $doctrine;
-    // TODO: Whitelist/Blacklist rules for Buyback Rules
-    // TODO: Remove Whitelist/Blacklist seperate system
+
     // TODO: Add +/- %/ISK values to Buyback Rules
     // -10%, +10%, -10 ISK, +10 ISK
     // /^(?'operand'[\+\-])\s*(?'value'\d*)\s*(?'type'%|ISK)\s*$/gm

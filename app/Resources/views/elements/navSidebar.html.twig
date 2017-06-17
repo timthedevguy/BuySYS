@@ -90,7 +90,6 @@
     <ul class="sidebar-menu">
         <li class="header">USER</li>
         <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>User Dashboard</span></a></li>
-        <!--<li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>-->
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
                 <li><a href="#"><span>Ore</span><i class="fa fa-angle-left pull-right"></i></a>
@@ -127,9 +126,6 @@
                 {% if is_granted('ROLE_BUY_ADMIN') %}
                     <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Corp Purchase Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
                 {% endif %}
-            <li class="header">INVENTORY</li>
-                <li class="{{ (page_name == "Inventory" ? 'active' : '') }}"><a href="{{ path('admin_inventory') }}"><i class="fa fa-archive" aria-hidden="true"></i> <span>Inventory</span></a></li>
-                <li class="{{ (page_name == "Compare" ? 'active' : '') }}"><a href="{{ path('compare_inventory') }}"><i class="fa fa-compress" aria-hidden="true"></i> <span>Compare</span></a></li>
 
             {% if is_granted('ROLE_SYSTEM_ADMIN') %}
                 <li class="header">SYSTEM</li>

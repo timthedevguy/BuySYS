@@ -22,8 +22,6 @@ use AppBundle\Helper\MarketHelper;
 
 class BuyBackController extends Controller
 {
-
-
     /**
      * @Route("/buyback/estimate", name="ajax_estimate_buyback")
      */
