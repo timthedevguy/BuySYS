@@ -53,7 +53,7 @@ class BuyBackController extends Controller
         foreach($items as $item)
         {
             // Check if price is -1, means Can Buy is False
-            if($typePrices[$item->getTypeId()]['market'] == -1) {
+            if($typePrices[$item->getTypeId()]['adjusted'] == -1) {
 
                 // Set to all 0 and mark as invalid
                 $item->setMarketPrice(0);

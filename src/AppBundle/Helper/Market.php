@@ -351,7 +351,7 @@ class Market
                 $adjustedPrice = $cacheItem->getMarket();
 
                 // Check if we can even buy this item
-                if ($mergedRule['canbuy'] == true) {
+                if ($mergedRule['canbuy'] == true ) {
 
                     // Is the refined flag set?
                     if ($mergedRule['isrefined'] == true) {
@@ -393,7 +393,9 @@ class Market
                     $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
                 } else {
 
-                    $results[$cacheItem->getTypeId()]['market'] = -1;
+                    $cacheItem->setAdjusted(-1);
+                    $em->flush();
+                    //$results[$cacheItem->getTypeId()]['market'] = -1;
                     $results[$cacheItem->getTypeId()]['adjusted'] = -1;
                 }
             }

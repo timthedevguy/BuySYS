@@ -9,13 +9,28 @@
                     <h3 class="box-title"><i class="fa fa-info" aria-hidden="true"></i> Information</h3>
                 </div>
                 <div class="box-body">
-                    <p>Buyback rules compound from top to bottom.</p>
-                    <ul>
-                        <li>Rules are processed Top to Bottom</li>
-                        <li>Rules compound to form the final pricing options</li>
-                        <li>All items start with the default '0' rules, these are changed in Settings</li>
-                        <li>Setting a Market Price overrides the Cache and Live Market Data</li>
-                    </ul>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <legend>Basic Understanding</legend>
+                            <p>Buyback rules are compounded from top to bottom to form the final rule.</p>
+                            <ul>
+                                <li>Rules are processed Top to Bottom</li>
+                                <li>Rules compound to form the final pricing options</li>
+                                <li>All items start with the default '0' rules, these are changed in Settings</li>
+                                <li>Setting a Market Price overrides the Cache and Live Market Data</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <legend>Understanding Can Buy </legend>
+                            <p>The Can Buy flag is always processed first.  If an item is set to Is Refined: Yes and
+                            Can Buy: No then the item will be rejected.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <legend>Understanding Price</legend>
+                            <p>Setting the Price flag will override all other rules attempting to modify the base price
+                            of an item.  If Price is set then refined value is ignored.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,6 +69,10 @@
                                         <tr>
                                             <th>Is Refined?</th>
                                             <td>{{ (results.isrefined == true) ? 'Yes' : 'No' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Can Buy?</th>
+                                            <td>{{ (results.canbuy == true) ? 'Yes' : 'No' }}</td>
                                         </tr>
                                         <tr>
                                             <th>Price</th>
