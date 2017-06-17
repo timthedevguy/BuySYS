@@ -1,8 +1,9 @@
 <style>
     TABLE.s{{source_system}} TR.r-{{source_type}} TD.c-{{source_stat}}
     {
-        background-color: #B0EEB0;
+        background-color: #62c462;
         font-weight: 700;
+        color: black;
     }
 </style>
 <div class="modal-content">
@@ -14,7 +15,8 @@
     </div>
     <div class="modal-body" >
         <div class="buyback-results-container">
-            <div class="nav-tabs-custom">
+            <div class="alert alert-info">Please Note: All prices on this screen are raw, they do not account for taxes!!!</div>
+            <div class="nav nav-tabs">
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#tab_2-1" data-toggle="tab" aria-expanded="true">Amarr</a></li>
                     <li class=""><a href="#tab_2-2" data-toggle="tab" aria-expanded="false">Jita</a></li>
@@ -268,24 +270,46 @@
                     </div>
                     {% if details != null %}
                     <div class="tab-pane" id="tab_2-6">
-                        <p>Refined using: {{details.refineskill}}</p>
-                        <p>Priced by Minerals?: {{ (is_priced == true) ? 'Yes' : 'No' }}</p>
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col-md-6">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <th>Refined Using:</th>
+                                        <td>{{ options['refineskill'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Priced by Refining:</th>
+                                        <td>{{ (options['isrefined']) ? 'Yes' : 'No' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                {% if options['isrefined'] == true %}
+                                    <div class="alert alert-warning">
+                                        This item is refined using Ore Skills, this table is assuming that the full
+                                        portion size of {{ options['portionSize'] }} units is being refined.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                         <table class="table table-striped images-table">
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>Raw Quantity</th>
                                     <th>Refined Quantity</th>
-                                    <th>Value<th>
+                                    <th>Value</th>
+                                    <th>Totals</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for type in details.types %}
+                                {% for type in refineDetails %}
                                     <tr>
-                                        <td><img src="https://image.eveonline.com/Type/{{type.typeid}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{type.typeid}}">{{type.name}}</span></td>
-                                        <td>{{type.quantity|number_format(0, '.', ',') }}</td>
-                                        <td>{{type.refinedquantity|number_format(0, '.', ',') }}</td>
-                                        <td>{{type.marketprice|number_format(0, '.', ',') }}</td>
+                                        <td><img src="https://image.eveonline.com/Type/{{ type['typeid'] }}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{ type['typeid'] }}">{{ type['name'] }}</span></td>
+                                        <td>{{ type['quantity']['base']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ type['quantity']['adjusted']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ type['price']['market']|number_format(0, '.', ',') }}</td>
+                                        <td>{{ (type['quantity']['adjusted'] * type['price']['adjusted'])|number_format(0, '.', ',') }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -294,7 +318,8 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td>{{value|number_format(0, '.', ',')}}</td>
+                                    <td></td>
+                                    <td>{{ refinedPrice|number_format(0, '.', ',') }}</td>
                                 </tr>
                             </tfooter>
                         </table>
@@ -305,6 +330,10 @@
                             <tr>
                                 <th>Attribute</th>
                                 <th>Value</th>
+                            </tr>
+                            <tr>
+                                <th>Can Buy</th>
+                                <td>{{ (options.canbuy == true) ? 'Yes' : 'No' }}</td>
                             </tr>
                             <tr>
                                 <th>Tax</th>
@@ -331,6 +360,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" id="buybackacceptclose" class="btn btn-warning" data-dismiss="modal">Close</button>
+        <button type="button" id="buybackacceptclose" class="btn btn-danger" data-dismiss="modal">Close</button>
     </div>
 </div>

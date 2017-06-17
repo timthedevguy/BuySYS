@@ -3,7 +3,6 @@ namespace AppBundle\Helper;
 
 use AppBundle\Helper\Helper;
 use AppBundle\Entity\LineItemEntity;
-use AppBundle\Entity\ExclusionEntity;
 
 /**
  * Handles all text parsing functions
@@ -23,16 +22,6 @@ class Parser
         //define Vars
         $results = array();
         $types = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata');
-        // Get any exclusions
-        $mode = $this->helper->getSetting("buyback_whitelist_mode");
-        $exclusions = $this->doctrine->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
-        $groups = array();
-
-        // Get exclusion groups
-        foreach($exclusions as $exclusion)
-        {
-            $groups[] = $exclusion->getMarketGroupId();
-        }
 
         // Get raw input as array (split on line breaks)
         $rawInputArray = preg_split("/\r\n|\n|\r/", $raw);
@@ -46,11 +35,11 @@ class Parser
         foreach($rawInputArray as $line)
         {
             $line = trim($line);
-            $lineItem = $oParser->parseLine($line, $types, $groups, $mode);
+            $lineItem = $oParser->parseLine($line, $types);
 
             if($lineItem->getTypeId() == 0) //parser failed - try hueristic
             {
-                $lineItem = ParserUtils::getParserForItem($lineItem)->parseLine($line, $types, $groups, $mode);
+                $lineItem = ParserUtils::getParserForItem($lineItem)->parseLine($line, $types);
             }
 
             $results[] = $lineItem;
@@ -109,12 +98,12 @@ class ParserUtils
 
 interface IParser
 {
-    public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode);
+    public function parseLine(&$line, &$itemTypes);
 }
 
 abstract class TabbedParser implements IParser
 {
-    public function parseTabbedLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode, $nameIndex, $quantityIndex)
+    public function parseTabbedLine(&$line, &$itemTypes, $nameIndex, $quantityIndex)
     {
         $lineItem = null;
 
@@ -137,14 +126,6 @@ abstract class TabbedParser implements IParser
                 $lineItem->setTypeId($type->getTypeId());
                 $lineItem->setName($type->getTypeName());
 
-                if(in_array($type->getMarketGroupId(), $excludedGroups) & $whiteListMode == "false")
-                {
-                    $lineItem->setIsValid(false);
-                }
-                elseif(!in_array($type->getMarketGroupID(), $excludedGroups) & $whiteListMode == "true")
-                {
-                    $lineItem->setIsValid(false);
-                }
                 //$lineItem->setVolume($type->getVolume());
             }
             else //type not found in DB - set defaults
@@ -171,25 +152,25 @@ abstract class TabbedParser implements IParser
 
 class InventoryParser extends TabbedParser
 {
-    public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
+    public function parseLine(&$line, &$itemTypes)
     {
-        return self::parseTabbedLine($line, $itemTypes, $excludedGroups, $whiteListMode, 0, 1); //inventory (and contracts) use 1st position for name and second for quantity
+        return self::parseTabbedLine($line, $itemTypes, 0, 1); //inventory (and contracts) use 1st position for name and second for quantity
     }
 }
 
 class RemoteViewCanParser extends TabbedParser
 {
 
-    public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
+    public function parseLine(&$line, &$itemTypes)
     {
-        return self::parseTabbedLine($line, $itemTypes, $excludedGroups, $whiteListMode, 0, 2);
+        return self::parseTabbedLine($line, $itemTypes, 0, 2);
     }
 }
 
 class UserInputParser extends TabbedParser
 {
     // Going to turn this into a tabbed line and then parse it as such
-    public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
+    public function parseLine(&$line, &$itemTypes)
     {
         $item = preg_split('/ +/', $line); //split on spaces
 
@@ -222,13 +203,13 @@ class UserInputParser extends TabbedParser
         }
         $formattedLine = trim($formattedLine);
 
-        return self::parseTabbedLine($formattedLine, $itemTypes, $excludedGroups, $whiteListMode, 1, 0);
+        return self::parseTabbedLine($formattedLine, $itemTypes, 1, 0);
     }
 }
 
 class HueristicParser implements IParser
 {
-    public function parseLine(&$line, &$itemTypes, &$excludedGroups, $whiteListMode)
+    public function parseLine(&$line, &$itemTypes)
     {
         //TODO: build parser
 

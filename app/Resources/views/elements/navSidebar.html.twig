@@ -4,6 +4,10 @@
 
         $(document).ready(function (e) {
 
+            {% if is_granted('ROLE_ADMIN') %}
+                setBadging();
+            {% endif %}
+
             $("#search-btn").click(function(e) {
 
                 doSearch();
@@ -33,6 +37,16 @@
             $("#search-input").val("");
         }
 
+        function setBadging() {
+            $.post('{{path('ajax_transaction_badging')}}', function(response) {
+
+                    var jsonResponse = JSON.parse(response);
+
+                    updatePurchaseQueueBadge(jsonResponse.purchaseQueueBadge);
+
+                }
+                , "html");
+        }
     </script>
 
 
@@ -76,18 +90,23 @@
     <ul class="sidebar-menu">
         <li class="header">USER</li>
         <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>User Dashboard</span></a></li>
-        <!--<li class="{{(page_name == "Upcoming Fleet Ops" ? 'active' : '')}}"><a href="{{ path('upcoming_fleet_ops') }}"><i class="fa fa-calendar" aria-hidden="true"></i> <span>Upcoming Fleet Ops</span></a></li>-->
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
-                <li><a href="{{ path('quicklook', {'ore_type': 'high'}) }}"><span>High Sec Ore</span></a></li>
-                <li><a href="{{ path('quicklook', {'ore_type': 'other'}) }}"><span>Other High Sec Ore</span></a></li>
-                <li><a href="{{ path('quicklook', {'ore_type': 'low'}) }}"><span>Low Sec Ore</span></a></li>
-                <li><a href="{{ path('quicklook', {'ore_type': 'null'}) }}"><span>Null Sec Ore</span></a></li>
+                <li><a href="#"><span>Ore</span><i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ path('quicklook', {'ore_type': 'all'}) }}"><span>All Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'high'}) }}"><span>High Sec Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'other'}) }}"><span>Other High Sec Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'low'}) }}"><span>Low Sec Ore</span></a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'null'}) }}"><span>Null Sec Ore</span></a></li>
+                    </ul>
+                </li>
                 <li><a href="{{ path('quicklook', {'ore_type': 'ice'}) }}"><span>Ice</span></a></li>
                 <li><a href="{{ path('quicklook', {'ore_type': 'gas'}) }}"><span>Gas</span></a></li>
                 <li><a href="{{ path('quicklook', {'ore_type': 'minerals'}) }}"><span>Minerals</span></a></li>
                 <li><a href="#"><span>Planetary Interaction</span><i class="fa fa-angle-left pull-right"></i></a>
                     <ul class="treeview-menu">
+                        <li><a href="{{ path('quicklook', {'ore_type': 'pAll'}) }}"><span>All Commodities</span></a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'p0'}) }}"><span>P0 Commodities</span></a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'p1'}) }}"><span>P1 Commodities</span></a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'p2'}) }}"><span>P2 Commodities</span></a></li>
@@ -104,23 +123,28 @@
 
         {% if is_granted('ROLE_ADMIN') %}
             <li class="header">ACCOUNTING</li>
-            <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Contract Queue</span></a></li>
-            <li class="header">INVENTORY</li>
-            <li class="{{ (page_name == "Inventory" ? 'active' : '') }}"><a href="{{ path('admin_inventory') }}"><i class="fa fa-archive" aria-hidden="true"></i> <span>Inventory</span></a></li>
-            <li class="{{ (page_name == "Compare" ? 'active' : '') }}"><a href="{{ path('compare_inventory') }}"><i class="fa fa-compress" aria-hidden="true"></i> <span>Compare</span></a></li>
-            <li class="header">SYSTEM</li>
-            <li class="{{(page_name == "Users" ? 'active' : '')}}"><a href="{{path('admin_users')}}"><i class="fa fa-users"></i> <span>Users</span></a></li>
-            <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
-            <li class="{{(page_name == "Admin Tools" ? 'active' : '')}}"><a href="{{path('admin_tools')}}"><i class="fa fa-wrench" aria-hidden="true"></i> <span>Admin Tools</span></a></li>
-            <li class="{{(page_name == "Settings" ? 'active' : '')}}"><a href="#"><i class="fa fa-cogs"></i> <span>Settings</span><i class="fa fa-angle-left pull-right"></i></a>
-                <ul class="treeview-menu">
-                    <li class="{{(page_name == "Core System Settings" ? 'active' : '')}}"><a href="{{ path('admin_core_settings') }}"><i class="fa fa-cogs"></i> <span>Core Settings</span></a></li>
-                    <li><a href="{{ path('admin_buyback_settings') }}"><i class="fa fa-cogs"></i> <span>Buyback Settings</span></a></li>
-                    <li><a href="{{ path('admin_buyback_exclusions') }}"><i class="fa fa-ban"></i> <span>Buyback Exclusions</span></a></li>
-                    <li><a href="{{ path('admin_buyback_rules') }}"><i class="fa fa-filter"></i> <span>Buyback Rules</span></a></li>
-                    <li><a href="{{ path('admin_registration') }}"><i class="fa fa-clipboard" aria-hidden="true"></i> <span>Registration</span></a></li>
-                </ul>
-            </li>
+                {% if is_granted('ROLE_BUY_ADMIN') %}
+                    <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Corp Purchase Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
+                {% endif %}
+
+            {% if is_granted('ROLE_SYSTEM_ADMIN') %}
+                <li class="header">SYSTEM</li>
+                    <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
+                    <li class="{{(page_name == "Admin Tools" ? 'active' : '')}}"><a href="{{path('admin_tools')}}"><i class="fa fa-wrench" aria-hidden="true"></i> <span>Admin Tools</span></a></li>
+
+                    <li class="{{(page_name == "Access Control" ? 'active' : '')}}"><a href="#"><i class="fa fa-address-card"></i> <span>Access Control</span><i class="fa fa-angle-left pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ path('admin_users') }}"><i class="fa fa-users"></i> <span>Users</span></a></li>
+                            <li><a href="{{ path('admin_authorization') }}"><i class="fa fa-clipboard"></i> <span>Authorization</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="{{(page_name == "Settings" ? 'active' : '')}}"><a href="#"><i class="fa fa-cogs"></i> <span>Settings</span><i class="fa fa-angle-left pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ path('admin_buyback_settings') }}"><i class="fa fa-cogs"></i> <span>Buyback Settings</span></a></li>
+                            <li><a href="{{ path('admin_buyback_rules') }}"><i class="fa fa-filter"></i> <span>Buyback Rules</span></a></li>
+                        </ul>
+                    </li>
+            {% endif %}
         {% endif %}
     </ul><!-- /.sidebar-menu -->
   </section>

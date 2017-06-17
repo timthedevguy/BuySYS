@@ -46,6 +46,8 @@ twig:
         corpName: "%corp_name%"
         corpURL: "%corp_url%"
         corpCopyright: "%corp_copyright%"
+        contractLocation: "%contract_location%"
+        contractCorp: "%contract_corp_name%"
 
 # Assetic Configuration
 assetic:
@@ -106,7 +108,3 @@ swiftmailer:
     username:   "%mailer_user%"
     password:   "%mailer_password%"
     spool:     { type: memory }
-
-guzzle:
-    # (de)activate logging/profiler; default: %kernel.debug%
-    logging: true

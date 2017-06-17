@@ -50,16 +50,6 @@ class RuleRepository extends EntityRepository
 
     public function findAllByTypeAndGroup($type, $group, $marketgroup) {
 
-        /*$query = $this->createQueryBuilder('r')
-            ->where('r.targetId = :typeid AND r.target = :typegroup')
-            ->where('r.targetId = :marketgroupid AND r.target = :groupgroup')
-            ->setParameter('typeid', $type)
-            ->setParameter('typegroup', 'item')
-            ->setParameter('marketgroupid', $group)
-            ->setParameter('groupgroup', 'group')
-            ->orderBy('r.sort', 'ASC')
-            ->getQuery();*/
-
         $query = $this->createQueryBuilder('r');
         $query = $this->createQueryBuilder('r')
             ->where($query->expr()->orX(
@@ -86,5 +76,25 @@ class RuleRepository extends EntityRepository
             ->getQuery();
 
         return $query->getResult();
+    }
+
+    public function findAllForTypeIds(array $typeids)
+    {
+        $types = $this->getEntityManager('evedata')
+            ->createQuery(
+                'SELECT 
+                        invTypes.typeID, 
+                        invTypes.groupID,
+                        invTypes.marketGroupID,
+                        (SELECT valueInt FROM dgmTypeAttributes WHERE dgmTypeAttributes.typeID = invTypes.typeID AND dgmTypeAttributes.attributeID = 790) as refineSkill
+                     FROM
+                        invTypes
+                     WHERE
+                        invTypes.typeID
+                     IN
+                        :types;'
+            )->setParameter('types', $typeids)->getResult();
+
+        return $types;
     }
 }

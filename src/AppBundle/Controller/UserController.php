@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Controller;
 
+use AppBundle\Security\RoleManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,20 +9,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
+
     /**
-     * @Route("/admin/users", name="admin_users")
+     * @Route("/system/admin/users", name="admin_users")
      */
     public function indexAction(Request $request)
     {
         $users = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->findAll();
 
-        return $this->render('users/index.html.twig', array(
-            'page_name' => 'Users', 'sub_text' => '', 'users' => $users
+        return $this->render('access_control/users.html.twig', array(
+            'page_name' => 'Access Control', 'sub_text' => '', 'users' => $users, 'roles' => RoleManager::getRoles()
         ));
     }
 
     /**
-     * @Route("/admin/users/disable", name="ajax_disable_user")
+     * @Route("/system/admin/users/disable", name="ajax_disable_user")
      */
     public function ajax_DisableAction(Request $request)
     {
@@ -38,7 +40,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/admin/users/enable", name="ajax_enable_user")
+     * @Route("/system/admin/users/enable", name="ajax_enable_user")
      */
     public function ajax_EnableAction(Request $request)
     {
@@ -49,6 +51,24 @@ class UserController extends Controller
         $user = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->find($id);
 
         $user->setIsActive(true);
+        $em->flush();
+
+        return new Response("OK");
+    }
+
+    /**
+     * @Route("/system/admin/users/updateOverride", name="ajax_update_user_override_role")
+     */
+    public function ajax_UpdateOverrideRole(Request $request)
+    {
+        $id = $request->request->get('id');
+        $role = $request->request->get('role');
+
+        // Get Entity Manager
+        $em = $this->getDoctrine('default')->getManager();
+        $user = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->find($id);
+
+        $user->setOverrideRole($role);
         $em->flush();
 
         return new Response("OK");

@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'secure_base.html.twig' %}
 
 {% block body %}
 <div class="row">
@@ -8,7 +8,7 @@
                 {% if eveCentralOK == false %}
                     <div class="alert alert-danger">
                         <h4><i class="icon fa fa-ban"></i> EveCentral is Down!</h4>
-                        The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down OgSYS will not accept buyback contracts.
+                        The buyback site relies on EveCentral for statistical pricing information.  Due to EveCentral being down {{ systemNameShort|raw }} will not accept buyback contracts.
                     </div>
                 {% endif %}
                 <table class="table table-striped images-table-small data-table">

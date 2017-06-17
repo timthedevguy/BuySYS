@@ -20,11 +20,15 @@ parameters:
         mailer_encryption: ssl
         mailer_auth_mode: login
         secret: 27cf9b3f2d86b1b6bc6aeaacad9941b5cc1f8a20
-        system_name_long: '<strong>Am</strong>SYS'
-        system_tab_name: 'Allied Industries Buyback Program'
-        system_name_short: '<strong>A</strong>SYS'
-        corp_ticker: ALLY
-        corp_name: 'Allied Industries'
-        corp_url: 'http://amrep-eve.com/'
-        corp_copyright: 'Copyright 2016, Allied Industries'
+        system_name_long: '<strong>COGG</strong>sys'
+        system_tab_name: 'COGG Buyback Program'
+        system_name_short: '<strong>OG</strong>sys'
+        corp_ticker: COGG
+        corp_name: 'Central Omni Galactic Group'
+        corp_url: 'https://omnigalactic.co.uk'
+        corp_copyright: 'Copyright 2016, Central Omni Galactic Group'
+        contract_location: "8P9-BM Empress Jamyl's Emporium"
+        contract_corp_name: 'Omni Galactic Xpress Logistics'
+        sso_client_id: 27c58fa9f6b62affb50e33ea252d389e
+        sso_secret_key: 3wsWm7XhNoFL7FFIo2heRxeto8LY2d6pP5ng47yh
 

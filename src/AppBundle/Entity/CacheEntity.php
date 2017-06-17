@@ -64,6 +64,23 @@ class CacheEntity
     }
 
     /**
+     * @ORM\Column(type="decimal", precision=19, scale=2)
+     */
+    protected $adjusted;
+
+    public function setAdjusted($adjusted)
+    {
+        $this->adjusted = $adjusted;
+
+        return $this;
+    }
+
+    public function getAdjusted()
+    {
+        return $this->adjusted;
+    }
+
+    /**
      * @ORM\Column(type="datetime")
      */
     protected $lastPull;

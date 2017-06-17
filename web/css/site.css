@@ -77,7 +77,7 @@
 
 .modal-dialog
 {
-	width: 750px;
+	width: 55%;
 }
 
 .images-table IMG
@@ -117,20 +117,20 @@ TD .btn-box-tool
 
 .nav-tabs
 {
-	border-bottom: 1px solid #DDD;
-	background-color: #EBEBEB;
+	/*border-bottom: 1px solid #DDD;*/
+	/*background-color: #EBEBEB;*/
 }
 
 .nav-tabs IMG
 {
-	width: 24px;
-	margin-bottom: 3px;
-	margin-right: 5px;
+	/*width: 24px;*/
+	/*margin-bottom: 3px;*/
+	/*margin-right: 5px;*/
 }
 
 .nav-tabs [aria-expanded="true"]
 {
-	font-weight: 700;
+	/*font-weight: 700;*/
 }
 
 .error-box
@@ -197,4 +197,48 @@ TD .label
 .top-margin-20
 {
 	margin-top: 20px;
+}
+
+.skin-blue .splitBackground
+{
+	background: -moz-linear-gradient(left, #ECF0F5 0%, #4A91B9 50%, #ECF0F5 50%);
+	background: -webkit-gradient(linear, left top, right top, color-stop(37%,#ecf0f5), color-stop(50%,#4a91b9), color-stop(63%,#ecf0f5));
+	background: -webkit-linear-gradient(left, #ECF0F5 37%, #4A91B9 50%, #ECF0F5 63%);
+	background: -o-linear-gradient(left, #ECF0F5 37%, #4A91B9 50%, #ECF0F5 63%);
+	background: -ms-linear-gradient(left, #ECF0F5 37%, #4A91B9 50%, #ECF0F5 63%);
+	background: linear-gradient(to right, #ECF0F5 37%, #4A91B9 50%, #ECF0F5 63%);
+}
+
+.box .overlay > H1
+{
+	position: absolute;
+	width: 100%;
+	top: 50%;
+	left: 0%;
+	text-align: center;
+	font-weight: 600;
+	/*margin-left: -15px;*/
+	/*margin-top: -15px;*/
+	color: #000;
+	font-size: 30px;
+}
+
+.box-body .info-box
+{
+	box-shadow: none;
+	border: 1px solid #D2D6DE;
+	min-height: 90px;
+}
+
+.box-body .info-box .info-box-icon
+{
+	margin-top: -1px;
+}
+
+.alt-form-group .form-group:nth-child(even)
+{
+	background-color: rgba(234, 234, 234, 0.538);
+	margin-left: -10px;
+	margin-right: -10px;
+	padding: 10px;
 }

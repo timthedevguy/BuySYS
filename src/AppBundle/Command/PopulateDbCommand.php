@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Command;
 
+use AppBundle\Controller\AuthorizationController;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,5 +28,8 @@ class PopulateDbCommand extends ContainerAwareCommand
     {
         $helper = $this->getContainer()->get('helper');
         $helper->generateDefaultSettings();
+
+        $roleManager = $this->getContainer()->get('role_manager');
+        $roleManager->setDefaultRoles();
     }
 }

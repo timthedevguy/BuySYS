@@ -44,19 +44,46 @@
         </li>-->
           <!-- Menu Footer-->
             <li class="user-footer">
-                <div class="pull-left">
-                    <a href="{{ path('change_password') }}" class="btn btn-default btn-flat">Change Password</a>
+                <div style="text-align: center;">
+                    <a href="{{ path('logout') }}" class="btn btn-default btn-flat" style="width: 120px;">Logout</a>
                 </div>
-                <div class="pull-right">
-                    <a href="{{ path('logout') }}" class="btn btn-default btn-flat">Logout</a>
-                </div>
+            </li>
+            <hr style="margin-top:10px; margin-bottom:0px;"/>
+            <li class="user-footer">
+
+                <form class="form-horizontal" action="{{ path('update_preferences') }}" method="post">
+
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" >Theme</label>
+                        <div class="col-lg-9">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="themeRadios" id="themeRadioDefault" value="default">
+                                    Default
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="themeRadios" id="themeRadioSlate" value="slate">
+                                    Slate
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                    <div class="pull-left">
+                        <button class="btn btn-default btn-flat" type="submit">Submit Preferences</button>
+                    </div>
+                </form>
             </li>
         </ul>
       </li>
       <!-- Control Sidebar Toggle Button -->
       <li>
-        <a href="#" data-toggle="control-sidebar"><i class="fa fa-info-circle"></i></a>
-        </li>
+            <a href="#" data-toggle="control-sidebar"><i class="fa fa-info-circle"></i></a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -74,7 +101,13 @@
                 //$('#buyback_quick_modal').modal({backdrop: "static"});
             }
         , "html");
+
+        {% set preferences = app.session.get('userPreferences') %}
+        var selectedTheme = '{{ preferences.displayTheme }}';
+        $('input[name=themeRadios][value=' + selectedTheme + ']').prop('checked',true)
     });
+
+
 
 </script>
 

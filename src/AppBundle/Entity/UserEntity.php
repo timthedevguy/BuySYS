@@ -8,11 +8,11 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 use AppBundle\Entity\TransactionEntity;
+use AppBundle\Entity\UserPrefecEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
- * @UniqueEntity("email", message="This email is already associated with an account.")
  * @UniqueEntity("username", message="This character has already been registered.")
  * @UniqueEntity("characterId", message="This character has already been registered.")
  */
@@ -29,17 +29,21 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     */
     protected $username;
     /**
-    * @ORM\Column(type="text")
+    * @ORM\Column(type="text", nullable=true)
     */
     protected $password;
     /**
-    * @ORM\Column(type="string", length=255)
+    * @ORM\Column(type="string", length=255, nullable=true)
     */
     protected $email;
     /**
     * @ORM\Column(type="string", length=50)
     */
     protected $role;
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    protected $overrideRole = "";
     /**
     * @ORM\Column(type="boolean")
     */
@@ -80,7 +84,6 @@ class UserEntity implements AdvancedUserInterface, \Serializable
      }
 
     /**
-     * @Assert\NotBlank()
      * @Assert\Length(max = 4096)
      */
     private $plainPassword;
@@ -155,8 +158,11 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     }
 
     public function getRoles() {
-
-        return explode(",", $this->role);
+        if (!empty($this->overrideRole)) {
+            return explode(",", $this->overrideRole);
+        } else {
+            return explode(",", $this->role);
+        }
     }
 
     public function eraseCredentials() {
@@ -319,6 +325,29 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     }
 
     /**
+     * Get override role
+     *
+     * @return string
+     */
+    public function getOverrideRole()
+    {
+        return $this->overrideRole;
+    }
+    /**
+     * Set override role
+     *
+     * @param string $overrideRole
+     *
+     * @return User
+     */
+    public function setOverrideRole($overrideRole)
+    {
+        $this->overrideRole = $overrideRole;
+
+        return $this;
+    }
+
+    /**
      * Set isActive
      *
      * @param boolean $isActive
@@ -382,5 +411,21 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     public function getTransaction()
     {
         return $this->transactions;
+    }
+
+    /**
+     * @ORM\OneToOne(targetEntity="UserPreferencesEntity", mappedBy="user")
+     */
+    protected $preferences;
+
+    public function setUserPreferences(\AppBundle\Entity\UserPreferencesEntity $preferences)
+    {
+        $this->preferences = $preferences;
+    }
+
+
+    public function getUserPreferences()
+    {
+        return $this->preferences;
     }
 }

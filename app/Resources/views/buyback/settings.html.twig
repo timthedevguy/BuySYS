@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'secure_base.html.twig' %}
 
 {% block body %}
 
@@ -9,9 +9,29 @@
                     <div class="box-header with-border">
                         <!--<h3 class="box-title"><i class="fa fa-balance-scale"></i> Outstanding Material Sales</h3>-->
                     </div><!-- /.box-header -->
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="form-group">
+                    <div class="box-body alt-form-group">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="maintenance_mode_base" class="control-label">Deny All by Default</label>
+                                    <p>If this option is enabled then nothing will be purchased unless specificly allowed in Buyback Rules.</p>
+                                    <p class="text-info">Warning: This can cause some interesting scenarios when enabled.  For instance, when enabled
+                                    and a user attempts to Sell 'Scordite' the system will reject it.  If an admin adds 'Scordite' to the allow
+                                    list (and refining options are on) the system will still reject it due to not being allowed to purchase
+                                    the refined goods.  This option works best when refining is disabled.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                                        <label>
+                                            <input type="checkbox" id="default_buyaction_deny_base" data-t="default_buyaction_deny" {{ (model.defaultBuybackActionDeny == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="default_buyaction_deny" name="default_buyaction_deny" value="{{ (model.defaultBuybackActionDeny == "1") ? "1" : "0" }}"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="source_id" class="control-label">System Id</label>
                                     <p>System Id to pull prices from.  You can find a list <a target="_blank" href="http://eve-marketdata.com/developers/solarsystems.php">here</a>.</p>
@@ -20,7 +40,9 @@
                                     <input class="form-control" type="text" id="source_id" name="source_id" value="{{model.SourceId}}"/>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="source_type" class="control-label">Source Type</label>
                                     <p>Source type will be the type of stat data to use.  For current Eve Central data the choices are 'all', 'buy' and 'sell'.</p>
@@ -29,7 +51,9 @@
                                     <input class="form-control" type="text" id="source_type" name="source_type" value="{{model.SourceType}}"/>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="source_stat" class="control-label">Source Statistic</label>
                                     <p>Source statistic is the stat field to use.  For current Eve Central data the choices are 'avg', 'wavg', 'variance', 'max', 'min', 'stdDev', 'median' and 'fivePercent'.</p>
@@ -38,25 +62,37 @@
                                     <input class="form-control" type="text" id="source_stat" name="source_stat" value="{{model.SourceStat}}"/>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="default_tax" class="control-label">Default Buyback Tax</label>
                                     <p>This is the default buyback tax used for all Material Buyback transactions.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="default_tax" name="default_tax" value="{{model.DefaultTax}}"/>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="default_tax" name="default_tax" value="{{model.DefaultTax}}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="default_public_stax" class="control-label">Default Public Buyback Tax</label>
-                                    <p>This is the default buyback tax used for all Material Buyback transactions from Guest Accounts.</p>
+                                    <p>This is the buyback tax <i>added</i> (in addition to default tax or specified rules) to all Material Buyback transactions from Guest Accounts.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="default_public_tax" name="default_public_tax" value="{{model.DefaultPublicTax}}"/>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="default_public_tax" name="default_public_tax" value="{{model.DefaultPublicTax}}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
                                     <p>This option will value any item that can be reprocessed by Refining Skill by it's mineral yield at the Refining Rate listed below.</p>
@@ -70,7 +106,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="maintenance_mode_base" class="control-label">Value Salvage by Minerals</label>
                                     <p>This option will value any item that can be reprocessed by Salvaging Skill by it's mineral yield at the Refining Rate listed below.</p>
@@ -84,34 +122,50 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="source_id" class="control-label">Ore Refining Rate</label>
                                     <p>Lowest rate at which we refine ore at.</a>.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="ore_refine_rate" name="ore_refine_rate" value="{{model.OreRefineRate}}"/>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="ore_refine_rate" name="ore_refine_rate" value="{{model.OreRefineRate}}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="source_id" class="control-label">Ice Refining Rate</label>
                                     <p>Lowest rate at which we refine ice at.</a>.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="ice_refine_rate" name="ice_refine_rate" value="{{model.IceRefineRate}}"/>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="ice_refine_rate" name="ice_refine_rate" value="{{model.IceRefineRate}}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
                                 <div class="col-sm-8">
                                     <label for="source_id" class="control-label">Salvage Refining Rate</label>
                                     <p>Lowest rate at which we salvage stuff at.</a>.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="salvage_refine_rate" name="salvage_refine_rate" value="{{model.SalvageRefineRate}}"/>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="salvage_refine_rate" name="salvage_refine_rate" value="{{model.SalvageRefineRate}}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 <!-- /.box-body -->
                     <div class="box-footer">

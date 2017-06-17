@@ -1,13 +1,13 @@
 <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
         <h4 class="modal-title">Thank you for your submission!</h4>
     </div>
     <div class="modal-body" >
         <div class="buyback-results-container">
-            <p>Please create a private 'Item Exchange' contract to <b>Omni Galactic</b> for the materials entered here.</p>
+            <p>Please create a private 'Item Exchange' contract to <b>{{ contractCorp }}</b> for the materials entered here.</p>
             <ol>
-                <li>Items should be contracted from 8P9-BM Empress Jamyl's Emporium (or other approved locations)</li>
+                <li>Items should be contracted from {{ contractLocation }}</li>
                 <li>Copy and Paste the 'Amount' to the 'I will receive' field in the contract</li>
                 <li>Copy and Paste the 'Auth Code' to the 'Comment' field, this <strong>MUST</strong> be present if you wish to get paid!</li>
             </ol>
@@ -42,32 +42,30 @@
 
         $("#buybackacceptclose").click(function(e) {
 
+            //hide modal
             $('#base_modal').modal('hide');
 
-            $oSales = stringToNumber($("#oSales").html());
-            $oSales += 1;
+            //update info boxes
+            updateInfoBox($("#pendingSales"), 1);
+            updateInfoBox($("#pendingIncome"), {{ transaction.net }});
 
-            $("#oSales").toggle("puff", function(e) {
-                $("#oSales").html(numberToString($oSales));
-                $("#oSales").toggle();
-            });
+            {% if is_granted('ROLE_ADMIN') %}
+                updatePurchaseQueueBadge(1);
+            {% endif %}
 
             // Add some data
             var data = [
                 '{{transaction.created|date("m/d/Y H:i")}}',
                 '<a class="fake_link" data-type="{{transaction.type}}">{{transaction.orderid}}</a>',
-                '{{transaction.net|number_format(0, '.', ',')}}'
+                '{{transaction.net|number_format(0, '.', ',')}}',
+                '<span class="label label-success pull-right">{{transaction.status}}</span>'
             ];
 
-            // add id
+            // add id and class
             data.id = "row-{{transaction.orderid}}";
+            data.className = "success";
 
             $("#rSales").DataTable().row.add(data).draw(true);
-
-
-            //$("#rSales TR:first").after('<tr><td>{{transaction.created|date("m/d/Y H:i")}}</td><td>{{transaction.orderid}}</td><td>{{transaction.net|number_format(0, '.', ',')}}</td></tr>');
-            //$("#rSales TR:nth-child(2)").effect("highlight", {color: "#dff0d8"}, 1000);
-            //$("#rSales TR:nth-child(2)").effect("pulsate", {times: 2});
 
             //clear buyback form
             $("#buy_back_form_items").val('');
