@@ -20,7 +20,7 @@ services:
 
     market:
         class: AppBundle\Helper\Market
-        arguments: ['@doctrine', '@helper']
+        arguments: ['@doctrine', '@helper', '@security.token_storage']
 
     parser:
         class: AppBundle\Helper\Parser

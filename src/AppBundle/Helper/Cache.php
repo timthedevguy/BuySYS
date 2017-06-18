@@ -67,19 +67,19 @@ class Cache
         if($eveCentralOK == true)
         {
             // Begin Updating the Cache
-            $this->market->forceCacheUpdateForTypes($mineralOres);
-            $this->market->forceCacheUpdateForTypes($highSecOres);
-            $this->market->forceCacheUpdateForTypes($otherHighSecOres);
-            $this->market->forceCacheUpdateForTypes($lowSecOres);
-            $this->market->forceCacheUpdateForTypes($nullSecOres);
-            $this->market->forceCacheUpdateForTypes($gasOres);
-            $this->market->forceCacheUpdateForTypes($p0Ores);
-            $this->market->forceCacheUpdateForTypes($p1Ores);
-            $this->market->forceCacheUpdateForTypes($p2Ores);
-            $this->market->forceCacheUpdateForTypes($p3Ores);
-            $this->market->forceCacheUpdateForTypes($p4Ores);
-            $this->market->forceCacheUpdateForTypes($iceMinerals);
-            $this->market->forceCacheUpdateForTypes($iceOres);
+            $this->market->getBuybackPricesForTypes($mineralOres);
+            $this->market->getBuybackPricesForTypes($highSecOres);
+            $this->market->getBuybackPricesForTypes($otherHighSecOres);
+            $this->market->getBuybackPricesForTypes($lowSecOres);
+            $this->market->getBuybackPricesForTypes($nullSecOres);
+            $this->market->getBuybackPricesForTypes($gasOres);
+            $this->market->getBuybackPricesForTypes($p0Ores);
+            $this->market->getBuybackPricesForTypes($p1Ores);
+            $this->market->getBuybackPricesForTypes($p2Ores);
+            $this->market->getBuybackPricesForTypes($p3Ores);
+            $this->market->getBuybackPricesForTypes($p4Ores);
+            $this->market->getBuybackPricesForTypes($iceMinerals);
+            $this->market->getBuybackPricesForTypes($iceOres);
 
             return true;
         }

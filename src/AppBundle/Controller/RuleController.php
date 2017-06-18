@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Form\AddMarketGroupRuleForm;
+use AppBundle\Form\AddRoleRuleForm;
 use AppBundle\Form\TestRuleForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -23,6 +24,7 @@ class RuleController extends Controller
         $results = null;
 
         // Create Forms for the Page
+        $roleForm = $this->createForm(AddRoleRuleForm::class);
         $groupForm = $this->createForm(AddGroupRuleForm::class);
         $marketGroupForm = $this->createForm(AddMarketGroupRuleForm::class);
         $typeForm = $this->createForm(AddTypeRuleForm::class);
@@ -67,11 +69,20 @@ class RuleController extends Controller
                     $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')
                         ->findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
                 }
+                elseif ($request->request->has('add_role_rule_form'))
+                {
+                    $form_results = $request->request->get('add_role_rule_form');
+                    $rule->setTarget('role');
+                    $rule->setTargetId(0);
+                    $rule->setTargetName($form_results['role']);
+                }
 
                 $rule->setSort($this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->getNextSort());
                 $rule->setAttribute($form_results['attribute']);
 
                 $isValid = false;
+                dump($form_results);
+                dump($rule);
 
                 if ($rule->getAttribute() == 'canbuy' | $rule->getAttribute() == 'isrefined')
                 {
@@ -95,7 +106,7 @@ class RuleController extends Controller
                     $rule->setValue($form_results['value']);
                     $isValid = true;
                 }
-
+                dump($rule);
                 if ($isValid)
                 {
                     $this->addFlash('success', 'Rule added successfully!');
@@ -160,7 +171,7 @@ class RuleController extends Controller
         return $this->render('rules/index.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
             'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules,
             'builtin' => $builtIn, 'testform' => $testForm->createView(), 'marketgroupform' => $marketGroupForm->createView(),
-            'results' => $results));
+            'results' => $results, 'roleform' => $roleForm->createView()));
     }
 
     /**

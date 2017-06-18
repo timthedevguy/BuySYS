@@ -7,6 +7,7 @@ use EveBundle\Entity\TypeEntity;
 use EveBundle\Entity\TypeMaterialsEntity;
 use EveBundle\Entity\MarketGroupsEntity;
 use EveBundle\Entity\DgmTypeAttributesEntity;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * Market Helper provides the needed logic to value an item using all provided buyback rules
@@ -14,15 +15,18 @@ use EveBundle\Entity\DgmTypeAttributesEntity;
 class Market
 {
     private $doctrine;
+    protected $user;
 
     // TODO: Add +/- %/ISK values to Buyback Rules
+    // TODO: Add rule code for User Roles
     // -10%, +10%, -10 ISK, +10 ISK
     // /^(?'operand'[\+\-])\s*(?'value'\d*)\s*(?'type'%|ISK)\s*$/gm
 
-    public function __construct($doctrine, Helper $helper)
+    public function __construct($doctrine, Helper $helper, TokenStorage $tokenStorage)
     {
         $this->doctrine = $doctrine;
         $this->helper = $helper;
+        $this->user = $tokenStorage->getToken()->getUser();
     }
 
     /**
@@ -175,18 +179,24 @@ class Market
                               dgmTypeAttributes.typeID = invTypes.typeID
                             AND
                               dgmTypeAttributes.attributeID = 790
-                        ) as refineSkill
+                        ) as refineSkill,
+                        (SELECT COUNT(invTypeMaterials.materialTypeID)
+                            FROM
+                              invTypeMaterials
+                            WHERE
+                              invTypeMaterials.typeID = ?
+                        ) as materialCount
                      FROM
                         invTypes
                      WHERE
                         invTypes.typeID = ?;';
 
         // Run the SQL Statement
-        $type = $evedataConnection->fetchAll($sqlQuery, array($typeId))[0];
+        $type = $evedataConnection->fetchAll($sqlQuery, array($typeId, $typeId))[0];
 
         // Get rules for the TypeId, GroupId and MarketGroupId sorted ASC
         $buybackRules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')
-            ->findAllByTypeAndGroup($type['typeID'], $type['groupID'], $type['marketGroupID']);
+            ->findAllByTypeAndGroup($type['typeID'], $type['groupID'], $type['marketGroupID'], $this->user->getRoles());
 
         $options = array();
         $options['tax'] = $bb_tax;
@@ -218,15 +228,19 @@ class Market
                 $options['refineskill'] = 'Ore';
             }
         }
-        elseif ($type['refineSkill'] == null)
+        elseif ($type['refineSkill'] == null & $type['materialCount'] > 0)
         {
             $options['issalvage'] = true;
             $options['refineskill'] = 'Salvage';
+        } else {
+
+            $options['issalvage'] = false;
+            $options['refineskill'] = 'Not Refinable';
         }
 
         // Should this item be valued by refined mats?
-        if($bb_value_minerals == 1 & $type['refineSkill'] != null |
-            $bb_value_salvage == 1 & $type['refineSkill'] == null)
+        if($bb_value_minerals == 1 & ($options['refineskill'] == 'Ore' | $options['refineskill'] == 'Ice') |
+            $bb_value_salvage == 1 & $options['refineskill'] == 'Salvage')
         {
             // Set is Refined
             $options['isrefined'] = true;
