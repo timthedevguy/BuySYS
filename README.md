@@ -12,8 +12,11 @@ Corporation / Alliance programs via a browser.
 5. Admins can control the pricing of an Item or Group of items and specify different Tax Rates, Refining Options or set
 a fixed price.
 
-#### Installation
+#### Current Installation
 
+1. See https://github.com/binarygod/AmSYS/wiki/1.-Installation
+
+#### Docker Installation (docker-dev Branch)
 1. Install latest Docker (Docker for Windows, etc)
 2. CD into root, run 'up.bat'
 3. It will automatically created server images, download data, populate the db, and start the site.
