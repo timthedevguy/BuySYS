@@ -44,11 +44,19 @@ class UpdateSDECommand extends ContainerAwareCommand
         $helper = $this->getHelper('question');
         $output->writeln('');
         $question = new ConfirmationQuestion('Are you sure you want to import the latest SDE? [<comment>Y</comment>,n]: ', true);
-
-        if (!$helper->ask($input, $output, $question)) {
+		$response = true;
+		
+		try {
+			
+			//$response = $helper->ask($input, $output, $question);
+			
+		} catch(Exception $e) { /* shh */ }
+		
+        if (!$response) {
 
             $output->writeln('<comment>Exiting...</comment>');
             return;
+			
         } else {
 
             $bar = new ProgressBar($output, count($tables));
@@ -112,8 +120,8 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             foreach($tables as $table) {
 
-                $import_command = 'mysql -u ' . $database_user . ' --password=' . $database_password . ' -h ' .
-                    $database_host . ' ' . $database . '< ' . $table . '.sql';
+				$import_command = 'mysql -u ' . $database_user . ' --password=' . $database_password . ' -h ' . $database_host . ' '
+					. $database . ' < ' . $table . '.sql';
 
                 $phelper->run($output, $import_command);
 
@@ -130,8 +138,8 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             foreach($tables as $table) {
 
-                //unlink($table.'.sql');
-                //unlink($table.'.sql.bz2');
+                unlink($table.'.sql');
+                unlink($table.'.sql.bz2');
 
                 $bar->advance();
             }
