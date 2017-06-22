@@ -409,7 +409,7 @@ class Market
 
                     $cacheItem->setAdjusted(-1);
                     $em->flush();
-                    //$results[$cacheItem->getTypeId()]['market'] = -1;
+
                     $results[$cacheItem->getTypeId()]['adjusted'] = -1;
                 }
             }

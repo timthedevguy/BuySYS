@@ -18,10 +18,9 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        dump($this->get('security.role_hierarchy'));
         $bb = new BuyBackModel();
         $form = $this->createForm(BuyBackForm::class, $bb);
-        $test = $this->get('market')->getBuybackPricesForTypes(array('16269'));
+
         $form->handleRequest($request);
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
         $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser());
