@@ -13,7 +13,12 @@ Corporation / Alliance programs via a browser.
 a fixed price.
 
 #### Installation
-Please see [Installation](https://github.com/binarygod/AmSYS/wiki/1.-Installation) in the Wiki for instructions.
+
+1. Install latest Docker (Docker for Windows, etc)
+2. CD into root, run 'up.bat'
+3. It will automatically created server images, download data, populate the db, and start the site.
+4. PHPMyAdmin: http://localhost:8080
+5. Website: http://localhost/
 
 
 #### How to help
