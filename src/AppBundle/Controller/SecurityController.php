@@ -30,11 +30,12 @@ class SecurityController extends Controller
                 $request->getSession()->set('oauth', $oauth);
 
                 $clientID = $this->container->getParameter('sso_client_id');
+				$scopes = $this->container->getParameter('sso_scopes');
                 $callbackURL = $this->generateUrl('sso_callback', array(), true);
 
                 // build SSO URL
-                $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID.'&state='.$oauth;
-
+                $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID;
+				$login_url .= '&scope='.urlencode($scopes).'&state='.$oauth;
 
                 return $this->render('security/login.html.twig', array('error' => $error, 'login_url' => $login_url));
 

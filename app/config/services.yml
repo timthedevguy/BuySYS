@@ -6,6 +6,10 @@ parameters:
 services:
     esi:
         class: EveBundle\API\ESI
+        
+    eve_esi:
+        class: AppBundle\ESI\ESI
+        arguments: ["@session"]
 
     eve_sso:
         class: EveBundle\API\SSO
