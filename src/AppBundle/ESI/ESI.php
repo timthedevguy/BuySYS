@@ -13,7 +13,8 @@ class ESI
     const CORPORATION_NAMES = '/v1/corporations/names/';
 	const API_NAMESPACES = [
 		"AllianceAPI" => ["getAlliances", "getAlliancesAllianceId"],
-		"WalletApi" => ["getCharactersCharacterIdWallets"]
+		"WalletApi" => ["getCharactersCharacterIdWallets"],
+		"KillmailsApi" => ["getCharactersCharacterIdKillmailsRecent"]
 	];
 	
 	protected $session;

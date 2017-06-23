@@ -58,7 +58,7 @@ class DefaultController extends Controller
 			'oPurchases' => $oPurchases,
 			'purchasesSummary' => $purchasesSummary,
 			'userCharacterName' => $this->getUser()->getCharacterName(),
-			'userWalletBalance' => round($walletSummary[0]['balance']/100),
+			'userWalletBalance' => isset($walletSummary[0]) ? round($walletSummary[0]['balance']/100) : null,
             'news' => $news,
 			'eveCentralOK' => $eveCentralOK]);
     }

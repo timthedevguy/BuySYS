@@ -104,7 +104,8 @@
 
         {% set preferences = app.session.get('userPreferences') %}
         var selectedTheme = '{{ preferences.displayTheme }}';
-        $('input[name=themeRadios][value=' + selectedTheme + ']').prop('checked',true)
+		if(selectedTheme && selectedTheme.length > 1)
+			$('input[name=themeRadios][value=' + selectedTheme + ']').prop('checked',true)
     });
 
 
