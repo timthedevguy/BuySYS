@@ -417,21 +417,13 @@ class Market
 
         if(count($typeIds) > 0)
         {
+			
+			$chunks = array_chunk($typeIDs, 20);
             // Lookup in batches of 20
-            for($i = 0; $i < count($typeIds); $i += 20)
-            {
-                $limit = $i+20;
-                if($limit > count($typeIds)) {$limit = count($typeIds);}
-
-                $lookup = array();
-
-                for($j = $i; $j < $limit; $j++)
-                {
-                    $lookup[] = $typeIds[$j];
-                }
+            foreach($chunks as $chunk) {
 
                 // Build EveCentral Query string
-                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $lookup) . "&usesystem=" . $fromSystemId;
+                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $chunk) . "&usesystem=" . $fromSystemId;
 
                 // Query EveCentral and grab results
                 $json = file_get_contents($queryString);

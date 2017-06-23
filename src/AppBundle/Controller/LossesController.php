@@ -33,7 +33,7 @@ class LossesController extends Controller
             'base_dir' => 'test',
 			'page_name' => 'My Recent Losses',
 			'sub_text' => 'Order and reship!',
-			'userCharacterName' => $this->getUser()->getCharacterName(),
+			'userCharacterName' => $this->getUser()->getUsername(),
 			'losses' => $filteredLosses,
 			'hiddenTypes' => array(670)]);
     }
