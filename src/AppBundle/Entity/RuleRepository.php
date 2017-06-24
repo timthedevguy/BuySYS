@@ -48,7 +48,7 @@ class RuleRepository extends EntityRepository
         return $query->getResult();
     }
 
-    public function findAllByTypeAndGroup($type, $group, $marketgroup, $roles) {
+    public function findAllByTypeAndGroup($type, $group, $marketgroup) {
 
         $query = $this->createQueryBuilder('r');
         $query = $this->createQueryBuilder('r')
@@ -64,10 +64,6 @@ class RuleRepository extends EntityRepository
                 $query->expr()->andX(
                     $query->expr()->eq('r.target', ':groupgroup'),
                     $query->expr()->eq('r.targetId', ':groupid')
-                ),
-                $query->expr()->andX(
-                    $query->expr()->eq('r.target', ':role'),
-                    $query->expr()->in('r.targetName', ':userroles')
                 )
             ))
             ->setParameter('typeid', $type)
@@ -76,8 +72,6 @@ class RuleRepository extends EntityRepository
             ->setParameter('marketgroup', 'marketgroup')
             ->setParameter('groupid', $group)
             ->setParameter('groupgroup', 'group')
-            ->setParameter('role', 'role')
-            ->setParameter('userroles', array_values($roles))
             ->orderBy('r.sort', 'ASC')
             ->getQuery();
 
