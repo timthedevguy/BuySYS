@@ -44,7 +44,20 @@ class RoleManager
         'ROLE_MEMBER',
         'ROLE_ALLY',
         'ROLE_GUEST',
-        'ROLE_DENIED'
+        'ROLE_DENIED',
+        'ROLE_FRIEND',
+        'ROLE_OTHER1',
+        'ROLE_OTHER2',
+        'ROLE_OTHER3'
+    );
+
+    private static $buybackRolesArray = array(
+        'ROLE_ALLY',
+        'ROLE_FRIEND',
+        'ROLE_MEMBER',
+        'ROLE_OTHER1',
+        'ROLE_OTHER2',
+        'ROLE_OTHER3'
     );
 
     private static $standingConversionArray = Array(
