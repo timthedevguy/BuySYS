@@ -128,7 +128,13 @@
                         {% for item in rules %}
                             <tr>
                                 <td>{{ item.sort }}</td>
-                                <td>{{ (item.target == 'group') ? "Group Rule" : "Item Rule" }}</td>
+                                {% if item.target == 'group' %}
+                                    <td>Group Rule</td>
+                                {% elseif item.target == 'role' %}
+                                    <td>Role Rule</td>
+                                {% else %}
+                                    <td>Item Rule</td>
+                                {% endif %}
                                 <td>{{ item.targetname }}</td>
                                 <td>{{ item.attribute }}</td>
                                 {% if item.attribute == "canbuy" or item.attribute == "isrefined" %}
@@ -149,6 +155,16 @@
             </div>
         </div>
         <div class="col-md-4">
+            <!--<div class="box">
+                <div class="box-header">
+                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Role</h3>
+                </div>
+                <div class="box-body">
+                    {{ form_start(roleform) }}
+                    {{ form_widget(roleform) }}
+                    {{ form_end(roleform) }}
+                </div>
+            </div>-->
             <div class="box">
                 <div class="box-header">
                     <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Type</h3>

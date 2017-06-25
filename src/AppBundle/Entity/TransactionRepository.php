@@ -34,6 +34,8 @@ class TransactionRepository extends EntityRepository {
     }
 
     public function findAllVisibleByUser($user) {
+		
+		trigger_error("TransactionRepository::findAllVisibleByUser is deprecated. Please use a more specific method here.");
 
         return $this->findAllByUserTypesAndExcludeStatus($user);
     }

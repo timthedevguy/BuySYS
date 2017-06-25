@@ -242,3 +242,15 @@ TD .label
 	margin-right: -10px;
 	padding: 10px;
 }
+
+.input-group-addon.iga-button
+{
+	cursor: pointer;
+	background-color: #2489C5;
+	color: white;
+}
+
+.input-group-addon.iga-button:hover
+{
+	background-color: #1B6896;
+}

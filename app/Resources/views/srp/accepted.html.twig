@@ -29,10 +29,6 @@
             updateInfoBox($("#pendingSales"), 1);
             updateInfoBox($("#pendingIncome"), {{ transaction.net }});
 
-            {% if is_granted('ROLE_ADMIN') %}
-                updatePurchaseQueueBadge(1);
-            {% endif %}
-
             // Add some data
             var data = [
                 '{{transaction.created|date("m/d/Y H:i")}}',

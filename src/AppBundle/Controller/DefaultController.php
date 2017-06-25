@@ -21,7 +21,7 @@ class DefaultController extends Controller
     {		
         $bb = new BuyBackModel();
         $form = $this->createForm(BuyBackForm::class, $bb);
-        $test = $this->get('market')->getBuybackPricesForTypes(array('16269'));
+
         $form->handleRequest($request);
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
         $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['P', 'PS'], "Estimate");

@@ -309,7 +309,7 @@
                                         <td>{{ type['quantity']['base']|number_format(0, '.', ',') }}</td>
                                         <td>{{ type['quantity']['adjusted']|number_format(0, '.', ',') }}</td>
                                         <td>{{ type['price']['market']|number_format(0, '.', ',') }}</td>
-                                        <td>{{ (type['quantity']['adjusted'] * type['price']['adjusted'])|number_format(0, '.', ',') }}</td>
+                                        <td>{{ (type['quantity']['adjusted'] * type['price']['market'])|number_format(0, '.', ',') }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

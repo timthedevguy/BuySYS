@@ -23,8 +23,8 @@
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                                         <label>
-                                            <input type="checkbox" id="default_buyaction_deny_base" data-t="default_buyaction_deny" {{ (model.defaultBuybackActionDeny == "1") ? 'checked' : '' }}/>
-                                            <input type="hidden" id="default_buyaction_deny" name="default_buyaction_deny" value="{{ (model.defaultBuybackActionDeny == "1") ? "1" : "0" }}"/>
+                                            <input type="checkbox" id="buyback_default_buyaction_deny" data-t="default_buyaction_deny" {{ (settings.buyback_default_buyaction_deny == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="default_buyaction_deny" name="buyback_default_buyaction_deny" value="{{ (settings.buyback_default_buyaction_deny == "1") ? "1" : "0" }}"/>
                                         </label>
                                     </div>
                                 </div>
@@ -37,7 +37,10 @@
                                     <p>System Id to pull prices from.  You can find a list <a target="_blank" href="http://eve-marketdata.com/developers/solarsystems.php">here</a>.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="source_id" name="source_id" value="{{model.SourceId}}"/>
+                                    <!--<div class="input-group">-->
+                                        <input class="form-control" type="text" id="source_id" name="buyback_source_id" value="{{ settings.buyback_source_id }}"/>
+                                        <!--<span class="input-group-addon iga-button global-search-button"><i class="fa fa-search" aria-hidden="true"></i></span>
+                                    </div>-->
                                 </div>
                             </div>
                         </div>
@@ -48,7 +51,7 @@
                                     <p>Source type will be the type of stat data to use.  For current Eve Central data the choices are 'all', 'buy' and 'sell'.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="source_type" name="source_type" value="{{model.SourceType}}"/>
+                                    <input class="form-control" type="text" id="source_type" name="buyback_source_type" value="{{ settings.buyback_source_type }}"/>
                                 </div>
                             </div>
                         </div>
@@ -59,35 +62,82 @@
                                     <p>Source statistic is the stat field to use.  For current Eve Central data the choices are 'avg', 'wavg', 'variance', 'max', 'min', 'stdDev', 'median' and 'fivePercent'.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="source_stat" name="source_stat" value="{{model.SourceStat}}"/>
+                                    <input class="form-control" type="text" id="source_stat" name="buyback_source_stat" value="{{ settings.buyback_source_stat }}"/>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="default_tax" class="control-label">Default Buyback Tax</label>
-                                    <p>This is the default buyback tax used for all Material Buyback transactions.</p>
+                                <div class="col-sm-6">
+                                    <label class="control-label">Base Tax Rates</label>
+                                    <p>Base tax rates can be set on a per Role basis.  Not all roles have to be used.  Roles
+                                    can be assigned to contacts by importing your contacts in with an API Key.  Or you can
+                                    assign these roles to Users and Corps/Alliances.</p>
+                                    <p>The role names are arbitrary and have no meaning other than how you assign them
+                                    in the Access Control screens.  You could, for example, set a -10 as a ROLE_ALLY if
+                                    wanted.</p>
                                 </div>
-                                <div class="col-sm-4">
-                                    <div class="input-group">
-                                        <input class="form-control" type="text" id="default_tax" name="default_tax" value="{{model.DefaultTax}}"/>
-                                        <span class="input-group-addon">%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="default_public_stax" class="control-label">Default Public Buyback Tax</label>
-                                    <p>This is the buyback tax <i>added</i> (in addition to default tax or specified rules) to all Material Buyback transactions from Guest Accounts.</p>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="input-group">
-                                        <input class="form-control" type="text" id="default_public_tax" name="default_public_tax" value="{{model.DefaultPublicTax}}"/>
-                                        <span class="input-group-addon">%</span>
-                                    </div>
+                                <div class="col-sm-6">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Tax</th>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_MEMBER</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_member_tax" value="{{ settings.buyback_role_member_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_ALLY</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_ally_tax" value="{{ settings.buyback_role_ally_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_FRIEND</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_friend_tax" value="{{ settings.buyback_role_friend_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_OTHER1</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other1_tax" value="{{ settings.buyback_role_other1_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_OTHER2</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other2_tax" value="{{ settings.buyback_role_other2_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_OTHER3</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other3_tax" value="{{ settings.buyback_role_other3_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -100,8 +150,8 @@
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                                         <label>
-                                            <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (model.ValueMinerals == "1") ? 'checked' : '' }}/>
-                                            <input type="hidden" id="value_minerals" name="value_minerals" value="{{ (model.ValueMinerals == "1") ? "1" : "0" }}"/>
+                                            <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (settings.buyback_value_minerals == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="value_minerals" name="buyback_value_minerals" value="{{ (settings.buyback_value_minerals == "1") ? "1" : "0" }}"/>
                                         </label>
                                     </div>
                                 </div>
@@ -116,8 +166,8 @@
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                                         <label>
-                                            <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (model.ValueSalvage == "1") ? 'checked' : '' }}/>
-                                            <input type="hidden" id="value_salvage" name="value_salvage" value="{{ (model.ValueSalvage == "1") ? "1" : "0" }}"/>
+                                            <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (settings.buyback_value_salvage == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="value_salvage" name="buyback_value_salvage" value="{{ (settings.buyback_value_salvage == "1") ? "1" : "0" }}"/>
                                         </label>
                                     </div>
                                 </div>
@@ -131,7 +181,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="input-group">
-                                        <input class="form-control" type="text" id="ore_refine_rate" name="ore_refine_rate" value="{{model.OreRefineRate}}"/>
+                                        <input class="form-control" type="text" id="ore_refine_rate" name="buyback_ore_refine_rate" value="{{ settings.buyback_ore_refine_rate }}"/>
                                         <span class="input-group-addon">%</span>
                                     </div>
                                 </div>
@@ -145,7 +195,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="input-group">
-                                        <input class="form-control" type="text" id="ice_refine_rate" name="ice_refine_rate" value="{{model.IceRefineRate}}"/>
+                                        <input class="form-control" type="text" id="ice_refine_rate" name="buyback_ice_refine_rate" value="{{ settings.buyback_ice_refine_rate }}"/>
                                         <span class="input-group-addon">%</span>
                                     </div>
                                 </div>
@@ -159,7 +209,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="input-group">
-                                        <input class="form-control" type="text" id="salvage_refine_rate" name="salvage_refine_rate" value="{{model.SalvageRefineRate}}"/>
+                                        <input class="form-control" type="text" id="salvage_refine_rate" name="buyback_salvage_refine_rate" value="{{ settings.buyback_salvage_refine_rate }}"/>
                                         <span class="input-group-addon">%</span>
                                     </div>
                                 </div>

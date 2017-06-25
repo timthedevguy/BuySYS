@@ -7,12 +7,20 @@ use EveBundle\Entity\TypeEntity;
 use EveBundle\Entity\TypeMaterialsEntity;
 use EveBundle\Entity\MarketGroupsEntity;
 use EveBundle\Entity\DgmTypeAttributesEntity;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Market Helper provides the needed logic to value an item using all provided buyback rules
  */
 class Market extends Helper
 {
+    protected $authorizationChecker;
+
+    public function __construct($doctrine, AuthorizationCheckerInterface $authorizationChecker)
+    {
+        $this->doctrine = $doctrine;
+        $this->authorizationChecker = $authorizationChecker;
+    }
 
     /**
      * Forces Cache to Update for specified Types.  No buyback rules
@@ -164,21 +172,27 @@ class Market extends Helper
                               dgmTypeAttributes.typeID = invTypes.typeID
                             AND
                               dgmTypeAttributes.attributeID = 790
-                        ) as refineSkill
+                        ) as refineSkill,
+                        (SELECT COUNT(invTypeMaterials.materialTypeID)
+                            FROM
+                              invTypeMaterials
+                            WHERE
+                              invTypeMaterials.typeID = ?
+                        ) as materialCount
                      FROM
                         invTypes
                      WHERE
                         invTypes.typeID = ?;';
 
         // Run the SQL Statement
-        $type = $evedataConnection->fetchAll($sqlQuery, array($typeId))[0];
+        $type = $evedataConnection->fetchAll($sqlQuery, array($typeId, $typeId))[0];
 
         // Get rules for the TypeId, GroupId and MarketGroupId sorted ASC
         $buybackRules = $this->doctrine->getRepository('AppBundle:RuleEntity', 'default')
             ->findAllByTypeAndGroup($type['typeID'], $type['groupID'], $type['marketGroupID']);
 
         $options = array();
-        $options['tax'] = $bb_tax;
+        $options['tax'] = 0;
         $options['price'] = 0;
         $options['isrefined'] = false;
         $options['rules'] = "0";
@@ -207,26 +221,30 @@ class Market extends Helper
                 $options['refineskill'] = 'Ore';
             }
         }
-        elseif ($type['refineSkill'] == null)
+        elseif ($type['refineSkill'] == null & $type['materialCount'] > 0)
         {
             $options['issalvage'] = true;
             $options['refineskill'] = 'Salvage';
+        } else {
+
+            $options['issalvage'] = false;
+            $options['refineskill'] = 'Not Refinable';
         }
 
         // Should this item be valued by refined mats?
-        if($bb_value_minerals == 1 & $type['refineSkill'] != null |
-            $bb_value_salvage == 1 & $type['refineSkill'] == null)
+        if($bb_value_minerals == 1 & ($options['refineskill'] == 'Ore' | $options['refineskill'] == 'Ice') |
+            $bb_value_salvage == 1 & $options['refineskill'] == 'Salvage')
         {
             // Set is Refined
             $options['isrefined'] = true;
-        }
+        };
 
         foreach($buybackRules as $buybackRule)
         {
             switch ($buybackRule->getAttribute())
             {
                 case 'tax':
-                    $options['tax'] = $buybackRule->getValue();
+                    $options['tax'] += $buybackRule->getValue();
                     break;
                 case 'price':
                     $options['price'] = $buybackRule->getValue();
@@ -259,6 +277,40 @@ class Market extends Helper
         $options['name'] = $type['typeName'];
         $options['typeid'] = $type['typeID'];
 
+        // Get Tax
+        $base_tax = 0;
+
+        if ($this->authorizationChecker->isGranted('ROLE_MEMBER')) {
+
+            $base_tax = $this->getSetting('buyback_role_member_tax');
+        } else if ($this->authorizationChecker->isGranted('ROLE_ALLY')) {
+
+            $base_tax = $this->getSetting('buyback_role_ally_tax');
+        } else if ($this->authorizationChecker->isGranted('ROLE_FRIEND')) {
+
+            $base_tax = $this->getSetting('buyback_role_friend_tax');
+        } else if ($this->authorizationChecker->isGranted('ROLE_GUEST')) {
+
+            $base_tax = $this->getSetting('buyback_role_guest_tax');
+        } else if ($this->authorizationChecker->isGranted('ROLE_OTHER1')) {
+
+            $base_tax = $this->getSetting('buyback_role_other1_tax');
+        } else if ($this->authorizationChecker->isGranted('ROLE_OTHER2')) {
+
+            $base_tax = $this->getSetting('buyback_role_other2_tax');
+        } else if ($this->authorizationChecker->isGranted('ROLE_OTHER3')) {
+
+            $base_tax = $this->getSetting('buyback_role_other3_tax');
+        }
+
+        $options['tax'] += $base_tax;
+
+        // Tax can never be below zero, we aren't giving ISK away!
+        if($options['tax'] < 0) {
+
+            $options['tax'] = 0;
+        }
+
         return $options;
     }
 
@@ -274,7 +326,7 @@ class Market extends Helper
      * @param array $typeIds Array of TypeIds
      * @return array Array of TypeId Keys with market Price values
      */
-    public function getBuybackPricesForTypes($typeIds)
+    public function getBuybackPricesForTypes($typeIds, $skipTaxCalculation = false)
     {
         $results = array();
 
@@ -348,7 +400,7 @@ class Market extends Helper
                         // Gets the refined materials
                         $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
                         // Get the prices
-                        $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials));
+                        $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials), true);
                         // Is refined so reset the adjusted price
                         $adjustedPrice = 0.0;
 
@@ -357,36 +409,55 @@ class Market extends Helper
 
                             $adjustedPrice += ($materialPrices[$materialTypeId]['market'] * $quantity['adjusted']);
                         }
-                    }
 
-                    // Process the rest of the rules
-                    if ($mergedRule['price'] == 0) {
+                        $cacheItem->setAdjusted($adjustedPrice);
 
-                        // Price isn't set so calculate the taxes
-                        $cacheItem->setAdjusted($adjustedPrice * ((100 - $mergedRule['tax']) / 100));
-
-                        // If this is Ore then change to partial value based on Portion Size
                         if ($mergedRule['isrefined'] == true & $mergedRule['refineskill'] == "Ore") {
 
                             // Adjust Price by portion size
-                            $cacheItem->setAdjusted($cacheItem->getAdjusted() / $mergedRule['portionSize']);
+                            $cacheItem->setAdjusted($cacheItem->getAdjusted()/ $mergedRule['portionSize']);
                         }
                     } else {
 
-                        $cacheItem->setAdjusted($mergedRule['price']);
+                        // Process the rest of the rules
+                        if ($mergedRule['price'] == 0 ) {
+
+                            // Price isn't set so calculate the taxes
+                            //$cacheItem->setAdjusted($adjustedPrice * ((100 - $mergedRule['tax']) / 100));
+                            $cacheItem->setAdjusted($adjustedPrice);
+                        } else {
+
+                            $cacheItem->setAdjusted($mergedRule['price']);
+                        }
                     }
 
                     $em->flush();
 
                     $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
-                    $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
+
                 } else {
 
                     $cacheItem->setAdjusted(-1);
                     $em->flush();
-                    //$results[$cacheItem->getTypeId()]['market'] = -1;
+
                     $results[$cacheItem->getTypeId()]['adjusted'] = -1;
                 }
+
+                $results[$cacheItem->getTypeId()]['options'] = $mergedRule;
+                $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
+            }
+        }
+
+        if(!$skipTaxCalculation) {
+            // Calculate final price by applying taxes
+            foreach (array_keys($results) as $typeid) {
+
+                if (!array_key_exists('options', $results[$typeid])) {
+
+                    $results[$typeid]['options'] = $this->getMergedBuybackRuleForType($typeid);
+                }
+
+                $results[$typeid]['adjusted'] = $results[$typeid]['adjusted'] * ((100 - $results[$typeid]['options']['tax']) / 100);
             }
         }
 

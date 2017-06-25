@@ -147,6 +147,7 @@
             <section class="content">
 
                 {{ include('elements/flash.html.twig') }}
+
                 {% block body %}{% endblock %}
 
             </section><!-- /.content -->
@@ -173,7 +174,7 @@
           <!-- Control Sidebar -->
           {{ include('elements/navControlbar.html.twig') }}
         </div><!-- ./wrapper -->
-
+        {{ include('elements/search.html.twig') }}
         <script type="text/javascript">
 
             function postForm( $form, callback ){

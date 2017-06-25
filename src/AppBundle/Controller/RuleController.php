@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Form\AddMarketGroupRuleForm;
+use AppBundle\Form\AddRoleRuleForm;
 use AppBundle\Form\TestRuleForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -23,6 +24,7 @@ class RuleController extends Controller
         $results = null;
 
         // Create Forms for the Page
+        $roleForm = $this->createForm(AddRoleRuleForm::class);
         $groupForm = $this->createForm(AddGroupRuleForm::class);
         $marketGroupForm = $this->createForm(AddMarketGroupRuleForm::class);
         $typeForm = $this->createForm(AddTypeRuleForm::class);
@@ -67,6 +69,13 @@ class RuleController extends Controller
                     $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')
                         ->findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
                 }
+                elseif ($request->request->has('add_role_rule_form'))
+                {
+                    $form_results = $request->request->get('add_role_rule_form');
+                    $rule->setTarget('role');
+                    $rule->setTargetId(0);
+                    $rule->setTargetName($form_results['role']);
+                }
 
                 $rule->setSort($this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->getNextSort());
                 $rule->setAttribute($form_results['attribute']);
@@ -90,10 +99,22 @@ class RuleController extends Controller
                         $this->addFlash('error', 'Value has to be either 0 or 1, true or false, yes or no.');
                     }
                 }
-                elseif ($rule->getAttribute() == 'tax' | $rule->getAttribute() == 'price')
+                elseif ($rule->getAttribute() == 'price')
                 {
                     $rule->setValue($form_results['value']);
                     $isValid = true;
+                }
+                elseif($rule->getAttribute() == 'tax')
+                {
+                    if(preg_match('/^(?\'operand\'[\+\-])\s*(?\'value\'\d*)$/m', $form_results['value']))
+                    {
+                        $rule->setValue($form_results['value']);
+                        $isValid = true;
+                    }
+                    else
+                    {
+                        $this->addFlash('error', 'Value has to be +/- ##.  For example, +10, -10');
+                    }
                 }
 
                 if ($isValid)
@@ -109,14 +130,6 @@ class RuleController extends Controller
 
         // Create built in rules
         $builtIn = array();
-        $rule = new RuleEntity();
-        $rule->setSort('0');
-        $rule->setTargetName('Everything');
-        $rule->setTarget('Global Rule');
-        $rule->setAttribute('Tax');
-        $rule->setValue($this->get("helper")->getSetting("buyback_default_tax"));
-
-        $builtIn[] = $rule;
         $rule = new RuleEntity();
         $rule->setSort('0');
         $rule->setTargetName('Anything Refinable');
@@ -160,7 +173,7 @@ class RuleController extends Controller
         return $this->render('rules/index.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
             'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules,
             'builtin' => $builtIn, 'testform' => $testForm->createView(), 'marketgroupform' => $marketGroupForm->createView(),
-            'results' => $results));
+            'results' => $results, 'roleform' => $roleForm->createView()));
     }
 
     /**
