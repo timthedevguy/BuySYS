@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 
 class AutoUpdateCommand extends ContainerAwareCommand
 {
@@ -26,6 +27,9 @@ class AutoUpdateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $token = new AnonymousToken('service', 'service', ['ROLE_SYSTEM_ADMIN']);
+        $this->getContainer()->get('security.token_storage')->setToken($token);
+
         $output->writeln('');
         $output->writeln('<info>Updating cache...this can take a minute or two!!!</info>');
         $cache = $this->getContainer()->get('cache');
