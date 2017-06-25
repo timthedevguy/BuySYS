@@ -115,7 +115,7 @@
                     </div>
                 </div>
             </div>
-        </div>				 <div class="col-md-6">            <div class="box">                <div class="box-header with-border">                    <h3 class="box-title"><i class="fa fa-money "></i> Current Wallet</h3>                </div>                <div class="box-body">                    <div class="row">                        <div class="col-md-12">                            <div class="info-box">                                <span class="info-box-icon bg-green"><i class="fa fa-cart-arrow-down"></i></span>                                <div class="info-box-content">                                    <span class="info-box-text">Money on {{ dump(userCharacterName) }}</span>                                    <span class="info-box-number">{{ userWalletBalance|number_format(0, '.', ',') }}</span>                                    <span class="text-muted"></span>                                </div><!-- /.info-box-content -->                            </div>                        </div>											</div>									</div>							</div>					</div>
+        </div>				 <div class="col-md-6">            <div class="box">                <div class="box-header with-border">                    <h3 class="box-title"><i class="fa fa-money "></i> Current Wallet</h3>                </div>                <div class="box-body">                    <div class="row">                        <div class="col-md-12">                            <div class="info-box">                                <span class="info-box-icon bg-green"><i class="fa fa-cart-arrow-down"></i></span>                                <div class="info-box-content">                                    <span class="info-box-text">Money on {{ userCharacterName }}</span>                                    <span class="info-box-number">{{ userWalletBalance|number_format(0, '.', ',') }}</span>                                    <span class="text-muted"></span>                                </div><!-- /.info-box-content -->                            </div>                        </div>											</div>									</div>							</div>					</div>
         <div class="col-md-6">
             <div class="box">
                 <div class="box-header with-border">
@@ -291,10 +291,10 @@
             , "html");
         });
 
-        $("#buyback_quick_submit").click(function(e)
+        $("#buyback_quick_submit").click(function(e)
         {
             $('#base_modal').modal({backdrop: "static"});
-            $("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>")
+            $("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
             $.post('{{path('ajax_estimate_buyback')}}', {'buy_back_form[items]': $("#buy_back_form_items").val()},
                 function(response)
                 {

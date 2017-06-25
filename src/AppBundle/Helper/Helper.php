@@ -9,7 +9,7 @@ use AppBundle\Entity\SettingEntity;
  */
 class Helper
 {
-    private $doctrine;
+    protected $doctrine;
 
     public function __construct($doctrine)
     {

@@ -96,7 +96,7 @@
 
     function acceptOfferSubmit()
     {
-        $.post('{{path('ajax_accept_buyback')}}', {total: {{total}}, orderId: '{{orderId}}', shares: $("#give_me_shares").val() },
+        $.post('{{path('ajax_accept_buyback')}}', {orderId: '{{orderId}}', shares: $("#give_me_shares").val() },
             function(response)
             {
                 $( "#base_modal_content" ).html( response );

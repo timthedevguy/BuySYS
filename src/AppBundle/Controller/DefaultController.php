@@ -24,7 +24,7 @@ class DefaultController extends Controller
         $test = $this->get('market')->getBuybackPricesForTypes(array('16269'));
         $form->handleRequest($request);
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser());
+        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['P', 'PS'], "Estimate");
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         $salesSummary = new TransactionSummaryModel($oSales);
@@ -57,7 +57,7 @@ class DefaultController extends Controller
 			'salesSummary'=> $salesSummary,
 			'oPurchases' => $oPurchases,
 			'purchasesSummary' => $purchasesSummary,
-			'userCharacterName' => $this->getUser()->getCharacterName(),
+			'userCharacterName' => ($this->getUser())->getUsername(),
 			'userWalletBalance' => isset($walletSummary[0]) ? round($walletSummary[0]['balance']/100) : null,
             'news' => $news,
 			'eveCentralOK' => $eveCentralOK]);

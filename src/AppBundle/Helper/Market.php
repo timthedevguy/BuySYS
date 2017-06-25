@@ -11,19 +11,8 @@ use EveBundle\Entity\DgmTypeAttributesEntity;
 /**
  * Market Helper provides the needed logic to value an item using all provided buyback rules
  */
-class Market
+class Market extends Helper
 {
-    private $doctrine;
-
-    // TODO: Add +/- %/ISK values to Buyback Rules
-    // -10%, +10%, -10 ISK, +10 ISK
-    // /^(?'operand'[\+\-])\s*(?'value'\d*)\s*(?'type'%|ISK)\s*$/gm
-
-    public function __construct($doctrine, Helper $helper)
-    {
-        $this->doctrine = $doctrine;
-        $this->helper = $helper;
-    }
 
     /**
      * Forces Cache to Update for specified Types.  No buyback rules
@@ -34,9 +23,9 @@ class Market
     public function forceCacheUpdateForTypes($typeIds)
     {
         // Get Settings
-        $bb_source_id = $this->helper->getSetting("buyback_source_id");
-        $bb_source_type = $this->helper->getSetting("buyback_source_type");
-        $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+        $bb_source_id = $this->getSetting("buyback_source_id");
+        $bb_source_type = $this->getSetting("buyback_source_type");
+        $bb_source_stat = $this->getSetting("buyback_source_stat");
 
         $jsonData = $this->getEveCentralDataForTypes($typeIds, $bb_source_id);
 
@@ -105,13 +94,13 @@ class Market
         switch($refiningSkill)
         {
             case 'Ice':
-                $refineRate = $this->helper->getSetting('buyback_ice_refine_rate');
+                $refineRate = $this->getSetting('buyback_ice_refine_rate');
                 break;
             case 'Ore':
-                $refineRate = $this->helper->getSetting('buyback_ore_refine_rate');
+                $refineRate = $this->getSetting('buyback_ore_refine_rate');
                 break;
             case 'Salvage':
-                $refineRate = $this->helper->getSetting('buyback_salvage_refine_rate');
+                $refineRate = $this->getSetting('buyback_salvage_refine_rate');
                 break;
         }
 
@@ -155,10 +144,10 @@ class Market
     public function getMergedBuybackRuleForType($typeId) {
 
         // Get System Settings
-        $bb_value_minerals = $this->helper->getSetting("buyback_value_minerals");
-        $bb_value_salvage = $this->helper->getSetting("buyback_value_salvage");
-        $bb_tax = $this->helper->getSetting("buyback_default_tax");
-        $bb_deny_all = $this->helper->getSetting("buyback_default_buyaction_deny");
+        $bb_value_minerals = $this->getSetting("buyback_value_minerals");
+        $bb_value_salvage = $this->getSetting("buyback_value_salvage");
+        $bb_tax = $this->getSetting("buyback_default_tax");
+        $bb_deny_all = $this->getSetting("buyback_default_buyaction_deny");
 
         // Fancy SQL to get Types, GroupID, MarketID and Refining Skill in one go
         $evedataConnection = $this->doctrine->getManager('evedata')->getConnection();
@@ -320,9 +309,9 @@ class Market
         if(count($uniqueTypeIds) > 0) {
 
             // Get Eve Central Settings
-            $bb_source_id = $this->helper->getSetting("buyback_source_id");
-            $bb_source_type = $this->helper->getSetting("buyback_source_type");
-            $bb_source_stat = $this->helper->getSetting("buyback_source_stat");
+            $bb_source_id = $this->getSetting("buyback_source_id");
+            $bb_source_type = $this->getSetting("buyback_source_type");
+            $bb_source_stat = $this->getSetting("buyback_source_stat");
 
             // Get updated Stats from Eve Central
             $eveCentralResults = $this->getEveCentralDataForTypes($uniqueTypeIds, $bb_source_id);
@@ -414,16 +403,19 @@ class Market
     public function getEveCentralDataForTypes(array $typeIds, string $fromSystemId)
     {
         $results = array();
+		
+		if(count($typeIds) == 1 && is_array($typeIds[0]))
+			$typeIds = $typeIds[0];
 
         if(count($typeIds) > 0)
         {
 			
-			$chunks = array_chunk($typeIDs, 20);
+			$chunks = array_chunk($typeIds, 20);
             // Lookup in batches of 20
             foreach($chunks as $chunk) {
 
                 // Build EveCentral Query string
-                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $chunk) . "&usesystem=" . $fromSystemId;
+                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode(",", $chunk) . "&usesystem=" . $fromSystemId;
 
                 // Query EveCentral and grab results
                 $json = file_get_contents($queryString);

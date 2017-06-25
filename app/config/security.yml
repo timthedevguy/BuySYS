@@ -34,9 +34,10 @@ security:
         - {path: ^/devlogin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/guest/suggestion, roles: ROLE_USER }
         - {path: ^/pages, roles: ROLE_USER }
+        - {path: ^/srp, roles: ROLE_MEMBER }
         - {path: ^/admin/buy, roles: ROLE_ADMIN }
         - {path: ^/admin/sell, roles: ROLE_ADMIN }
-        - {path: ^/admin/srp, roles: ROLE_ADMIN }
+        - {path: ^/admin/srp, roles: ROLE_SRP_ADMIN }
         - {path: ^/system/admin, roles: ROLE_SYSTEM_ADMIN }
         - {path: ^/, roles: [ROLE_USER, IS_AUTHENTICATED_REMEMBERED] }
 

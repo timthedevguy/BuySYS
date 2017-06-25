@@ -12,7 +12,7 @@
         <!--choose theme-->
         {% set preferences = app.session.get('userPreferences') %}
 
-        {% if preferences is defined and preferences.displayTheme == "slate" %}
+        {% if preferences is defined and preferences.displayTheme is defined and preferences.displayTheme == "slate" %}
             <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
             <link rel="stylesheet" href="{{ asset('/css/bootstrap-slate-modified.css') }}" />
             <link rel="stylesheet" href="{{ asset('/css/AdminLTE-override-theme.css') }}" />
@@ -42,6 +42,7 @@
         <script src="{{ asset('/js/bootstrap-typeahead.js') }}"></script>
         <script src="{{ asset('/js/typeaheadbundle.js') }}"></script>
         <script src="{{ asset('/js/bootstrap-toggle.min.js') }}"></script>
+		<script src="{{ asset('/js/plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
 
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -94,9 +95,26 @@
                 }
             }
 
+            function updateSRPQueueBadge(addedValue) {
+
+                var element = $( "#SRPQueueBadge" )
+
+                var oldVal = element.html();
+                if (oldVal === "") {
+                    oldVal = 0;
+                }
+
+                var newVal = parseInt(oldVal) + parseInt(addedValue);
+                if (newVal <= 0) {
+                    element.html("");
+                } else {
+                    element.html(numberToString(newVal));
+                }
+            }
+
         </script>
     </head>
-    <body class="hold-transition skin-blue sidebar-mini">
+    <body class="hold-transition skin-blue sidebar-mini fixed">
         <div class="wrapper">
             <!-- Main Header -->
             <header class="main-header">

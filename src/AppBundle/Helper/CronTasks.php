@@ -7,14 +7,13 @@ use AppBundle\Security\RoleManager;
 /**
  * Handles Cache functions
  */
-class CronTasks
+class CronTasks extends Helper
 {
-    private $helper;
     private $roleManager;
 
-    public function __construct(Helper $helper, RoleManager $roleManager)
+    public function __construct($doctrine, RoleManager $roleManager)
     {
-        $this->helper = $helper;
+        $this->doctrine = $doctrine;
         $this->roleManager = $roleManager;
     }
 
@@ -30,8 +29,8 @@ class CronTasks
 
     private function updateContacts()
     {
-        $apiKey = $this->helper->getSetting('ContactAPIKey');
-        $apiCode = $this->helper->getSetting('ContactAPICode');
+        $apiKey = $this->getSetting('ContactAPIKey');
+        $apiCode = $this->getSetting('ContactAPICode');
 
         if (!empty($apiKey) && !empty($apiCode))
         {

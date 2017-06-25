@@ -1,0 +1,49 @@
+							<table class="table table-bordered table-hover" id="pastRequests">
+
+                                <thead>
+
+                                <tr>
+								
+									<th class='hidden'>ID</th>
+								
+									<th>Icon</th>
+
+                                    <th>Ship Type</th>
+
+                                    <th>Isk Amount</th>
+
+                                    <th>SRP Status</th>
+
+                                </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                {% for transaction in history %}
+
+									<tr id="transaction-{{transaction.getOrderID()}}">
+
+										<td class='hidden'>{{transaction.getId()}}</td>
+									
+										<td><img src='https://imageserver.eveonline.com/Type/{{transaction.getLineitems().0.getTypeId()}}_64.png' /></td>
+
+										<td>{{transaction.getLineitems().0.getName()}}</td>
+
+										<td>{{transaction.getNet()|number_format(0, '.', ',')}}</td>
+										
+										{% if transaction.getStatus() == 'Pending' %}
+										<td>In Queue<span class='visible-lg'><br /><em>We haven't reviewed your request yet</em></span></td>
+										{% elseif transaction.getStatus() == 'Accepted' %}
+										<td>Accepted<span class='visible-lg'><br /><em>You should receive your ISK soon</em></span></td>
+										{% elseif transaction.getStatus() == 'Denied' %}
+										<td>Denied<span class='visible-lg'><br /><em>We have rejected this request.</em></span></td>
+										{% endif %}
+
+                                    </tr>
+
+                                {% endfor %}
+
+                                </tbody>
+
+                            </table>
