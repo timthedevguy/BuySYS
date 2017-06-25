@@ -16,11 +16,6 @@ class Market extends Helper
 {
     protected $authorizationChecker;
 
-    // TODO: Add +/- %/ISK values to Buyback Rules
-    // TODO: Add rule code for User Roles
-    // -10%, +10%, -10 ISK, +10 ISK
-    // /^(?'operand'[\+\-])\s*(?'value'\d*)\s*(?'type'%|ISK)\s*$/gm
-
     public function __construct($doctrine, AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->doctrine = $doctrine;
@@ -308,6 +303,12 @@ class Market extends Helper
         }
 
         $options['tax'] += $base_tax;
+
+        // Tax can never be below zero, we aren't giving ISK away!
+        if($options['tax'] < 0) {
+
+            $options['tax'] = 0;
+        }
 
         return $options;
     }

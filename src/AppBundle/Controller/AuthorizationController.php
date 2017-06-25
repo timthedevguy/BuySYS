@@ -85,7 +85,7 @@ class AuthorizationController extends Controller
 
 
         return $this->render('access_control/authorization.html.twig', array('page_name' => 'Access Control',
-            'sub_text' => '', 'items' => $manualItems, 'roles' => RoleManager::getRoles(), 'levels' => self::$contactLevelArray,
+            'sub_text' => '', 'items' => $manualItems, 'roles' => RoleManager::getBuybackRoles(), 'levels' => self::$contactLevelArray,
             'contactSummary' => $contactSummary, 'apiKey' => $apiKey, 'apiCode' => $apiCode));
     }
 

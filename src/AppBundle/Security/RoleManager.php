@@ -57,7 +57,9 @@ class RoleManager
         'ROLE_MEMBER',
         'ROLE_OTHER1',
         'ROLE_OTHER2',
-        'ROLE_OTHER3'
+        'ROLE_OTHER3',
+        'ROLE_GUEST',
+        'ROLE_DENIED'
     );
 
     private static $standingConversionArray = Array(
@@ -75,6 +77,11 @@ class RoleManager
     public static function getRoles()
     {
         return self::$rolesArray;
+    }
+
+    public static function getBuybackRoles()
+    {
+        return self::$buybackRolesArray;
     }
 
     public static function getDefaultRole()

@@ -81,8 +81,6 @@ class RuleController extends Controller
                 $rule->setAttribute($form_results['attribute']);
 
                 $isValid = false;
-                dump($form_results);
-                dump($rule);
 
                 if ($rule->getAttribute() == 'canbuy' | $rule->getAttribute() == 'isrefined')
                 {
@@ -101,12 +99,24 @@ class RuleController extends Controller
                         $this->addFlash('error', 'Value has to be either 0 or 1, true or false, yes or no.');
                     }
                 }
-                elseif ($rule->getAttribute() == 'tax' | $rule->getAttribute() == 'price')
+                elseif ($rule->getAttribute() == 'price')
                 {
                     $rule->setValue($form_results['value']);
                     $isValid = true;
                 }
-                dump($rule);
+                elseif($rule->getAttribute() == 'tax')
+                {
+                    if(preg_match('/^(?\'operand\'[\+\-])\s*(?\'value\'\d*)$/m', $form_results['value']))
+                    {
+                        $rule->setValue($form_results['value']);
+                        $isValid = true;
+                    }
+                    else
+                    {
+                        $this->addFlash('error', 'Value has to be +/- ##.  For example, +10, -10');
+                    }
+                }
+
                 if ($isValid)
                 {
                     $this->addFlash('success', 'Rule added successfully!');
@@ -120,14 +130,6 @@ class RuleController extends Controller
 
         // Create built in rules
         $builtIn = array();
-        $rule = new RuleEntity();
-        $rule->setSort('0');
-        $rule->setTargetName('Everything');
-        $rule->setTarget('Global Rule');
-        $rule->setAttribute('Tax');
-        $rule->setValue($this->get("helper")->getSetting("buyback_default_tax"));
-
-        $builtIn[] = $rule;
         $rule = new RuleEntity();
         $rule->setSort('0');
         $rule->setTargetName('Anything Refinable');
