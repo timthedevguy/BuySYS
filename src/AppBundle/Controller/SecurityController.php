@@ -34,11 +34,8 @@ class SecurityController extends Controller
                 $callbackURL = $this->generateUrl('sso_callback', array(), true);
 
                 // build SSO URL
-                $login_url =  '/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID;
+                $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID;
 				$login_url .= '&scope='.urlencode($scopes).'&state='.$oauth;
-				
-				// needs to be fully-encoded. This is a double-redirect.
-				$login_url = "https://login.eveonline.com/Account/LogOn?ReturnUrl=".urlencode($login_url);
 
                 return $this->render('security/login.html.twig', array('error' => $error, 'login_url' => $login_url));
 
