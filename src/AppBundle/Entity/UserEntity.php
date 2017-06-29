@@ -428,4 +428,45 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     {
         return $this->preferences;
     }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTransactions()
+    {
+        return $this->transactions;
+    }
+
+    /**
+     * Set preferences
+     *
+     * @param \AppBundle\Entity\UserPreferencesEntity $preferences
+     *
+     * @return UserEntity
+     */
+    public function setPreferences(\AppBundle\Entity\UserPreferencesEntity $preferences = null)
+    {
+        $this->preferences = $preferences;
+
+        return $this;
+    }
+
+    /**
+     * Get preferences
+     *
+     * @return \AppBundle\Entity\UserPreferencesEntity
+     */
+    public function getPreferences()
+    {
+        return $this->preferences;
+    }
 }

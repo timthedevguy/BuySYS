@@ -12,9 +12,7 @@
         <h2 id="srp_offer" style="text-align: right; margin-top: 0px;height:40px;">SRP Offered: <span class="text-blue">{{srpOffered|number_format(0, '.', ',')}}</h2>
         {% if hasInvalid %}
             <div class="alert alert-danger">
-                Your SRP Requests was denied, or the value of the SRP provided would be zero.<br />
-				Please contact us in-game if you believe this is in error.<br /><br />
-				It's also possible that we weren't able to value this loss.
+                {{ reason }}
             </div>
         {% else %}
         <div class="buyback-results-container">

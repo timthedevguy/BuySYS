@@ -1,15 +1,17 @@
 <?php
-
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\UserPreferencesEntity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Entity\LineItemEntity;
 use AppBundle\Entity\TransactionEntity;
 use AppBundle\Helper\MarketHelper;
+use EveBundle\Entity\TypeEntity;
+use AppBundle\Entity\InsurancesEntity;
 
 class SRPController extends Controller
 {
@@ -38,23 +40,26 @@ class SRPController extends Controller
     }
 	
     /**
-     * @Route("/srp/estimate", name="srp_estimate")
+     * @Route("/srp/estimate", name="ajax_srp_estimate")
      */
     public function estimateAction(Request $request)
     {	
 		$zkillValue = $insuranceValue = $netLoss = $srpOffered = null;
-		$orderID = $hasInvalid = false;
+		$orderID = $hasInvalid = $reason = false;
 		
         $zkillID = $request->request->get('zkillID');
 		
 		if(!is_numeric($zkillID)) {
-			$hasInvalid = true;
+			$hasInvalid = false;
+			$reason = "Invalid ZKillboard ID";
 		}
 		else {
 			$zkillInfo = json_decode(file_get_contents("https://zkillboard.com/api/killID/".$zkillID."/json/"), true);
 			if($zkillInfo && isset($zkillInfo[0]) && isset($zkillInfo[0]['killID']) && $zkillInfo[0]['killID'] == $zkillID) {
 				$lossTypeID = $zkillInfo[0]['victim']['shipTypeID'];
 				$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($lossTypeID);
+				$groupID = $type->getGroupId();
+				$group = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')->findOneByGroupID($groupID);
 				
 				$itemIDs = [$lossTypeID];
 				foreach($zkillInfo[0]['items'] as $item) {
@@ -63,13 +68,51 @@ class SRPController extends Controller
 				$itemIDs = array_unique($itemIDs);
 				$itemsAtJita = $this->get('market')->getBuybackPricesForTypes($itemIDs);
 			
-				$zkillValue = $zkillInfo[0]['zkb']['totalValue'];
-				$insuranceValue = 0;
-				$netLoss = ($zkillValue - $insuranceValue);
-				$srpOffered = 100;
+				$zkillValue = $zkillInfo[0]['zkb']['totalValue'];				
 			
 				//get DB manager
 				$em = $this->getDoctrine()->getManager('default');
+				
+				$insuranceData = $this->getDoctrine('default')->getRepository('AppBundle:InsurancesEntity')->getInsuranceDataByTypeIDAndLevel($lossTypeID);
+				$insuranceValue = $insuranceValue = ($insuranceData->getInsurancePayout() - $insuranceData->getInsuranceCost());
+				
+				$netLoss = ($zkillValue - $insuranceValue);
+				
+				$groupIDToMaximums = [
+					25 => 5000000, //"Frigate",
+					26 => 15000000, //"Cruiser",
+					27 => 115000000, //"Battleship",
+					324 => 15000000, //"Assault Frigate",
+					358 => 100000000, //"Heavy Assault Cruiser",
+					419 => 35000000, //"Combat Battlecruiser",
+					420 => 10000000, //"Destroyer",
+					485 => 500000000, //"Dreadnought",
+					540 => 115000000, //"Command Ship",
+					541 => 25000000, //"Interdictor",
+					547 => 500000000, //"Carrier",
+					830 => 20000000, //"Covert Ops",
+					831 => 25000000, //"Interceptor",
+					832 => 250000000, //"Logistics",
+					833 => 100000000, //"Force Recon Ship",
+					834 => 25000000, //"Stealth Bomber",
+					893 => 15000000, //"Electronic Attack Ship",
+					894 => 100000000, //"Heavy Interdiction Cruiser",
+					898 => 150000000, //"Black Ops",
+					906 => 100000000, //"Combat Recon Ship",
+					963 => 100000000, //"Strategic Cruiser",
+					1201 => 35000000, //"Attack Battlecruiser",
+					1305 => 25000000, //"Tactical Destroyer",
+					1527 => 100000000, //"Logistics Frigate",
+					1534 => 25000000, //"Command Destroyer",
+					1538 => 500000000, //"Force Auxiliary",
+				];
+				if(isset($groupIDToMaximums[$groupID])) {
+					$srpOffered = $groupIDToMaximums[$groupID];
+				}
+				else {
+					$srpOffered = 0;
+					$reason = "This type of ship (".$group->getGroupName().") is not accepted in our SRP Program.";
+				}
 
 				//build transaction
 				$transaction = new TransactionEntity();
@@ -113,13 +156,14 @@ class SRPController extends Controller
 				// End add all killmail loot lost items
 				
 				// Reenforce our SRP Offer Amount
-				$srpOffered = $transaction->getNet();
+				$srpOffered = min($srpOffered, 500000000);
 				$transaction->setNet($srpOffered);
 
 				$em->flush();
 			}
 			else {
-				$hasInvalid = true;
+				$hasInvalid = false;
+				$reason = "We were unable to pull this kill from ZKillboard.com";
 			}
 		}
 	
@@ -129,6 +173,7 @@ class SRPController extends Controller
 			"netLoss" => $netLoss,
 			"srpOffered" => $srpOffered,
 			"hasInvalid" => $srpOffered <= 0,
+			"reason" => $reason,
 			"orderId" => $orderID]);
     }
     /**
@@ -150,7 +195,10 @@ class SRPController extends Controller
      */
     public function ajax_GetSRPHistory()
     {
-		$history = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), ['SRP']);
+		$history = $this->getDoctrine()
+					->getManager('default')
+					->getRepository('AppBundle:TransactionEntity', 'default')
+					->findAllByUserAndTypes($this->getUser(), ['SRP']);
 		
         return $this->render('srp/history.html.twig', array('history' => $history));
     }
@@ -158,7 +206,7 @@ class SRPController extends Controller
 	/**
      * @Route("/srp/accept", name="ajax_accept_srp")
      */
-    public function ajax_AcceptAction(Request $request)
+    public function ajax_AcceptAction(Symfony\Component\HttpFoundation\Request $request)
     {
         // Get our list of Items
         $order_id = $request->request->get('orderId');

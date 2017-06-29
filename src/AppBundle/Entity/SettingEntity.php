@@ -51,4 +51,14 @@ class SettingEntity
     {
         return $this->value;
     }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

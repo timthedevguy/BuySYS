@@ -41,6 +41,7 @@ class UpdateSDECommand extends ContainerAwareCommand
         $tables[] = "invTypeMaterials";
         $tables[] = "invGroups";
         $tables[] = "mapSolarSystems";
+        $tables[] = "invItems";
 
         $helper = $this->getHelper('question');
         $output->writeln('');
@@ -61,6 +62,7 @@ class UpdateSDECommand extends ContainerAwareCommand
         } else {
 
             $bar = new ProgressBar($output, count($tables));
+            $output->writeln('');
             $output->writeln('');
             $output->writeln('<info>Downloading SDE files from fuzzwork.co</info>');
             $bar->start();
@@ -86,6 +88,7 @@ class UpdateSDECommand extends ContainerAwareCommand
             $bar->finish();
 
             $output->writeln('');
+            $output->writeln('');
             $output->writeln('<info>Extracting SDE...</info>');
 
             $bar = new ProgressBar($output, count($tables));
@@ -109,6 +112,7 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             $phelper = $this->getHelper('process');
             $output->writeln('');
+            $output->writeln('');
             $output->writeln('<info>Importing sql files to database...</info>');
 
             $database = $this->getContainer()->getParameter('database_name2');
@@ -130,6 +134,36 @@ class UpdateSDECommand extends ContainerAwareCommand
             }
 
             $bar->finish();
+			
+			$prices = json_decode(file_get_contents("https://crest-tq.eveonline.com/insuranceprices/"), true);
+			if(isset($prices['items'])) {
+				
+				$database = $this->getContainer()->getParameter('database_name');
+				$database_user = $this->getContainer()->getParameter('database_user');
+				$database_password = $this->getContainer()->getParameter('database_password');
+				$database_host = $this->getContainer()->getParameter('database_host');
+
+				$output->writeln('');
+				$output->writeln('');
+				$output->writeln('<info>Importing ship insurance values...</info>');
+				
+				$bar = new ProgressBar($output, count($prices['items']));
+				$bar->start();
+				
+				$queries = [];
+				foreach($prices['items'] as $item) {
+					foreach($item['insurance'] as $level) {
+						$queries []= "(".$item['type']['id'].", '".$level['level']."', ".$level['cost'].", ".$level["payout"].")";
+					}
+					$bar->advance();
+				}
+			
+				$sql = 'INSERT INTO '.$database.'.insurancePrices (type_id, insurance_level, insurance_cost, insurance_payout) VALUES '.implode(',', $queries).';';
+				$import_command = 'mysql -u ' . $database_user . ' --password=' . $database_password . ' -h ' . $database_host . ' ' . $database . ' --execute="'.$sql.'"';
+				$phelper->run($output, $import_command);
+								
+				$bar->finish();
+			}
 
             $output->writeln('');
             $output->writeln('<info>Cleaning up...</info>');
@@ -147,6 +181,7 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             $bar->finish();
 
+            $output->writeln('');
             $output->writeln('');
             $output->writeln('<info>SDE Import is complete.</info>');
         }

@@ -14,13 +14,15 @@ COPY web /var/www/web
 COPY app/config/parameters.yml.dist /var/www/app/config/parameters.yml
 
 RUN mkdir /var/www/app/cache/dev \
-	&& mkdir /var/www/app/cache/prodd \
+	&& mkdir /var/www/app/cache/prod \
 	&& touch /var/log/nginx/amsys.access \
 	&& touch /var/log/nginx/amsys.error \
 	&& chown -R www-data:www-data /var/log/nginx/ \
 	&& chown -R www-data:www-data /var/www/ \
 	&& composer install \
-	&& chown -R www-data /var/www/app/
+	&& chown -R www-data:www-data /var/www/app/ \
+	&& chown -R www-data:www-data /var/www/app/Resources \
+	&& chown -R www-data:www-data /var/www/app/cache
 
 ADD docker/servers/web/root /
 
