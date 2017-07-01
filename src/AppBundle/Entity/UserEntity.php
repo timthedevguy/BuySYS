@@ -18,6 +18,17 @@ use AppBundle\Entity\UserPrefecEntity;
  */
 class UserEntity implements AdvancedUserInterface, \Serializable
 {
+
+    //CONSTRUCTOR
+    public function _construct() {
+        $this->isActive = true;
+        $this->role = "ROLE_USER";
+        $this->transactions = new ArrayCollection();
+    }
+
+
+
+    //FIELDS
     /**
     * @ORM\Column(name="id", type="integer", nullable=false)
     * @ORM\Id
@@ -28,14 +39,6 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     * @ORM\Column(type="string", length=255)
     */
     protected $username;
-    /**
-    * @ORM\Column(type="text", nullable=true)
-    */
-    protected $password;
-    /**
-    * @ORM\Column(type="string", length=255, nullable=true)
-    */
-    protected $email;
     /**
     * @ORM\Column(type="string", length=50)
     */
@@ -48,115 +51,121 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     * @ORM\Column(type="boolean")
     */
     protected $isActive;
-
     /**
      * @ORM\Column(type="integer")
      */
-     protected $characterId;
-
-     public function setCharacterId($characterId)
-     {
-         $this->characterId = $characterId;
-
-         return $this;
-     }
-
-     public function getCharacterId()
-     {
-         return $this->characterId;
-     }
-
-     /**
-      * @ORM\Column(type="datetime")
-      */
-     protected $lastLogin;
-
-     public function setLastLogin($lastLogin)
-     {
-         $this->lastLogin = $lastLogin;
-
-         return $this;
-     }
-
-     public function getLastLogin()
-     {
-         return $this->lastLogin;
-     }
-
+    protected $characterId;
     /**
-     * @Assert\Length(max = 4096)
+     * @ORM\Column(type="datetime")
      */
-    private $plainPassword;
-
-    private $character_name;
-    private $api_key;
-    private $api_code;
-
-    public function setCharacterName($character_name)
-    {
-        $this->character_name = $character_name;
-
-        return $this;
-    }
-
-    public function getCharacterName()
-    {
-        return $this->character_name;
-    }
-
-    public function setApiKey($api_key)
-    {
-        $this->api_key = $api_key;
-
-        return $this;
-    }
-
-    public function getApiKey()
-    {
-        return $this->api_key;
-    }
-
-    public function setApiCode($api_code)
-    {
-        $this->api_code = $api_code;
-
-        return $this;
-    }
-
-    public function getApiCode()
-    {
-        return $this->api_code;
-    }
-
+    protected $lastLogin;
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\OneToMany(targetEntity="TransactionEntity", mappedBy="user")
      */
-    protected $resetCode;
+    protected $transactions;
+    /**
+     * @ORM\OneToOne(targetEntity="UserPreferencesEntity", mappedBy="user")
+     */
+    protected $preferences;
 
-    public function setResetCode($resetCode)
+
+
+    //GETTERS AND SETTERS
+    public function getId()
     {
-        $this->resetCode = $resetCode;
+        return $this->id;
+    }
 
+    public function setCharacterId($characterId)
+    {
+        $this->characterId = $characterId;
+        return $this;
+    }
+    public function getCharacterId()
+    {
+        return $this->characterId;
+    }
+
+    public function setLastLogin($lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
+        return $this;
+    }
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+        return $this;
+    }
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setRole($role)
+    {
+        $this->role = $role;
+        return $this;
+    }
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    public function getOverrideRole()
+    {
+        return $this->overrideRole;
+    }
+    public function setOverrideRole($overrideRole)
+    {
+        $this->overrideRole = $overrideRole;
         return $this;
     }
 
-    public function getResetCode()
+    public function setIsActive($isActive)
     {
-        return $this->resetCode;
+        $this->isActive = $isActive;
+        return $this;
+    }
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 
-    public function _construct() {
-
-        $this->isActive = true;
-        $this->role = "ROLE_USER";
-        $this->transactions = new ArrayCollection();
+    public function addTransaction(\AppBundle\Entity\TransactionEntity $transaction)
+    {
+        $this->transactions[] = $transaction;
+        return $this;
+    }
+    public function removeTransaction(\AppBundle\Entity\TransactionEntity $transaction)
+    {
+        $this->transactions->removeElement($transaction);
+    }
+    public function getTransactions()
+    {
+        return $this->transactions;
     }
 
+    public function setUserPreferences(\AppBundle\Entity\UserPreferencesEntity $preferences)
+    {
+        $this->preferences = $preferences;
+        return $this;
+    }
+    public function getUserPreferences()
+    {
+        return $this->preferences;
+    }
+
+
+
+    //USED BY SYMFONY
     public function getSalt() {
-
         return null;
     }
-
     public function getRoles() {
         if (!empty($this->overrideRole)) {
             return explode(",", $this->overrideRole);
@@ -164,268 +173,49 @@ class UserEntity implements AdvancedUserInterface, \Serializable
             return explode(",", $this->role);
         }
     }
-
-    public function eraseCredentials() {
-        $this->setPlainPassword(null);
-    }
-
     /** @see \Serializable::serialize() */
     public function serialize()
     {
         return serialize(array(
             $this->id,
             $this->username,
-            $this->password,
-            $this->isActive,
+            $this->isActive
             // see section on salt below
             // $this->salt,
         ));
     }
-
     /** @see \Serializable::unserialize() */
     public function unserialize($serialized)
     {
         list (
             $this->id,
             $this->username,
-            $this->password,
-            $this->isActive,
+            $this->isActive
             // see section on salt below
             // $this->salt
         ) = unserialize($serialized);
     }
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     *
-     * @return User
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string
-     */
     public function getPassword()
     {
-        return $this->password;
+        return null;
     }
-
-    public function getPlainPassword()
+    public function isAccountNonExpired()
     {
-        return $this->plainPassword;
+        return true;
     }
-
-    public function setPlainPassword($password)
+    public function isAccountNonLocked()
     {
-        $this->plainPassword = $password;
+        return true;
     }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return User
-     */
-    public function setEmail($email)
+    public function isCredentialsNonExpired()
     {
-        $this->email = $email;
-
-        return $this;
+        return true;
     }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    public function getMaskedEmail()
-    {
-        $plainEmail = $this->email;
-        $maskedEmail = substr($plainEmail, 0, 3);
-
-        for($i=0;$i<6;$i++)
-        {
-            $maskedEmail .= "*";
-        }
-
-        return $maskedEmail . "@" . explode("@", $plainEmail)[1];
-    }
-
-    /**
-     * Set role
-     *
-     * @param string $role
-     *
-     * @return User
-     */
-    public function setRole($role)
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    /**
-     * Get role
-     *
-     * @return string
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
-
-    /**
-     * Get override role
-     *
-     * @return string
-     */
-    public function getOverrideRole()
-    {
-        return $this->overrideRole;
-    }
-    /**
-     * Set override role
-     *
-     * @param string $overrideRole
-     *
-     * @return User
-     */
-    public function setOverrideRole($overrideRole)
-    {
-        $this->overrideRole = $overrideRole;
-
-        return $this;
-    }
-
-    /**
-     * Set isActive
-     *
-     * @param boolean $isActive
-     *
-     * @return User
-     */
-    public function setIsActive($isActive)
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    /**
-     * Get isActive
-     *
-     * @return boolean
-     */
-    public function getIsActive()
+    public function isEnabled()
     {
         return $this->isActive;
     }
-
-    public function isAccountNonExpired()
-   {
-       return true;
-   }
-
-   public function isAccountNonLocked()
-   {
-       return true;
-   }
-
-   public function isCredentialsNonExpired()
-   {
-       return true;
-   }
-
-   public function isEnabled()
-   {
-       return $this->isActive;
-   }
-
-    /**
-     * @ORM\OneToMany(targetEntity="TransactionEntity", mappedBy="user")
-     */
-    protected $transactions;
-
-    public function addTransaction(\AppBundle\Entity\TransactionEntity $transaction)
+    public function eraseCredentials()
     {
-        $this->transactions[] = $transaction;
-
-        return $this;
-    }
-
-    public function removeTransaction(\AppBundle\Entity\TransactionEntity $transaction)
-    {
-        $this->transactions->removeElement($transaction);
-    }
-
-    public function getTransaction()
-    {
-        return $this->transactions;
-    }
-
-    /**
-     * @ORM\OneToOne(targetEntity="UserPreferencesEntity", mappedBy="user")
-     */
-    protected $preferences;
-
-    public function setUserPreferences(\AppBundle\Entity\UserPreferencesEntity $preferences)
-    {
-        $this->preferences = $preferences;
-    }
-
-
-    public function getUserPreferences()
-    {
-        return $this->preferences;
     }
 }
