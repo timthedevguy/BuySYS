@@ -159,6 +159,48 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     {
         return $this->preferences;
     }
+<<<<<<< HEAD
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTransactions()
+    {
+        return $this->transactions;
+    }
+
+    /**
+     * Set preferences
+     *
+     * @param \AppBundle\Entity\UserPreferencesEntity $preferences
+     *
+     * @return UserEntity
+     */
+    public function setPreferences(\AppBundle\Entity\UserPreferencesEntity $preferences = null)
+    {
+        $this->preferences = $preferences;
+
+        return $this;
+    }
+
+    /**
+     * Get preferences
+     *
+     * @return \AppBundle\Entity\UserPreferencesEntity
+     */
+    public function getPreferences()
+    {
+        return $this->preferences;
+=======
 
 
 
@@ -217,5 +259,6 @@ class UserEntity implements AdvancedUserInterface, \Serializable
     }
     public function eraseCredentials()
     {
+>>>>>>> 7b9775cec341435553d8488516e22dede2990ec9
     }
 }

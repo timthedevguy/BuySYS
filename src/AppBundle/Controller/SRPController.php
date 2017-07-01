@@ -106,6 +106,7 @@ class SRPController extends Controller
 					1534 => 25000000, //"Command Destroyer",
 					1538 => 500000000, //"Force Auxiliary",
 				];
+				
 				if(isset($groupIDToMaximums[$groupID])) {
 					$srpOffered = $groupIDToMaximums[$groupID];
 				}
@@ -133,7 +134,7 @@ class SRPController extends Controller
 				$lineItem->setMarketPrice($itemsAtJita[$lossTypeID]['market']);
 				$lineItem->setTax(0.0);
 				$lineItem->setGrossPrice($itemsAtJita[$lossTypeID]['market']);
-				$lineItem->setNetPrice($itemsAtJita[$lossTypeID]['adjusted']);
+				$lineItem->setNetPrice($itemsAtJita[$lossTypeID]['market']);
 				$em->persist($lineItem);
 				$transaction->addLineitem($lineItem);
 				// End add ship as lost item

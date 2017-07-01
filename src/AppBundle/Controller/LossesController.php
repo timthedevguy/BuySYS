@@ -32,7 +32,7 @@ class LossesController extends Controller
 		$filteredLosses = [];
 		
 		foreach($losses as $loss)
-			if(!in_array($loss['victim']['shipTypeID'], [670, 26890, 26888, 12198]))
+			if(!in_array($loss['victim']['shipTypeID'], [670, 26890, 26888, 12198, 23055]))
 				$filteredLosses []= $loss;
 			
 		unset($losses);
