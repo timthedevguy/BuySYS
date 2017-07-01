@@ -20,7 +20,7 @@ services:
 
     market:
         class: AppBundle\Helper\Market
-        arguments: ['@doctrine', '@helper']
+        arguments: ['@doctrine','@security.authorization_checker']
 
     parser:
         class: AppBundle\Helper\Parser

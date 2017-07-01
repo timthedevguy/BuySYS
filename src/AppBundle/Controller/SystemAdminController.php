@@ -41,48 +41,27 @@ class SystemAdminController extends Controller
      */
     public function buybackSettingsAction(Request $request)
     {
-        //$settings = $this->getDoctrine('default')->getRepository('AppBundle:SettingEntity');
-
         if($request->getMethod() == 'POST') {
 
-            try
-            {
-                $this->get('helper')->setSetting("buyback_source_id", $request->request->get('source_id'));
-                $this->get("helper")->setSetting("buyback_source_type", $request->request->get('source_type'));
-                $this->get("helper")->setSetting("buyback_source_stat", $request->request->get('source_stat'));
-                $this->get("helper")->setSetting("buyback_default_tax", $request->request->get('default_tax'));
-                $this->get("helper")->setSetting("buyback_value_minerals", $request->request->get('value_minerals'));
-                $this->get("helper")->setSetting("buyback_value_salvage", $request->request->get('value_salvage'));
-                $this->get("helper")->setSetting("buyback_ore_refine_rate", $request->request->get('ore_refine_rate'));
-                $this->get("helper")->setSetting("buyback_ice_refine_rate", $request->request->get('ice_refine_rate'));
-                $this->get("helper")->setSetting("buyback_salvage_refine_rate", $request->request->get('salvage_refine_rate'));
-                $this->get("helper")->setSetting("buyback_default_public_tax", $request->request->get('default_public_tax'));
-                $this->get("helper")->setSetting("buyback_default_buyaction_deny", $request->request->get('default_buyaction_deny'));
+            foreach($request->request->keys() as $setting) {
 
-                $this->addFlash('success', "Settings saved successfully!");
+                $this->get('helper')->setSetting($setting, $request->request->get($setting));
             }
-            catch(Exception $e)
-            {
-                $this->addFlash('error', "Settings not saved!  Contact Fecals Matters.");
-            }
+
+            $this->addFlash('success', 'Settings saved!');
         }
 
-        $buybacksettings = new BuyBackSettingsModel();
+        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')
+            ->findSettingsByPrefix('buyback');
+        $settings = array();
 
-        $buybacksettings->setSourceId($this->get("helper")->getSetting("buyback_source_id"));
-        $buybacksettings->setSourceType($this->get("helper")->getSetting("buyback_source_type"));
-        $buybacksettings->setSourceStat($this->get("helper")->getSetting("buyback_source_stat"));
-        $buybacksettings->setDefaultTax($this->get("helper")->getSetting("buyback_default_tax"));
-        $buybacksettings->setValueMinerals($this->get("helper")->getSetting("buyback_value_minerals"));
-        $buybacksettings->setValueSalvage($this->get("helper")->getSetting("buyback_value_salvage"));
-        $buybacksettings->setOreRefineRate($this->get("helper")->getSetting("buyback_ore_refine_rate"));
-        $buybacksettings->setDefaultPublicTax($this->get("helper")->getSetting("buyback_default_public_tax"));
-        $buybacksettings->setIceRefineRate($this->get("helper")->getSetting("buyback_ice_refine_rate"));
-        $buybacksettings->setSalvageRefineRate($this->get("helper")->getSetting("buyback_salvage_refine_rate"));
-        $buybacksettings->setDefaultBuybackActionDeny($this->get("helper")->getSetting("buyback_default_buyaction_deny"));
+        foreach($allSettings as $setting) {
+
+            $settings[$setting->getName()] = $setting->getValue();
+        }
 
         return $this->render('buyback/settings.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'model' => $buybacksettings));
+            'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'settings' => $settings));
     }
 
     /**

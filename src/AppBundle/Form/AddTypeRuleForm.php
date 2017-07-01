@@ -21,7 +21,7 @@ class AddTypeRuleForm extends AbstractType
                 'choices' => array(
                     'tax' => 'Tax Percent',
                     'price' => 'Set Price',
-                    'refined' => 'Is Refined',
+                    'isrefined' => 'Is Refined',
                     'canbuy' => 'Can Buy'
                 )
             ))

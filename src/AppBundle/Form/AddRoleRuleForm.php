@@ -7,20 +7,29 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Lifo\TypeaheadBundle\Form\Type\TypeaheadType;
 
-class AddGroupRuleForm extends AbstractType
+class AddRoleRuleForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('groupid', TypeaheadType::class, array('label' => false,
-                'class' => 'EveBundle\Entity\GroupsEntity', 'render' => 'groupName',
-                'route' => 'ajax_group_list', 'attr' => array('placeholder' => 'Group Name...')))
+            ->add('role', ChoiceType::class, array(
+                'choices' => array(
+                    'ROLE_SYSTEM_ADMIN' => 'ROLE_SYSTEM_ADMIN',
+                    'ROLE_TRANSACTION_ADMIN' => 'SROLE_TRANSACTION_ADMIN',
+                    'ROLE_BUY_ADMIN' => 'ROLE_BUY_ADMIN',
+                    'ROLE_SELL_ADMIN' => 'ROLE_SELL_ADMIN',
+                    'ROLE_SRP_ADMIN' => 'ROLE_SRP_ADMIN',
+                    'ROLE_ADMIN' => 'ROLE_ADMIN',
+                    'ROLE_EDITOR' => 'ROLE_EDITOR',
+                    'ROLE_MEMBER' => 'ROLE_MEMBER',
+                    'ROLE_ALLY' => 'ROLE_ALLY',
+                    'ROLE_GUEST' => 'ROLE_GUEST'
+                )
+            ))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(
                     'tax' => 'Tax Percent',
-                    'price' => 'Set Price',
                     'isrefined' => 'Is Refined',
                     'canbuy' => 'Can Buy'
                 )
@@ -30,11 +39,11 @@ class AddGroupRuleForm extends AbstractType
                 'btn btn-flat btn-success')))
         ;
     }
-    
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Model\GroupRuleModel',
+            'data_class' => 'AppBundle\Model\RoleRuleModel',
         ));
     }
 }

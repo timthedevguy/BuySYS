@@ -40,6 +40,7 @@ class UpdateSDECommand extends ContainerAwareCommand
         $tables[] = "invTypes";
         $tables[] = "invTypeMaterials";
         $tables[] = "invGroups";
+        $tables[] = "mapSolarSystems";
 
         $helper = $this->getHelper('question');
         $output->writeln('');

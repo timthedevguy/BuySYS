@@ -44,6 +44,21 @@ class RoleManager
         'ROLE_MEMBER',
         'ROLE_ALLY',
         'ROLE_GUEST',
+        'ROLE_DENIED',
+        'ROLE_FRIEND',
+        'ROLE_OTHER1',
+        'ROLE_OTHER2',
+        'ROLE_OTHER3'
+    );
+
+    private static $buybackRolesArray = array(
+        'ROLE_ALLY',
+        'ROLE_FRIEND',
+        'ROLE_MEMBER',
+        'ROLE_OTHER1',
+        'ROLE_OTHER2',
+        'ROLE_OTHER3',
+        'ROLE_GUEST',
         'ROLE_DENIED'
     );
 
@@ -62,6 +77,11 @@ class RoleManager
     public static function getRoles()
     {
         return self::$rolesArray;
+    }
+
+    public static function getBuybackRoles()
+    {
+        return self::$buybackRolesArray;
     }
 
     public static function getDefaultRole()
