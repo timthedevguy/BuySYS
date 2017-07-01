@@ -65,9 +65,17 @@
     $(document).ready(function (e) {
 
         $('#users-table').DataTable({
-            "order": [[0, "desc"]]
+            "order": [[0, "desc"]],
+
+            "drawCallback": function( settings ) {
+                bindClickEvent();
+                bindRoleOverride();
+            }
         });
 
+    });
+
+    function bindRoleOverride() {
         $('.overrideRoleSelect').on('change', function() {
 
             $id = $(this).attr("data-id");
@@ -79,7 +87,9 @@
                 }
                 , "html");
         });
+    }
 
+    function bindClickEvent() {
         $(".fake-link").click(function(e)
         {
             $id = $(this).attr("data-id");
@@ -96,7 +106,7 @@
                         $source.addClass("fa-ban");
                         $source.addClass("text-danger");
                     }
-                , "html");
+                    , "html");
             } else {
 
                 //Need to enable
@@ -108,10 +118,10 @@
                         $source.addClass("fa-check");
                         $source.addClass("text-success");
                     }
-                , "html");
+                    , "html");
             }
         });
-    });
+    }
 
     function processTransaction($id)
     {

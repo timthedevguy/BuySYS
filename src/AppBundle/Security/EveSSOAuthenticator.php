@@ -99,7 +99,6 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
             if(empty($user)) {
                 $user = new UserEntity();
                     $user->setCharacterId($characterToken->getCharacterId());
-                    $user->setCharacterName($characterToken->getCharacterName());
                     $user->setUsername($characterToken->getCharacterName());
                     $user->setIsActive(true);
                     $user->setLastLogin(new \DateTime());
