@@ -1,18 +1,222 @@
-{% extends 'secure_base.html.twig' %}
-
-{% block body %}	    <div class="row">				<div class="col-xs-12 col-lg-6">					<div class="row">							<div class="col-xs-12 col-lg-6">					<div class="info-box">						<span class="info-box-icon bg-green"><i class="fa fa-cart-plus"></i></span>						<div class="info-box-content">							<span class="info-box-text">Pending Requests</span>							<span class="info-box-number" id="pendingSales">{{srpSummary.totalTransactionPending|number_format(0, '.', ',')}}</span>							<span class="text-muted"></span>						</div><!-- /.info-box-content -->					</div>				</div>							{% if srpSummary.totalNetPending > 0 %}				<div class="col-xs-12 col-lg-6">					<div class="info-box">						<span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>						<div class="info-box-content">							<span class="info-box-text">Pending Income</span>							<span class="info-box-number" id="pendingIncome">{{srpSummary.totalNetPending|number_format(0, '.', ',')}}</span>							<span class="text-muted"></span>						</div><!-- /.info-box-content -->					</div>									</div>				{% endif %}			</div>            <div class="box">                <div class="box-header with-border">                    <h3 class="box-title"><i class="fa fa-user "></i> Review Queue</h3>                </div>                <div class="box-body">                    <div class="row">                        <div class="col-xs-12">                            <table class="table table-bordered table-hover" id="pastRequests">                                <thead>                                <tr>																	<th class='hidden'>ID</th>																	<th>Icon</th>                                    <th>Ship Type</th>                                    <th>Isk Amount</th>                                    <th>SRP Status</th>                                </tr>                                </thead>                                <tbody>									<tr>										<td colspan='6'>											<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>										</td>									</tr>                                </tbody>                            </table>                        </div>                    </div>                </div>            </div>        </div>				<div class="col-lg-6">            <div class="box">                <div class="box-header with-border">                    <h3 class="box-title"><i class="fa fa-money "></i> Fitting Estimator</h3>                </div>                <div class="box-body">                    <div class="row">                        <div class="col-md-12">                                {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}                                {{ form_start(form) }}                                {{ form_row(form.items, {'attr': {'placeholder': 'Paste fitting here', 'style': 'height:200px;'}}) }}                                <div id="buyback_submits" class="right_justify_submits">                                    <a class="btn btn-info pull-left" href="{{ path('pages', {'chapter_slug': 'help', 'topic_slug': 'help_using_buyback'}) }}#Selling Items" target="_new">Help</a>                                    <input type="button" id="srp_estimate_clear" class="btn btn-danger " value="Clear">                                    <input type="button" id="srp_quick_estimate" class="btn btn-success " value="Get Estimate">                                </div>                                {{ form_end(form) }}                        </div>                    </div>                </div>            </div>        </div>		
+{% extends 'secure_base.html.twig' %}
+
+
+
+{% block body %}
+
+	
+    <div class="row">
+		
+		<div class="col-xs-12 col-lg-6">
+		
+			<div class="row">
+			
+				<div class="col-xs-12 col-lg-6">
+
+					<div class="info-box">
+
+						<span class="info-box-icon bg-green"><i class="fa fa-cart-plus"></i></span>
+
+						<div class="info-box-content">
+
+							<span class="info-box-text">Pending Requests</span>
+
+							<span class="info-box-number" id="pendingSales">{{srpSummary.totalTransactionPending|number_format(0, '.', ',')}}</span>
+
+							<span class="text-muted"></span>
+
+						</div><!-- /.info-box-content -->
+
+					</div>
+
+				</div>
+			
+				{% if srpSummary.totalNetPending > 0 %}
+				<div class="col-xs-12 col-lg-6">
+
+					<div class="info-box">
+
+						<span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+
+						<div class="info-box-content">
+
+							<span class="info-box-text">Pending Income</span>
+
+							<span class="info-box-number" id="pendingIncome">{{srpSummary.totalNetPending|number_format(0, '.', ',')}}</span>
+
+							<span class="text-muted"></span>
+
+						</div><!-- /.info-box-content -->
+
+					</div>
+					
+				</div>
+				{% endif %}
+			</div>
+
+            <div class="box">
+
+                <div class="box-header with-border">
+
+                    <h3 class="box-title"><i class="fa fa-user "></i> Review Queue</h3>
+
+                </div>
+
+                <div class="box-body">
+
+                    <div class="row">
+
+                        <div class="col-xs-12">
+
+                            <table class="table table-bordered table-hover" id="pastRequests">
+
+                                <thead>
+
+                                <tr>
+								
+									<th class='hidden'>ID</th>
+								
+									<th>Icon</th>
+
+                                    <th>Ship Type</th>
+
+                                    <th>Isk Amount</th>
+
+                                    <th>SRP Status</th>
+
+                                </tr>
+
+                                </thead>
+
+                                <tbody>
+
+									<tr>
+										<td colspan='6'>
+											<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>
+										</td>
+									</tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+		
+		<div class="col-lg-6">
+
+            <div class="box">
+
+                <div class="box-header with-border">
+
+                    <h3 class="box-title"><i class="fa fa-money "></i> Fitting Estimator</h3>
+
+                </div>
+
+                <div class="box-body">
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                                {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
+
+                                {{ form_start(form) }}
+
+                                {{ form_row(form.items, {'attr': {'placeholder': 'Paste formatted fit here', 'style': 'height:200px;'}}) }}
+
+                                <div id="buyback_submits" class="right_justify_submits">
+
+                                    <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
+
+                                    <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
+
+                                </div>
+
+                                {{ form_end(form) }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+		
     </div>
-
-{% endblock %}
-
-{% block stylesheets %}<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" />
-{% endblock %}
-
-{% block javascripts %}
-
-<script type="text/javascript">
-    $(document).ready(function (e) {		$.get('{{path('ajax_srp_history')}}').then(function(response) {			$( "#pastRequests ").parent().html( response );						$('#pastRequests').DataTable({				"order": [[ 0, "desc" ]]			});		});
-    });		$("#srp_quick_estimate").click(function(e)	{		$('#base_modal').modal({backdrop: "static"});		$("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");		$.post('{{path('ajax_srp_quick_estimate')}}', {'srp_form_items[items]': $("#srp_form_items").val()},			function(response)			{				$( "#base_modal_content" ).html( response );			}		, "html");	});	$("#srp_estimate_clear").click(function(e) {			$("#srp_form_items").val('');			});	$("#srp_form_items").bind("paste", function(e) {			var pData = e.originalEvent.clipboardData.getData('text'),			numberOfLineBreaks = (pData.match(/\n/g)||[]).length;		if(numberOfLineBreaks > 500) {			$("#more-than-200").css("display", "block");			e.preventDefault();		} else {			$("#more-than-200").css("display", "none");		}			});
-</script>
-
-{% endblock %}
+
+
+{% endblock %}
+
+
+
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" />
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function (e) {
+		$.get('{{path('ajax_srp_history')}}').then(function(response) {
+			$( "#pastRequests ").parent().html( response );
+			
+			$('#pastRequests').DataTable({
+				"order": [[ 0, "desc" ]]
+			});
+		});
+
+    });
+	
+	$("#buyback_quick_submit").click(function(e)
+	{
+		$('#base_modal').modal({backdrop: "static"});
+		$("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
+		$.post('{{path('ajax_srp_quick_estimate')}}', {'buy_back_form[items]': $("#buy_back_form_items").val()},
+			function(response)
+			{
+				$( "#base_modal_content" ).html( response );
+				//$('#buyback_quick_modal').modal({backdrop: "static"});
+			}
+		, "html");
+
+	});
+
+	$("#buyback_clear").click(function(e) {
+		$("#buy_back_form_items").val('');
+	});
+
+
+
+	$("#buy_back_form_items").bind("paste", function(e) {
+		var pData = e.originalEvent.clipboardData.getData('text');
+		var numberOfLineBreaks = (pData.match(/\n/g)||[]).length;
+		if(numberOfLineBreaks > 500) {
+			$("#more-than-200").css("display", "block");
+			e.preventDefault();
+		} else {
+			$("#more-than-200").css("display", "none");
+		 }
+	});
+
+</script>
+
+
+
+{% endblock %}
+
