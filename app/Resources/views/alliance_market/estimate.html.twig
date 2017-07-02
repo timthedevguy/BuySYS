@@ -1,0 +1,115 @@
+<script type="text/javascript">
+
+
+
+    {% if transactionType == 'P' %}
+        {% set marketText = 'Sell' %}
+        {% set hasInvalidText = 'You can safely remove them from the contract.' %}
+        {% set infoText = 'Income' %}
+    {% elseif transactionType == 'S' %}
+        {% set marketText = 'Buy' %}
+        {% set hasInvalidText = 'You will not recieve this item and you will not be charged for it.' %}
+        {% set infoText = 'Cost' %}
+    {% endif %}
+
+</script>
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button"  id="exitModal" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{{ marketText }} Offer</h4>
+    </div>
+    <div class="modal-body" >
+        <h2 id="estimated_value" style="text-align: right; margin-top: 0px;height:40px;">Estimated {{ infoText }}: <span class="text-green">{{total|number_format(0, '.', ',')}}</h2>
+        {% if hasInvalid %}
+            <div class="alert alert-danger">
+                Some of the items submitted are invalid.  These are indicated by a red background and will not be included this
+                transaction. {{ hasInvalidText }}
+
+            </div>
+        {% endif %}
+        <div class="alliance-market-results-container">
+            <table class="table table-striped images-table">
+                <tr>
+                    <th>Quantity</th>
+                    <th>Item</th>
+                    <th>Value</th>
+                </tr>
+                {% for item in items %}
+                    <tr class="{{ (item.isvalid) ? '' : 'danger' }}">
+                        <td>{{item.Quantity|number_format(0, '.', ',') }}</td>
+                        <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{item.Name}}</span></td>
+                        <td>{{item.NetPrice|number_format(0, '.', ',') }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="declineOffer" class="btn btn-danger" data-dismiss="modal">Decline</button>
+        <button type="button" id="acceptOffer" class="btn btn-success">Accept</button>
+    </div>
+</div>
+
+{% block javascripts %}
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $totalValue="";
+
+        $("#acceptOffer").click(function(e)
+        {
+            acceptOfferSubmit();
+        });
+
+        $("#declineOffer, #exitModal").click(function(e)
+        {
+            declineOfferSubmit();
+        });
+
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        $(function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+        });
+    });
+
+    $("#estimated_value").mouseenter(function(e) {
+
+        $totalValue = $(this).html();
+        $(this).html("Don't copy this!!!");
+    });
+
+    $("#estimated_value").mouseleave(function(e) {
+
+        $(this).html($totalValue);
+    });
+
+    function acceptOfferSubmit()
+    {
+        $.post('{{path('ajax_alliance_market_accept')}}', {orderId: '{{orderId}}', transactionType: '{{ transactionType }}' },
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+        , "html");
+    }
+
+    function declineOfferSubmit()
+    {
+        $.post('{{path('ajax_alliance_market_decline')}}', { orderId: '{{orderId}}' },
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+            , "html");
+    }
+</script>
+
+{% endblock %}
