@@ -34,15 +34,15 @@ class TransactionSummaryModel {
                 $this->totalTransactionAccepted++;
 
                 if ($transaction->getType() == "P" || $transaction->getType() == "PS" ) {
-                    $this->totalGrossAccepted = $this->totalGrossAccepted + $transaction->getGross();
-                    $this->totalNetAccepted = $this->totalNetAccepted + $transaction->getNet();
+                    $this->totalGrossAccepted += $transaction->getGross();
+                    $this->totalNetAccepted += $transaction->getNet();
                 }
             } elseif ($transaction->getStatus() == "Pending") { //set pending values
                 $this->totalTransactionPending++;
 
-                if ($transaction->getType() == "P" || $transaction->getType() == "PS" ) {
-                    $this->totalGrossPending = $this->totalGrossPending + $transaction->getGross();
-                    $this->totalNetPending = $this->totalNetPending + $transaction->getNet();
+                if (in_array($transaction->getType(), ["P", "PS", "SRP"])) {
+                    $this->totalGrossPending += $transaction->getGross();
+                    $this->totalNetPending += $transaction->getNet();
                 }
             }
             //ignore Pending or Declined transactions

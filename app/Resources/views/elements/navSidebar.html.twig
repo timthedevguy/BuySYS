@@ -88,8 +88,11 @@
 
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
-        <li class="header">BUYBACK</li>
+	
+        <li class="header">HOME</li>
         <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>User Dashboard</span></a></li>
+		
+        <li class="header">BUYBACK</li>
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
                 <li><a href="#"><span>Ore</span><i class="fa fa-angle-left pull-right"></i></a>
@@ -116,9 +119,9 @@
                 </li>
             </ul>
         </li>
+		
         {% if is_granted('ROLE_MEMBER') %}
 			<li class="header">Ship Replacement</li>
-			<li class="{{(page_name == "My SRP Requests" ? 'active' : '')}}"><a href="{{ path('srp') }}"><i class="fa fa-money"></i> <span>Dashboard</span></a></li>
 			<li class="{{(page_name == "My Recent Losses" ? 'active' : '')}}"><a href="{{ path('losses') }}"><i class="fa fa-money"></i> <span>Recent Losses</span></a></li>
             <li class='header'>MEMBER</li>
             <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>

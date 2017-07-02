@@ -5,6 +5,16 @@ use GuzzleHttp\Client;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Swagger\Client\Api;
 
+/*
+ * Magic function accepts anything called and maps it to API_NAMESPACES, which I hardcoded for convenience.
+ * Follow the ESI documentation for the endpoints to send the right data. Headers are done for you.
+ *
+ * Usage:
+ * $ESI = new ESI($this->get('session'));
+ * $walletSummary = $ESI->getCharactersCharacterIdWallets(["character_id" => $this->getUser()->getCharacterId()]);
+ * $walletSummary[0]['balance']
+ */
+
 class ESI
 {
     const ESI_URL = 'https://esi.tech.ccp.is';

@@ -2,7 +2,7 @@ FROM tehraven/alpinewebos:latest
 MAINTAINER "https://github.com/tehraven"
 # BUILDS tehraven/eve-amsys
 
-ENV BUILD_VERSION=1.0.1
+ENV BUILD_VERSION=1.0.2
 ENV BUILD_ENV=dev
 
 WORKDIR /var/www/

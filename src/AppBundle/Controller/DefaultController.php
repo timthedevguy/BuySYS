@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Model\BuyBackModel;
 use AppBundle\Form\BuyBackForm;
 use AppBundle\Model\TransactionSummaryModel;
-use AppBundle\ESI\ESI;
 
 class DefaultController extends Controller
 {
@@ -23,19 +22,20 @@ class DefaultController extends Controller
         $form = $this->createForm(BuyBackForm::class, $bb);
 
         $form->handleRequest($request);
+		
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['P', 'PS'], "Estimate");
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
-
+		
+        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['P', 'PS'], "Estimate");
         $salesSummary = new TransactionSummaryModel($oSales);
-
-		$ESI = new ESI($this->get('session'));
-		$walletSummary = $ESI->getCharactersCharacterIdWallets(["character_id" => $this->getUser()->getCharacterId()]);
 		
         $oPurchases = array(); //coming soon!
         $purchasesSummary = new TransactionSummaryModel($oPurchases);
-
-        //set preferences
+		
+        $oSRP = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['SRP'], "Estimate");
+        $srpSummary = new TransactionSummaryModel($oSRP);
+		
+		//set preferences
         $preferences = $this->getDoctrine()->getRepository('AppBundle:UserPreferencesEntity', 'default')->findOneBy(array('user' => $this->getUser()));
 
         if($preferences == null) { //user doesn't have preferences yet.  set defaults (and save)
@@ -57,8 +57,8 @@ class DefaultController extends Controller
 			'salesSummary'=> $salesSummary,
 			'oPurchases' => $oPurchases,
 			'purchasesSummary' => $purchasesSummary,
+			'srpSummary' => $srpSummary,
 			'userCharacterName' => ($this->getUser())->getUsername(),
-			'userWalletBalance' => isset($walletSummary[0]) ? round($walletSummary[0]['balance']/100) : null,
             'news' => $news,
 			'eveCentralOK' => $eveCentralOK]);
     }
