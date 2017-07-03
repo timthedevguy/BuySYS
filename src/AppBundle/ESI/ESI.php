@@ -24,7 +24,8 @@ class ESI
 	const API_NAMESPACES = [
 		"AllianceAPI" => ["getAlliances", "getAlliancesAllianceId"],
 		"WalletApi" => ["getCharactersCharacterIdWallets"],
-		"KillmailsApi" => ["getCharactersCharacterIdKillmailsRecent"]
+		"KillmailsApi" => ["getCharactersCharacterIdKillmailsRecent"],
+		"MailApi" => ["postCharactersCharacterIdMail"]
 	];
 	
 	protected $session;
@@ -74,14 +75,17 @@ class ESI
 					$apiParamProvided = $this->session->get("esi_access_token");
 				}
 				
+				if($apiParamName == "user_agent") {
+					$apiParamProvided = "AmSYS";
+				}
+				
 				if(!$apiParamOptional && $apiParamProvided === null) {
 					$api_requirements_met = $apiParamName;
 					break;
 				}
 				
 				$api_params[$param->getName()] = $apiParamProvided;
-			}
-			
+			}			
 			
 			if($api_requirements_met !== true) {
 				if(gettype($api_requirements_met) == "boolean") {
@@ -92,11 +96,12 @@ class ESI
 				}
 			}
 			
+			$result = null;
 			try {
 				$result = call_user_func_array(array($api_instance, $method), $api_params);
 				return $result;
-			} catch (\Exception $e) {
-				return ["Error" => "Error when calling ".$method.": ".$e->getMessage()];
+			} catch(Swagger\Client\ApiException $e) {
+				return ["Error" => "Error when calling ".$method.": ".$e->getMessage(), "headers" => $e->responseHeaders (), "body" => $e->getResponseBody()];
 			}
 		}
 		catch (Exception $e) {

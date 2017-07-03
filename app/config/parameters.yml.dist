@@ -31,5 +31,5 @@ parameters:
         contract_corp_name: 'Omni Galactic Xpress Logistics'
         sso_client_id: 1f40cf73941944609c6a35f142b1e137
         sso_secret_key: ZZsc451cRSZgp2OGcIxoTRRPY3eYQdhLFJFH78T5
-        sso_scopes: publicData esi-wallet.read_character_wallet.v1 esi-killmails.read_killmails.v1 esi-ui.open_window.v1
-        sso_scopes_todo: remoteClientUI esi-fleets.read_fleet.v1 esi-fleets.write_fleet.v1
+        sso_scopes: publicData esi-wallet.read_character_wallet.v1 esi-killmails.read_killmails.v1 esi-mail.send_mail.v1 esi-mail.read_mail.v1
+        sso_scopes_todo: remoteClientUI esi-fleets.read_fleet.v1 esi-fleets.write_fleet.v1 esi-ui.open_window.v1
