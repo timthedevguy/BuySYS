@@ -78,7 +78,6 @@ class Helper
         $this->setSetting("buyback_source_id", "30002510");
         $this->setSetting("buyback_source_type", "buy");
         $this->setSetting("buyback_source_stat", "fivePercent");
-        $this->setSetting("buyback_default_tax", "15");
         $this->setSetting("buyback_ore_refine_rate", "70");
         $this->setSetting("buyback_ice_refine_rate", "70");
         $this->setSetting("buyback_salvage_refine_rate", "60");
@@ -90,23 +89,10 @@ class Helper
         $this->setSetting('buyback_role_other1_tax', '10');
         $this->setSetting('buyback_role_other2_tax', '0');
         $this->setSetting('buyback_role_other3_tax', '0');
+
+        $this->setSetting('buyback_default_buyaction_deny', '0');
     }
 }
-        $this->setSetting('eveCentralOK', '1');
-        $this->setSetting("system_maintenance", "0");
-        $this->setSetting("buyback_source_id", "30002510");
-        $this->setSetting("buyback_source_type", "buy");
-        $this->setSetting("buyback_source_stat", "fivePercent");
-        $this->setSetting("buyback_default_tax", "15");
-        $this->setSetting("buyback_ore_refine_rate", "70");
-        $this->setSetting("buyback_ice_refine_rate", "70");
-        $this->setSetting("buyback_salvage_refine_rate", "60");
-        $this->setSetting('buyback_value_minerals', '1');
-        $this->setSetting('buyback_value_salvage', '1');
-        $this->setSetting('buyback_role_member_tax', '5');
-        $this->setSetting('buyback_role_ally_tax', '6');
-        $this->setSetting('buyback_role_friend_tax', '8');
-        $this->setSetting('buyback_role_other1_tax', '10');
-        $this->setSetting('buyback_role_other2_tax', '0');
-        $this->setSetting('buyback_role_other3_tax', '0');
+
+
 		

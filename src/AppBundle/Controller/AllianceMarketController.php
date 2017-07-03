@@ -34,7 +34,7 @@ class AllianceMarketController extends Controller
 
         $form->handleRequest($request);
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser());
+        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array('P'));
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         $transactionSummary = new TransactionSummaryModel($oTransaction);
@@ -54,11 +54,9 @@ class AllianceMarketController extends Controller
 
         $form->handleRequest($request);
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
+        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array('S'));
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
-        //todo
 
-
-        $oTransaction = array(); //coming soon!
         $transactionSummary = new TransactionSummaryModel($oTransaction);
 
         return $this->render('alliance_market/index.html.twig', array(
