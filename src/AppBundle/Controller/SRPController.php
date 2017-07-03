@@ -13,8 +13,8 @@ use AppBundle\Helper\MarketHelper;
 use EveBundle\Entity\TypeEntity;
 use AppBundle\Entity\InsurancesEntity;
 
-use AppBundle\Model\SRPModel;
-use AppBundle\Form\SRPForm;
+use AppBundle\Model\BuyBackModel;
+use AppBundle\Form\BuyBackForm;
 use AppBundle\Model\TransactionSummaryModel;
 
 class SRPController extends Controller
@@ -48,24 +48,25 @@ class SRPController extends Controller
 		1538 => 500000000, //"Force Auxiliary",
 	];
 	
-	private function lineItemsToSRP($lineItems = [], $estLossValue = 0) {
+	private function lineItemsToSRP(&$lineItems = [], $estLossValue = 0) {
 		$srpOffered = 0;
 		$lossValue = 0;
 		$lossTypeID = null;
 		$lossType = null;
 		$lossInsuranceProfit = 0;
 		$reason = null;
-        $hasInvalid = false;
+        $hasInvalid = $hasWarning = false;
 		$typeIDs = [];
 		
 		/* FIND THE SHIP! */
 		foreach($lineItems as $lineItem) {
+			if(!method_exists($lineItem, 'getTypeId'))
+				continue;
 			$typeID = $lineItem->getTypeId();
 			$typeIDs []= $typeID;
 			$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeID);
 			if($type) {
 				$groupID = $type->getGroupId();
-				$reason .= $groupID."/";
 				if(isset(self::groupIDToMaximums[$groupID])) {
 					// Is a ship
 					if($lossTypeID === null) {
@@ -74,7 +75,7 @@ class SRPController extends Controller
 					}
 					else {
 						$hasInvalid = true;
-						$reason .= "Estimate contains more than one ship. This is naughty.";
+						$reason = "Estimate contains more than one ship. This is naughty.";
 						return [
 							"lossType" => null,
 							"lossGross" => null,
@@ -83,6 +84,7 @@ class SRPController extends Controller
 							"lossSRP" => null,
 							"orderId" => null,
 							"hasInvalid" => $hasInvalid,
+							"hasWarning" => $hasWarning,
 							"reason" => $reason
 						];
 					}
@@ -92,7 +94,7 @@ class SRPController extends Controller
 		
 		if(empty($lossTypeID)) {
 			$hasInvalid = true;
-			$reason .= "Estimate contains no ship. This is silly.";
+			$reason = "Estimate contains no ship. This is silly.";
 			return [
 				"lossType" => null,
 				"lossGross" => null,
@@ -101,6 +103,7 @@ class SRPController extends Controller
 				"lossSRP" => null,
 				"orderId" => null,
 				"hasInvalid" => $hasInvalid,
+				"hasWarning" => $hasWarning,
 				"reason" => $reason
 			];
 		}
@@ -133,8 +136,10 @@ class SRPController extends Controller
         $transaction->setStatus("Estimate");
         $em->persist($transaction);
 		
-        foreach($lineItems as $lineItem)
+        foreach($lineItems as &$lineItem)
         {
+			if(!method_exists($lineItem, 'getTypeId'))
+				continue;
 			$typeID = $lineItem->getTypeId();
 			$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeID);
             if($type) {
@@ -143,21 +148,22 @@ class SRPController extends Controller
 				$lineItem->setMarketPrice(0);
 				$lineItem->setGrossPrice(0);
 				$lineItem->setNetPrice(0);
-				if(isset($typePrices[$lineItem->getTypeId()]) && $typePrices[$lineItem->getTypeId()]['adjusted'] >= 0) {
+				if(isset($typePrices[$lineItem->getTypeId()]) && $typePrices[$lineItem->getTypeId()]['adjusted'] > 0) {
 					$lossValue += $lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['market'];
 					$lineItem->setMarketPrice($typePrices[$lineItem->getTypeId()]['adjusted']);
 					$lineItem->setGrossPrice($lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['market']);
 					$lineItem->setNetPrice($lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['adjusted']);
 				}
 				else {
-					$hasInvalid = true;
-					$reason = "Some items were not evaluated corrected. [".$type->getTypeName()." @ ".print_r($typePrices[$lineItem->getTypeId()], true)."]";
+					$hasWarning = true;
+					$reason = "Some items were not evaluated correctly. This estimation may be off significantly...";
 				}
                 $em->persist($lineItem);
                 $transaction->addLineitem($lineItem);
             }
 			else
 				$hasInvalid |= true;
+			unset($lineItem);
         }
 		
 		// Reenforce our SRP Offer Amount
@@ -169,6 +175,11 @@ class SRPController extends Controller
 			$srpOffered = min($srpOffered, $transaction->getGross() - $insuranceValue);
 		}
 		
+		if($srpOffered <= 0) {
+			$hasInvalid = true;
+			$reason = trim(trim(trim($reason." | No SRP can be given for this loss."), "|"));
+		}
+		
 		$transaction->setNet($srpOffered);
 
 		$em->flush();
@@ -176,11 +187,12 @@ class SRPController extends Controller
 		return [
 			"lossType" => $lossType,
 			"lossGross" => $transaction->getGross(),
-			"lossNet" => $transaction->getGross() - $insuranceValue,
+			"lossNet" => max($transaction->getGross() - $insuranceValue, 0),
 			"lossInsurance" => $insuranceValue,
 			"lossSRP" => $srpOffered,
 			"orderId" => $transaction->getOrderId(),
 			"hasInvalid" => $hasInvalid,
+			"hasWarning" => $hasWarning,
 			"reason" => $reason
 		];
 		
@@ -191,8 +203,9 @@ class SRPController extends Controller
      */
     public function indexAction(Request $request)
     {	
-        $srpm = new SRPModel();
-        $form = $this->createForm(SRPForm::class, $srpm);
+        $fModel = new BuyBackModel();
+        $form = $this->createForm(BuyBackForm::class, $fModel);
+        $form->handleRequest($request);
 		
         $oSRP = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['SRP'], "Estimate");
         $srpSummary = new TransactionSummaryModel($oSRP);
@@ -210,13 +223,12 @@ class SRPController extends Controller
      */
     public function quickEstimateAction(Request $request)
 	{
-		// Setup model and form
-        $srpm = new SRPModel();
-        $form = $this->createForm(SRPForm::class, $srpm);
+		$fModel = new BuyBackModel();
+        $form = $this->createForm(BuyBackForm::class, $fModel);
         $form->handleRequest($request);
 
         // Parse form input
-        $items = $this->get('parser')->GetLineItemsFromPasteData($srpm->getItems());
+        $items = $this->get('parser')->GetLineItemsFromPasteData($fModel->getItems());
 
         // Check to make sure it parsed correctly
         if($items == null || count($items) <= 0) {
@@ -231,8 +243,10 @@ class SRPController extends Controller
 			"netLoss" => $results['lossNet'],
 			"srpOffered" => $results['lossSRP'],
 			"hasInvalid" => $results['hasInvalid'],
+			"hasWarning" => $results['hasWarning'],
 			"reason" => $results['reason'],
-			"orderId" => $results['orderId']]);
+			"orderId" => $results['orderId'],
+			"items" => $items]);
 	}
 	
     /**
@@ -282,8 +296,10 @@ class SRPController extends Controller
 					"netLoss" => $results['lossNet'],
 					"srpOffered" => $results['lossSRP'],
 					"hasInvalid" => $results['hasInvalid'],
+					"hasWarning" => $results['hasWarning'],
 					"reason" => $results['reason'],
-					"orderId" => $results['orderId']]);
+					"orderId" => $results['orderId'],
+					"items" => $items]);
 			}
 			else {
 				$hasInvalid = true;
@@ -297,6 +313,7 @@ class SRPController extends Controller
 			"netLoss" => null,
 			"srpOffered" => null,
 			"hasInvalid" => $hasInvalid,
+			"hasWarning" => false,
 			"reason" => $reason,
 			"orderId" => null]);
     }

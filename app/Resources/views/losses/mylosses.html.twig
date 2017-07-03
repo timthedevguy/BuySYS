@@ -1,3 +1,14 @@
+
+							{% if losses|length == 0 %}
+								
+									<div style='padding: 10px;'>
+										You have no recent losses. Congratulations.
+										<br /><br />
+										(Post your losses to zkillboard.com...)
+									</div>
+								
+							{% else %}
+								
 							<table class="table table-bordered table-hover" id="zLosses">
 
                                 <thead>
@@ -56,3 +67,5 @@
                                 </tbody>
 
                             </table>
+							
+							{% endif %}

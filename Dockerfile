@@ -19,6 +19,7 @@ RUN mkdir /var/www/app/cache/dev \
 	&& touch /var/log/nginx/amsys.error \
 	&& chown -R www-data:www-data /var/log/nginx/ \
 	&& chown -R www-data:www-data /var/www/ \
+	&& composer dump-autoload --optimize \
 	&& composer install \
 	&& chown -R www-data:www-data /var/www/app/ \
 	&& chown -R www-data:www-data /var/www/app/Resources \
