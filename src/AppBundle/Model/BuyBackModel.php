@@ -6,11 +6,8 @@ class BuyBackModel
     protected $items;
 
     public function setItems($items)
-
     {
-        $this->items
-        = $items;
-
+        $this->items = $items;
 
         return $this;
     }
@@ -18,6 +15,5 @@ class BuyBackModel
     public function getItems()
     {
         return $this->items;
-
     }
 }

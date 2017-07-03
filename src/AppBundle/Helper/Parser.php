@@ -7,16 +7,8 @@ use AppBundle\Entity\LineItemEntity;
 /**
  * Handles all text parsing functions
  */
-class Parser
+class Parser extends Helper
 {
-    private $doctrine;
-
-    public function __construct($doctrine, Helper $helper)
-    {
-        $this->doctrine = $doctrine;
-        $this->helper = $helper;
-    }
-
     public function GetLineItemsFromPasteData($raw)
     {
         //define Vars

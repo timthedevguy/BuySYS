@@ -64,7 +64,7 @@ class CacheEntity
     }
 
     /**
-     * @ORM\Column(type="decimal", precision=19, scale=2)
+     * @ORM\Column(type="decimal", precision=19, scale=2, nullable=true)
      */
     protected $adjusted;
 

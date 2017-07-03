@@ -53,7 +53,7 @@ class BuyBackController extends Controller
         foreach($items as $item)
         {
             // Check if price is -1, means Can Buy is False
-            if($typePrices[$item->getTypeId()]['adjusted'] == -1) {
+            if(!isset($typePrices[$item->getTypeId()]) || $typePrices[$item->getTypeId()]['adjusted'] == -1) {
 
                 // Set to all 0 and mark as invalid
                 $item->setMarketPrice(0);
@@ -115,7 +115,6 @@ class BuyBackController extends Controller
     public function ajax_AcceptAction(Request $request)
     {
         // Get our list of Items
-        $total = $request->request->get('total');
         $order_id = $request->request->get('orderId');
         $shares = $request->request->get('shares');
 

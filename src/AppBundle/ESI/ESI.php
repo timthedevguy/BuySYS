@@ -2,15 +2,108 @@
 namespace AppBundle\ESI;
 
 use GuzzleHttp\Client;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Swagger\Client\Api;
+
+/*
+ * Magic function accepts anything called and maps it to API_NAMESPACES, which I hardcoded for convenience.
+ * Follow the ESI documentation for the endpoints to send the right data. Headers are done for you.
+ *
+ * Usage:
+ * $ESI = new ESI($this->get('session'));
+ * $walletSummary = $ESI->getCharactersCharacterIdWallets(["character_id" => $this->getUser()->getCharacterId()]);
+ * $walletSummary[0]['balance']
+ */
 
 class ESI
 {
     const ESI_URL = 'https://esi.tech.ccp.is';
-
     const SEARCH = '/v1/search/';
     const ALLIANCE_NAMES = '/v1/alliances/names/';
     const CORPORATION_NAMES = '/v1/corporations/names/';
+	const API_NAMESPACES = [
+		"AllianceAPI" => ["getAlliances", "getAlliancesAllianceId"],
+		"WalletApi" => ["getCharactersCharacterIdWallets"],
+		"KillmailsApi" => ["getCharactersCharacterIdKillmailsRecent"]
+	];
+	
+	protected $session;
 
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
+    }
+	
+	public function __call($method, $arguments)
+    {
+		if(count($arguments) != 1 || !is_array($arguments[0]))
+			throw new \Exception("ESI::[API Method] requires a single array parameter of key=>value pairs.");
+		$arguments = $arguments[0];
+		
+		$found = false;
+		foreach(self::API_NAMESPACES as $namespace => $functions)
+			if(in_array($method, $functions)) {
+				$found = $namespace;
+				break;
+			}
+			
+		if($found===false) {
+			return ["Error" => "Unknown method '".$method."'..."];
+		}
+		
+		$class = "Swagger\\Client\\Api\\".$found;
+		$api_instance = new $class();
+		
+		try {
+			
+			$r = new \ReflectionMethod($class, $method);
+			$params = $r->getParameters();
+			
+			$api_requirements_met = true;
+			$api_params = [];
+			foreach($params as $param) {
+				
+				$apiParamName = $param->getName();
+				$apiParamOptional = $param->isOptional();
+				$apiParamProvided = isset($arguments[$apiParamName]) ? $arguments[$apiParamName] : null;
+				
+				if($apiParamName == "token") {
+					if(empty($this->session)) {
+						return ["Error" => "No access_token from session."];
+					}
+					$apiParamProvided = $this->session->get("esi_access_token");
+				}
+				
+				if(!$apiParamOptional && $apiParamProvided === null) {
+					$api_requirements_met = $apiParamName;
+					break;
+				}
+				
+				$api_params[$param->getName()] = $apiParamProvided;
+			}
+			
+			
+			if($api_requirements_met !== true) {
+				if(gettype($api_requirements_met) == "boolean") {
+					return ["Error" => "Missing required parameter(s)"];
+				}
+				else {
+					return ["Error" => "Missing required parameter '".$api_requirements_met."'!"];
+				}
+			}
+			
+			try {
+				$result = call_user_func_array(array($api_instance, $method), $api_params);
+				return $result;
+			} catch (\Exception $e) {
+				return ["Error" => "Error when calling ".$method.": ".$e->getMessage()];
+			}
+		}
+		catch (Exception $e) {
+			return ["Error" => "Class Not Found: ".$e->getMessage()];
+		}
+	}
+	
     //https://esi.tech.ccp.is/latest/search/?categories=alliance%2Ccorporation&datasource=tranquility&language=en-us&search=test&strict=false
 
     /**

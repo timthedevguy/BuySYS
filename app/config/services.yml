@@ -6,6 +6,10 @@ parameters:
 services:
     esi:
         class: EveBundle\API\ESI
+        
+    eve_esi:
+        class: AppBundle\ESI\ESI
+        arguments: ["@session"]
 
     eve_sso:
         class: EveBundle\API\SSO
@@ -24,7 +28,7 @@ services:
 
     parser:
         class: AppBundle\Helper\Parser
-        arguments: ['@doctrine', '@helper']
+        arguments: ['@doctrine']
 
     authentication_handler:
         class: AppBundle\Helper\AuthenticationHandler
@@ -32,7 +36,7 @@ services:
             - [ setContainer, [ @service_container ] ]
     cache:
         class: AppBundle\Helper\Cache
-        arguments: ['@doctrine', '@helper', '@market']
+        arguments: ['@doctrine', '@market']
 
     lineItemComparator:
         class: AppBundle\Helper\LineItemComparator
@@ -48,4 +52,4 @@ services:
 
     cron_tasks:
         class: AppBundle\Helper\CronTasks
-        arguments: ['@helper', '@role_manager']
+        arguments: ['@doctrine', '@role_manager']

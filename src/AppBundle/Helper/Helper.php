@@ -90,5 +90,6 @@ class Helper
         $this->setSetting('buyback_role_other1_tax', '10');
         $this->setSetting('buyback_role_other2_tax', '0');
         $this->setSetting('buyback_role_other3_tax', '0');
+		
     }
 }

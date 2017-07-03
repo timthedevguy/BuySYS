@@ -4,6 +4,8 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 
 class TransactionRepository extends EntityRepository {
+	
+	private $types = ["P", "PS", "S", "SRP"];
 
     public function findValidTransactionsOrderedByDate($limit = 5000) {
 
@@ -32,23 +34,83 @@ class TransactionRepository extends EntityRepository {
     }
 
     public function findAllVisibleByUser($user) {
+		
+		trigger_error("TransactionRepository::findAllVisibleByUser is deprecated. Please use a more specific method here.");
 
-        /*$query = $this->getEntityManager()->createQueryBuilder('t')
-            ->where('t.user = :user')
-            ->andWhere('t.is_complete = 0')
-            ->andWhere('t.type = :type')
-            ->andWhere('t.status = :status')
-            ->orderBy('t.created', 'DESC')
-            ->setParameter('user', $user)
-            ->setParameter('type', "P")
-            ->setParameter('status', "Pending")
-            ->getQuery();
+        return $this->findAllByUserTypesAndExcludeStatus($user);
+    }
 
-        return $query->getResult();*/
+    public function findCountByUser($user, $types = null) {
 
+		if(empty($types))
+			$types = $this->types;
+		
+        return $this->findCountByUserAndTypes($user);
+    }
+
+    public function findAllByUserAndTypes($user, $types = null) {
+
+		if(empty($types))
+			$types = $this->types;
+		
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user'
+            )->setParameter('user', $user)->setParameter('types', $types)->getResult();
+    }
+
+    public function findCountByUserAndTypes($user, $types = null) {
+
+		if(empty($types))
+			$types = $this->types;
+		
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT COUNT(t.id) FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user'
+            )->setParameter('user', $user)->setParameter('types', $types)->getSingleScalarResult();
+    }
+
+    public function findAllByUserTypesAndStatus($user, $types = null, $status = "Pending") {
+
+		if(empty($types))
+			$types = $this->types;
+		
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user AND t.status = :includeStatus'
+            )->setParameter('user', $user)->setParameter('types', $types)->setParameter('includeStatus', $status)->getResult();
+    }
+
+    public function findCountByUserTypesAndStatus($user, $types = null, $status = "Pending") {
+
+		if(empty($types))
+			$types = $this->types;
+		
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT COUNT(t.id) FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user AND t.status = :includeStatus'
+            )->setParameter('user', $user)->setParameter('types', $types)->setParameter('includeStatus', $status)->getSingleScalarResult();
+    }
+
+    public function findAllByUserTypesAndExcludeStatus($user, $types = null, $status = "Estimate") {
+
+		if(empty($types))
+			$types = $this->types;
+		
         return $this->getEntityManager()
             ->createQuery(
                 'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user AND t.status <> :excludeStatus'
-            )->setParameter('user', $user)->setParameter('types', Array('P', 'PS'))->setParameter('excludeStatus', 'Estimate')->getResult();
+            )->setParameter('user', $user)->setParameter('types', $types)->setParameter('excludeStatus', $status)->getResult();
+    }
+
+    public function findCountByUserTypesAndExcludeStatus($user, $types = null, $status = "Estimate") {
+
+		if(empty($types))
+			$types = $this->types;
+		
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT COUNT(t.id) FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.user = :user AND t.status <> :excludeStatus'
+            )->setParameter('user', $user)->setParameter('types', $types)->setParameter('excludeStatus', $status)->getSingleScalarResult();
     }
 }

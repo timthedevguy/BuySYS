@@ -72,9 +72,12 @@ class EveSSOAuthenticator extends AbstractGuardAuthenticator
             {
                 // Get our Access Token
                 $accessToken = $this->eveSSO->getSSOAccessToken($auth_code);
+				$accessTokenValue = $accessToken->getAccessTokenValue();
+				
+				$request->getSession()->set("esi_access_token", $accessTokenValue);
 
                 return array(
-                    'access_token' => $accessToken->getAccessTokenValue()
+                    'access_token' => $accessTokenValue
                 );
             }
             catch (Exception $e)

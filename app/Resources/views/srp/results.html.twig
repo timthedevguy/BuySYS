@@ -1,0 +1,100 @@
+<script type="text/javascript">
+
+
+
+</script>
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button"  id="exitModal" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">SRP Offer</h4>
+    </div>
+    <div class="modal-body" >
+        <h2 id="srp_offer" style="text-align: right; margin-top: 0px;height:40px;">SRP Offered: <span class="text-blue">{{srpOffered|number_format(0, '.', ',')}}</h2>
+        {% if hasInvalid %}
+            <div class="alert alert-danger">
+                {{ reason }}
+            </div>
+        {% else %}
+        <div class="buyback-results-container">
+            <table class="table table-striped images-table">
+                <tr>
+                    <th>Summary Item</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+					<td>Ships & Module Value</td>
+					<td class="text-red">{{ lossValue|number_format(0, '.', ',') }}</td>
+				</tr>
+                <tr>
+					<td>Insurance (Profit)</td>
+					<td class="text-green">{{ insuranceValue|number_format(0, '.', ',') }}</td>
+				</tr>
+                <tr>
+					<td>Net Loss</td>
+					<td class="text-red">{{ netLoss|number_format(0, '.', ',') }}</td>
+				</tr>
+                <tr>
+					<td>SRP Offer</td>
+					<td class="text-blue">{{ srpOffered|number_format(0, '.', ',') }}</td>
+				</tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+	{% if not hasInvalid %}
+    <div class="modal-footer">
+        <button type="button" id="declineOffer" class="btn btn-danger" data-dismiss="modal">Decline</button>
+        <button type="button" id="acceptOffer" class="btn btn-success">Accept</button>
+    </div>
+	{% endif %}
+</div>
+
+{% block javascripts %}
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $totalValue="";
+
+        $("#acceptOffer").click(function(e)
+        {
+            acceptOfferSubmit();
+        });
+
+        $("#declineOffer").click(function(e)
+        {
+            declineOfferSubmit();
+        });
+
+        $("#exitModal").click(function(e)
+        {
+            declineOfferSubmit();
+        });
+
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        });
+    });
+
+    function acceptOfferSubmit()
+    {
+        $.post('{{path('ajax_accept_srp')}}', {orderId: '{{orderId}}' },
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+        , "html");
+    }
+
+    function declineOfferSubmit()
+    {
+        $.post('{{path('ajax_decline_srp')}}', { orderId: '{{orderId}}' },
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+            , "html");
+    }
+</script>
+
+{% endblock %}

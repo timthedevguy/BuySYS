@@ -42,10 +42,10 @@
 
                     var jsonResponse = JSON.parse(response);
 
-                    updatePurchaseQueueBadge(jsonResponse.purchaseQueueBadge);
+                    updatePurchaseQueueBadge(typeof(jsonResponse.purchaseQueueBadge) == 'number' ? jsonResponse.purchaseQueueBadge : 0);
+                    updateSRPQueueBadge(typeof(jsonResponse.SRPQueueBadge) == 'number' ? jsonResponse.SRPQueueBadge : 0);
 
-                }
-                , "html");
+			} , "html");
         }
     </script>
 
@@ -88,8 +88,11 @@
 
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
-        <li class="header">USER</li>
+	
+        <li class="header">HOME</li>
         <li class="{{(page_name == "Dashboard" ? 'active' : '')}}"><a href="{{ path('homepage') }}"><i class="fa fa-tachometer"></i> <span>User Dashboard</span></a></li>
+		
+        <li class="header">BUYBACK</li>
         <li class="treeview {{(page_name == "Quicklook" ? 'active' : '')}}"><a href="#"><i class="fa fa-eye"></i> <span>Quicklook</span><i class="fa fa-angle-left pull-right"></i></a>
             <ul class="treeview-menu">
                 <li><a href="#"><span>Ore</span><i class="fa fa-angle-left pull-right"></i></a>
@@ -116,18 +119,22 @@
                 </li>
             </ul>
         </li>
+		
         {% if is_granted('ROLE_MEMBER') %}
+			<li class="header">Ship Replacement</li>
+			<li class="{{(page_name == "My Recent Losses" ? 'active' : '')}}"><a href="{{ path('losses') }}"><i class="fa fa-money"></i> <span>Recent Losses</span></a></li>
             <li class='header'>MEMBER</li>
             <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>
         {% endif %}
 
         {% if is_granted('ROLE_ADMIN') %}
             <li class="header">ACCOUNTING</li>
-                {% if is_granted('ROLE_BUY_ADMIN') %}
-                    <li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Corp Purchase Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
-                {% endif %}
+			
+				{% if is_granted('ROLE_BUY_ADMIN') %}
+				<li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Corp Purchase Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
+				{% endif %}
 
-            {% if is_granted('ROLE_SYSTEM_ADMIN') %}
+				{% if is_granted('ROLE_SYSTEM_ADMIN') %}
                 <li class="header">SYSTEM</li>
                     <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
                     <li class="{{(page_name == "Admin Tools" ? 'active' : '')}}"><a href="{{path('admin_tools')}}"><i class="fa fa-wrench" aria-hidden="true"></i> <span>Admin Tools</span></a></li>
@@ -144,7 +151,12 @@
                             <li><a href="{{ path('admin_buyback_rules') }}"><i class="fa fa-filter"></i> <span>Buyback Rules</span></a></li>
                         </ul>
                     </li>
-            {% endif %}
+				{% endif %}
+			
+				{% if is_granted('ROLE_SRP_ADMIN') %}
+				<li class="{{(page_name == "SRP Admin" ? 'active' : '')}}"><a href="{{ path('srp_admin') }}"><i class="fa fa-money"></i> <span>SRP Requests</span> <span class="badge bg-green" id="srpQueueBadge"></span></a></li>
+				{% endif %}
+				
         {% endif %}
     </ul><!-- /.sidebar-menu -->
   </section>

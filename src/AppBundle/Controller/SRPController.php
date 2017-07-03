@@ -1,0 +1,378 @@
+<?php
+namespace AppBundle\Controller;
+
+use AppBundle\Entity\UserPreferencesEntity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use AppBundle\Entity\LineItemEntity;
+use AppBundle\Entity\TransactionEntity;
+use AppBundle\Helper\MarketHelper;
+use EveBundle\Entity\TypeEntity;
+use AppBundle\Entity\InsurancesEntity;
+
+use AppBundle\Model\SRPModel;
+use AppBundle\Form\SRPForm;
+use AppBundle\Model\TransactionSummaryModel;
+
+class SRPController extends Controller
+{
+	const groupIDToMaximums = [
+		25 => 5000000, //"Frigate",
+		26 => 15000000, //"Cruiser",
+		27 => 115000000, //"Battleship",
+		324 => 15000000, //"Assault Frigate",
+		358 => 100000000, //"Heavy Assault Cruiser",
+		419 => 35000000, //"Combat Battlecruiser",
+		420 => 10000000, //"Destroyer",
+		485 => 500000000, //"Dreadnought",
+		540 => 115000000, //"Command Ship",
+		541 => 25000000, //"Interdictor",
+		547 => 500000000, //"Carrier",
+		830 => 20000000, //"Covert Ops",
+		831 => 25000000, //"Interceptor",
+		832 => 250000000, //"Logistics",
+		833 => 100000000, //"Force Recon Ship",
+		834 => 25000000, //"Stealth Bomber",
+		893 => 15000000, //"Electronic Attack Ship",
+		894 => 100000000, //"Heavy Interdiction Cruiser",
+		898 => 150000000, //"Black Ops",
+		906 => 100000000, //"Combat Recon Ship",
+		963 => 100000000, //"Strategic Cruiser",
+		1201 => 35000000, //"Attack Battlecruiser",
+		1305 => 25000000, //"Tactical Destroyer",
+		1527 => 100000000, //"Logistics Frigate",
+		1534 => 25000000, //"Command Destroyer",
+		1538 => 500000000, //"Force Auxiliary",
+	];
+	
+	private function lineItemsToSRP($lineItems = [], $estLossValue = 0) {
+		$srpOffered = 0;
+		$lossValue = 0;
+		$lossTypeID = null;
+		$lossType = null;
+		$lossInsuranceProfit = 0;
+		$reason = null;
+        $hasInvalid = false;
+		$typeIDs = [];
+		
+		/* FIND THE SHIP! */
+		foreach($lineItems as $lineItem) {
+			$typeID = $lineItem->getTypeId();
+			$typeIDs []= $typeID;
+			$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeID);
+			if($type) {
+				$groupID = $type->getGroupId();
+				$reason .= $groupID."/";
+				if(isset(self::groupIDToMaximums[$groupID])) {
+					// Is a ship
+					if($lossTypeID === null) {
+						$lossTypeID = $typeID;
+						$lossType = $type;
+					}
+					else {
+						$hasInvalid = true;
+						$reason .= "Estimate contains more than one ship. This is naughty.";
+						return [
+							"lossType" => null,
+							"lossGross" => null,
+							"lossNet" => null,
+							"lossInsurance" => null,
+							"lossSRP" => null,
+							"orderId" => null,
+							"hasInvalid" => $hasInvalid,
+							"reason" => $reason
+						];
+					}
+				}
+			}
+		}
+		
+		if(empty($lossTypeID)) {
+			$hasInvalid = true;
+			$reason .= "Estimate contains no ship. This is silly.";
+			return [
+				"lossType" => null,
+				"lossGross" => null,
+				"lossNet" => null,
+				"lossInsurance" => null,
+				"lossSRP" => null,
+				"orderId" => null,
+				"hasInvalid" => $hasInvalid,
+				"reason" => $reason
+			];
+		}
+		
+		$orig = $this->get('helper')->getSetting("buyback_source_type");
+		
+		$this->get('helper')->setSetting("buyback_source_type", "sell");
+        $this->get('market')->forceCacheUpdateForTypes($typeIDs);	
+        $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIDs);
+        $this->get('market')->forceCacheUpdateForTypes($typeIDs);	
+		$this->get('helper')->getSetting("buyback_source_type", $orig);
+	
+		//get DB manager
+		$em = $this->getDoctrine()->getManager('default');
+		
+		$insuranceData = $this->getDoctrine('default')->getRepository('AppBundle:InsurancesEntity')->getInsuranceDataByTypeIDAndLevel($lossTypeID);
+		$insuranceValue = $insuranceValue = ($insuranceData->getInsurancePayout() - $insuranceData->getInsuranceCost());
+		
+		$srpOffered = self::groupIDToMaximums[$lossType->getGroupId()];
+
+		///build transaction
+        $transaction = new TransactionEntity();
+        $transaction->setUser($this->getUser());
+        $transaction->setType("P"); //will reset to PS if accepted with shares
+        $transaction->setIsComplete(false);
+        $transaction->setOrderId($transaction->getType() . uniqid());
+        $transaction->setGross(0);
+        $transaction->setNet(0);
+        $transaction->setCreated(new \DateTime("now"));
+        $transaction->setStatus("Estimate");
+        $em->persist($transaction);
+		
+        foreach($lineItems as $lineItem)
+        {
+			$typeID = $lineItem->getTypeId();
+			$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeID);
+            if($type) {
+				$lineItem->setName($type->getTypeName());
+				$lineItem->setTax(0);
+				$lineItem->setMarketPrice(0);
+				$lineItem->setGrossPrice(0);
+				$lineItem->setNetPrice(0);
+				if(isset($typePrices[$lineItem->getTypeId()]) && $typePrices[$lineItem->getTypeId()]['adjusted'] >= 0) {
+					$lossValue += $lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['market'];
+					$lineItem->setMarketPrice($typePrices[$lineItem->getTypeId()]['adjusted']);
+					$lineItem->setGrossPrice($lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['market']);
+					$lineItem->setNetPrice($lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['adjusted']);
+				}
+				else {
+					$hasInvalid = true;
+					$reason = "Some items were not evaluated corrected. [".$type->getTypeName()." @ ".print_r($typePrices[$lineItem->getTypeId()], true)."]";
+				}
+                $em->persist($lineItem);
+                $transaction->addLineitem($lineItem);
+            }
+			else
+				$hasInvalid |= true;
+        }
+		
+		// Reenforce our SRP Offer Amount
+		$srpOffered = min($srpOffered, 500000000);
+		$transaction->setGross($estLossValue > 0 ? $estLossValue : $lossValue);		
+		
+		/* For larger ships, we're not going to SRP more than the net loss of your ship.after insurance  */
+		if($transaction->getGross() >= 50000000 && $transaction->getGross() - $insuranceValue < $srpOffered) {
+			$srpOffered = min($srpOffered, $transaction->getGross() - $insuranceValue);
+		}
+		
+		$transaction->setNet($srpOffered);
+
+		$em->flush();
+		
+		return [
+			"lossType" => $lossType,
+			"lossGross" => $transaction->getGross(),
+			"lossNet" => $transaction->getGross() - $insuranceValue,
+			"lossInsurance" => $insuranceValue,
+			"lossSRP" => $srpOffered,
+			"orderId" => $transaction->getOrderId(),
+			"hasInvalid" => $hasInvalid,
+			"reason" => $reason
+		];
+		
+	}
+	
+    /**
+     * @Route("/srp", name="srp")
+     */
+    public function indexAction(Request $request)
+    {	
+        $srpm = new SRPModel();
+        $form = $this->createForm(SRPForm::class, $srpm);
+		
+        $oSRP = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['SRP'], "Estimate");
+        $srpSummary = new TransactionSummaryModel($oSRP);
+	
+        return $this->render('srp/srp.html.twig', [
+            'base_dir' => 'test',
+			'page_name' => 'My SRP Requests',
+			'sub_text' => null,
+			'form' => $form->createView(),
+			'srpSummary' => $srpSummary]);
+    }
+	
+    /**
+     * @Route("/srp/quick_estimate", name="ajax_srp_quick_estimate")
+     */
+    public function quickEstimateAction(Request $request)
+	{
+		// Setup model and form
+        $srpm = new SRPModel();
+        $form = $this->createForm(SRPForm::class, $srpm);
+        $form->handleRequest($request);
+
+        // Parse form input
+        $items = $this->get('parser')->GetLineItemsFromPasteData($srpm->getItems());
+
+        // Check to make sure it parsed correctly
+        if($items == null || count($items) <= 0) {
+            return $this->render('srp/novalid.html.twig');
+        }
+
+        $results = self::lineItemsToSRP($items);
+
+        return $this->render('srp/results.html.twig', [
+            "lossValue" => $results['lossGross'],
+			"insuranceValue" => $results['lossInsurance'],
+			"netLoss" => $results['lossNet'],
+			"srpOffered" => $results['lossSRP'],
+			"hasInvalid" => $results['hasInvalid'],
+			"reason" => $results['reason'],
+			"orderId" => $results['orderId']]);
+	}
+	
+    /**
+     * @Route("/srp/estimate", name="ajax_srp_estimate")
+     */
+    public function estimateAction(Request $request)
+    {	
+		$hasInvalid = $reason = false;		
+        $zkillID = $request->request->get('zkillID');
+		
+		if(!is_numeric($zkillID)) {
+			$hasInvalid = true;
+			$reason = "Invalid ZKillboard ID";
+		}
+		else {
+			$zkillInfo = json_decode(file_get_contents("https://zkillboard.com/api/killID/".$zkillID."/json/"), true);
+			if($zkillInfo && isset($zkillInfo[0]) && isset($zkillInfo[0]['killID']) && $zkillInfo[0]['killID'] == $zkillID) {
+				$lossTypeID = $zkillInfo[0]['victim']['shipTypeID'];
+				$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($lossTypeID);
+				$groupID = $type->getGroupId();
+				$group = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')->findOneByGroupID($groupID);
+				
+				$items = [];
+				$lineItem = new LineItemEntity();
+				$lineItem->setTypeId($lossTypeID);
+				$lineItem->setQuantity(1);
+				$lineItem->setMarketPrice(0);
+				$lineItem->setGrossPrice(0);
+				$lineItem->setNetPrice(0);
+				$lineItem->setTax(0);
+				$items []= $lineItem;
+				foreach($zkillInfo[0]['items'] as $item) {
+					$lineItem = new LineItemEntity();
+					$lineItem->setTypeId($item['typeID']);
+					$lineItem->setQuantity($item['qtyDropped']+$item['qtyDestroyed']);
+					$lineItem->setMarketPrice(0);
+					$lineItem->setGrossPrice(0);
+					$lineItem->setNetPrice(0);
+					$lineItem->setTax(0);
+					$items []= $lineItem;
+				}
+				$results = self::lineItemsToSRP($items, $zkillInfo[0]['zkb']['totalValue']);
+
+				return $this->render('srp/results.html.twig', [
+					"lossValue" => $results['lossGross'],
+					"insuranceValue" => $results['lossInsurance'],
+					"netLoss" => $results['lossNet'],
+					"srpOffered" => $results['lossSRP'],
+					"hasInvalid" => $results['hasInvalid'],
+					"reason" => $results['reason'],
+					"orderId" => $results['orderId']]);
+			}
+			else {
+				$hasInvalid = true;
+				$reason = "We were unable to pull this kill from ZKillboard.com";
+			}
+		}
+	
+        return $this->render('srp/results.html.twig', [
+            "lossValue" => null,
+			"insuranceValue" => null,
+			"netLoss" => null,
+			"srpOffered" => null,
+			"hasInvalid" => $hasInvalid,
+			"reason" => $reason,
+			"orderId" => null]);
+    }
+    /**
+     * @Route("/srp/admin", name="srp_admin")
+     */
+    public function adminAction(Request $request)
+    {	
+        return $this->render('srp/srp.html.twig', [
+            'base_dir' => 'test',
+			'page_name' => 'SRP Approval Queue',
+			'sub_text' => 'Accept or Deny SRP Requests',
+			'userCharacterName' => $this->getUser()->getUsername(),
+			'history' => [],
+			'hiddenTypes' => array(670)]);
+    }
+	
+	/**
+     * @Route("/srp/history", name="ajax_srp_history")
+     */
+    public function ajax_GetSRPHistory()
+    {
+		$history = $this->getDoctrine()
+					->getManager('default')
+					->getRepository('AppBundle:TransactionEntity', 'default')
+					->findAllByUserTypesAndExcludeStatus($this->getUser(), ['SRP']);
+
+		
+        return $this->render('srp/history.html.twig', array('history' => $history));
+    }
+	
+	/**
+     * @Route("/srp/accept", name="ajax_accept_srp")
+     */
+    public function ajax_AcceptAction(Request $request)
+    {
+        // Get our list of Items
+        $order_id = $request->request->get('orderId');
+
+        // Pull data from DB
+        $em = $this->getDoctrine()->getManager('default');
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+
+        //update status
+        $transaction->setStatus("Pending");
+
+        $em->flush();
+
+        $share_value = 0;
+
+        return $this->render('srp/accepted.html.twig', [
+			'srpOffered' => $transaction->getNet(),
+			'transaction' => $transaction,
+			'shares' => 0,
+			'share_value' => 0]);
+    }
+
+    /**
+     * @Route("/srp/decline", name="ajax_decline_srp")
+     */
+    public function ajax_DeclineAction(Request $request)
+    {
+        // Get our list of Items
+        $order_id = $request->request->get('orderId');
+
+        // Pull data from DB
+        $em = $this->getDoctrine()->getManager('default');
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+
+        //delete transaction
+        $em->remove($transaction);
+
+        $em->flush();
+
+        return new Response();
+    }
+
+
+}

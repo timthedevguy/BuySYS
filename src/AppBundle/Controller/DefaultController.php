@@ -17,21 +17,25 @@ class DefaultController extends Controller
      * @Route("/", name="homepage")
      */
     public function indexAction(Request $request)
-    {
+    {		
         $bb = new BuyBackModel();
         $form = $this->createForm(BuyBackForm::class, $bb);
 
         $form->handleRequest($request);
+		
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllVisibleByUser($this->getUser());
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
-
+		
+        $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['P', 'PS'], "Estimate");
         $salesSummary = new TransactionSummaryModel($oSales);
-
+		
         $oPurchases = array(); //coming soon!
         $purchasesSummary = new TransactionSummaryModel($oPurchases);
-
-        //set preferences
+		
+        $oSRP = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['SRP'], "Estimate");
+        $srpSummary = new TransactionSummaryModel($oSRP);
+		
+		//set preferences
         $preferences = $this->getDoctrine()->getRepository('AppBundle:UserPreferencesEntity', 'default')->findOneBy(array('user' => $this->getUser()));
 
         if($preferences == null) { //user doesn't have preferences yet.  set defaults (and save)
@@ -44,10 +48,19 @@ class DefaultController extends Controller
         }
         $this->get('session')->set('userPreferences', $preferences);
 
-        return $this->render('default/index.html.twig', array(
-            'base_dir' => 'test', 'page_name' => 'Dashboard', 'sub_text' => 'User Dashboard', 'form' => $form->createView(),
-            'oSales' => $oSales, 'salesSummary'=> $salesSummary, 'oPurchases' => $oPurchases, 'purchasesSummary' => $purchasesSummary,
-            'news' => $news, 'eveCentralOK' => $eveCentralOK ));
+        return $this->render('default/index.html.twig', [
+            'base_dir' => 'test',
+			'page_name' => 'Dashboard',
+			'sub_text' => 'User Dashboard',
+			'form' => $form->createView(),
+            'oSales' => $oSales,
+			'salesSummary'=> $salesSummary,
+			'oPurchases' => $oPurchases,
+			'purchasesSummary' => $purchasesSummary,
+			'srpSummary' => $srpSummary,
+			'userCharacterName' => ($this->getUser())->getUsername(),
+            'news' => $news,
+			'eveCentralOK' => $eveCentralOK]);
     }
 
 }

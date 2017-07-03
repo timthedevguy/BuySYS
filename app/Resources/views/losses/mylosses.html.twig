@@ -1,0 +1,58 @@
+							<table class="table table-bordered table-hover" id="zLosses">
+
+                                <thead>
+
+                                <tr>
+								
+									<th class='hidden'>ID</th>
+								
+									<th>Icon</th>
+
+                                    <th>Date</th>
+
+                                    <th>Ship Type</th>
+
+                                    <th>Isk Amount</th>
+
+                                    <th>SRP Status</th>
+
+                                </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                {% for loss in losses %}
+
+									<tr id="kill-{{loss.killID}}">
+
+										<td class='hidden'>{{loss.killID}}</td>
+									
+										<td>
+											<a href="https://zkillboard.com/kill/{{loss.killID}}/" target="_blank">
+												<img src='https://imageserver.eveonline.com/Type/{{loss.victim.shipTypeID}}_64.png' />
+											</a>
+										</td>
+
+										<td>
+											<a href="https://zkillboard.com/kill/{{loss.killID}}/" target="_blank">
+												{{loss.killTime|date("D, M jS")}}<br />@ {{loss.killTime|date("G:s")}}
+											</a>
+										</td>
+
+										<td>{{loss.victim.shipTypeID}}</td>
+
+										<td>{{loss.zkb.totalValue|number_format(0, '.', ',')}}</td>
+										
+										<td>
+											<a class="btn bg-green requestSRP" data-killid="{{loss.killID}}">SRP</a>
+											<a class="btn bg-blue">Order</a>
+										</td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                                </tbody>
+
+                            </table>

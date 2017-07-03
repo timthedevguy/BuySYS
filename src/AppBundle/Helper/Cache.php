@@ -6,16 +6,13 @@ use AppBundle\Helper\Helper;
 /**
  * Handles Cache functions
  */
-class Cache
+class Cache extends Helper
 {
-    private $doctrine;
-    private $helper;
     private $market;
 
-    public function __construct($doctrine, Helper $helper, Market $market)
+    public function __construct($doctrine, Market $market)
     {
         $this->doctrine = $doctrine;
-        $this->helper = $helper;
         $this->market = $market;
     }
 
@@ -62,7 +59,7 @@ class Cache
         //$helper = $this->getContainer()->get('helper');
 
         $eveCentralOK = $this->market->isEveCentralAlive();
-        $this->helper->setSetting("eveCentralOK", $eveCentralOK);
+        $this->setSetting("eveCentralOK", $eveCentralOK);
 
         if($eveCentralOK == true)
         {

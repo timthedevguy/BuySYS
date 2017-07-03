@@ -1,0 +1,2 @@
+CREATE DATABASE `eve_db`;
+CREATE DATABASE `amsys_db`;

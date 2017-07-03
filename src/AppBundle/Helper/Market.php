@@ -154,6 +154,7 @@ class Market extends Helper
         // Get System Settings
         $bb_value_minerals = $this->getSetting("buyback_value_minerals");
         $bb_value_salvage = $this->getSetting("buyback_value_salvage");
+        $bb_tax = $this->getSetting("buyback_default_tax");
         $bb_deny_all = $this->getSetting("buyback_default_buyaction_deny");
 
         // Fancy SQL to get Types, GroupID, MarketID and Refining Skill in one go
@@ -473,24 +474,19 @@ class Market extends Helper
     public function getEveCentralDataForTypes(array $typeIds, string $fromSystemId)
     {
         $results = array();
+		
+		if(count($typeIds) == 1 && is_array($typeIds[0]))
+			$typeIds = $typeIds[0];
 
         if(count($typeIds) > 0)
         {
+			
+			$chunks = array_chunk($typeIds, 20);
             // Lookup in batches of 20
-            for($i = 0; $i < count($typeIds); $i += 20)
-            {
-                $limit = $i+20;
-                if($limit > count($typeIds)) {$limit = count($typeIds);}
-
-                $lookup = array();
-
-                for($j = $i; $j < $limit; $j++)
-                {
-                    $lookup[] = $typeIds[$j];
-                }
+            foreach($chunks as $chunk) {
 
                 // Build EveCentral Query string
-                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode("&typeid=", $lookup) . "&usesystem=" . $fromSystemId;
+                $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode(",", $chunk) . "&usesystem=" . $fromSystemId;
 
                 // Query EveCentral and grab results
                 $json = file_get_contents($queryString);

@@ -103,8 +103,11 @@
         , "html");
 
         {% set preferences = app.session.get('userPreferences') %}
-        var selectedTheme = '{{ preferences.displayTheme }}';
-        $('input[name=themeRadios][value=' + selectedTheme + ']').prop('checked',true)
+		{% if preferences is defined and preferences.displayTheme is defined %}
+			var selectedTheme = '{{ preferences.displayTheme }}';
+			if(selectedTheme && selectedTheme.length > 1)
+				$('input[name=themeRadios][value=' + selectedTheme + ']').prop('checked',true)
+		{% endif %}
     });
 
 
