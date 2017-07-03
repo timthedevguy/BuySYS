@@ -207,7 +207,7 @@
     function validateContract() {
         $('#auto_verify_results').html('<div class="modal-loading"><i class="fa fa-refresh fa-spin"></i></div>');
         //ajax form
-        var $formInput = $('#buy_back_form_items').val();
+        var $formInput = $('#alliance_market_form_items').val();
         var $orderId = $('#orderId').val();
         console.log($formInput);
         $.post('{{ path('ajax_validate_transaction') }}', {formInput: $formInput, orderId: $orderId},
@@ -218,7 +218,7 @@
             , "html");
 
         //clear form
-        $('#buy_back_form_items').val('');
+        $('#alliance_market_form_items').val('');
     }
 
     function processValidationResponse(response) {

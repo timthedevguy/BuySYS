@@ -137,7 +137,7 @@ class TransactionsController extends Controller
      */
     public function ajax_ValidateTransaction(Request $request)
     {
-
+        dump($request);
         // Get list of items from stored transaction
         $orderId = $request->request->get('orderId');
         $pasteData = $request->request->get('formInput');

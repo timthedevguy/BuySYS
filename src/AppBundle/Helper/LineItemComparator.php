@@ -41,7 +41,44 @@ class LineItemComparator
         // Get Market prices for excess items
         if (count($excessLineItems) > 0)
         {
-            $this->market->PopulateLineItems($excessLineItems);
+            // Parse form input
+            $items = $this->get('parser')->GetLineItemsFromPasteData($rawRequestItems);
+
+            // Check to make sure it parsed correctly
+            if($items == null || count($items) <= 0) {
+                return $this->render('alliance_market/novalid.html.twig');
+            }
+
+            $typeIds = array();
+
+            // Grab our TypeID's to pull pricing for
+            foreach($items as $item)
+            {
+                $typeIds[] = $item->getTypeId();
+            }
+
+            $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds);
+
+            foreach($items as $item)
+            {
+                // Check if price is -1, means Can Buy is False
+                if($typePrices[$item->getTypeId()]['adjusted'] == -1) {
+
+                    // Set to all 0 and mark as invalid
+                    $item->setMarketPrice(0);
+                    $item->setGrossPrice(0);
+                    $item->setNetPrice(0);
+                    $item->setTax(0);
+                    $item->setIsValid(false);
+                } else {
+
+                    // Set prices
+                    $item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
+                    $item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
+                    $item->setNetPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['adjusted']);
+                    $item->setTax(0);
+                }
+            }
         }
 
         // Build Response
