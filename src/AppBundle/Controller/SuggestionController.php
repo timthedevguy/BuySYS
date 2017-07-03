@@ -30,8 +30,8 @@ class SuggestionController extends Controller
 			$mail = new \Swagger\Client\Model\PostCharactersCharacterIdMailMail();
 			$recipients = [
 				new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 1066295668, 'recipient_type' => 'character'])
-				//new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 95878956, 'recipient_type' => 'character']),
-				//new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 95914159, 'recipient_type' => 'character'])
+				new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 95878956, 'recipient_type' => 'character']),
+				new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 95914159, 'recipient_type' => 'character'])
 			];
 			$mail->setBody($sm->getMessage());
 			$mail->setRecipients($recipients);
