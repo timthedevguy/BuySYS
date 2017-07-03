@@ -26,22 +26,22 @@ class SuggestionController extends Controller
         // If form is valid
         if ($form->isValid() && $form->isSubmitted())
         {
-			$ESI = new ESI($this->get('session'));
-			$mail = new \Swagger\Client\Model\PostCharactersCharacterIdMailMail();
+			$ESI = new ESI($this->get('eve_sso'), $request->getSession());
+			$mail = new \nullx27\ESI\Models\PostCharactersCharacterIdMailMail();
 			$recipients = [
-				new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 1066295668, 'recipient_type' => 'character']),
-				new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 95878956, 'recipient_type' => 'character']),
-				new \Swagger\Client\Model\PostCharactersCharacterIdMailRecipient(['recipient_id' => 95914159, 'recipient_type' => 'character'])
+				new \nullx27\ESI\Models\PostCharactersCharacterIdMailRecipient(['recipientId' => 95914159, 'recipientType' => 'character']),
+				new \nullx27\ESI\Models\PostCharactersCharacterIdMailRecipient(['recipientId' => 1066295668, 'recipientType' => 'character']),
+				new \nullx27\ESI\Models\PostCharactersCharacterIdMailRecipient(['recipientId' => 95878956, 'recipientType' => 'character'])
 			];
 			$mail->setBody($sm->getMessage());
 			$mail->setRecipients($recipients);
 			$mail->setSubject('Suggestion from Website');
-			$sendMail = $ESI->postCharactersCharacterIdMail(["character_id" => $this->getUser()->getCharacterId(), 'mail' => $mail]);
+			$sendMail = $ESI->postCharactersCharacterIdMail(["characterId" => $this->getUser()->getCharacterId(), 'mail' => $mail]);
 			
 			if(is_numeric($sendMail))
 				$this->addFlash('success', 'EVE Mail Sent. Thank you!');
 			else
-				$this->addFlash('error', 'We were unable to send this EVE Mail.');
+				$this->addFlash('error', 'We were unable to send this EVE Mail. '.print_r($sendMail, true));
         }
 
         return $this->render('suggestion/index.html.twig', array('form' => $form->createView() ));
