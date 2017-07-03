@@ -33,25 +33,29 @@ security:
         - {path: ^/sso, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/devlogin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/guest/suggestion, roles: ROLE_USER }
-        - {path: ^/pages, roles: ROLE_USER }
+        - {path: ^/pages, roles: ROLE_MEMBER }
         - {path: ^/srp, roles: ROLE_MEMBER }
         - {path: ^/admin/buy, roles: ROLE_ADMIN }
         - {path: ^/admin/sell, roles: ROLE_ADMIN }
-        - {path: ^/admin/srp, roles: ROLE_SRP_ADMIN }
+        - {path: ^/admin/srp, roles: ROLE_ADMIN }
         - {path: ^/system/admin, roles: ROLE_SYSTEM_ADMIN }
         - {path: ^/, roles: [ROLE_USER, IS_AUTHENTICATED_REMEMBERED] }
 
     role_hierarchy:
-        ROLE_SYSTEM_ADMIN: [ROLE_TRANSACTION_ADMIN, ROLE_EDITOR]
+        ROLE_SYSTEM_ADMIN: ROLE_TRANSACTION_ADMIN
         ROLE_TRANSACTION_ADMIN: [ROLE_BUY_ADMIN, ROLE_SELL_ADMIN, ROLE_SRP_ADMIN]
         ROLE_BUY_ADMIN: ROLE_ADMIN
         ROLE_SELL_ADMIN: ROLE_ADMIN
         ROLE_SRP_ADMIN: ROLE_ADMIN
-        ROLE_ADMIN: ROLE_MEMBER
+        ROLE_ADMIN: ROLE_EDITOR
         ROLE_EDITOR: ROLE_MEMBER
         ROLE_MEMBER: ROLE_USER
         ROLE_ALLY: ROLE_USER
+        ROLE_FRIEND: ROLE_USER
         ROLE_GUEST: ROLE_USER
+        ROLE_OTHER1: ROLE_USER
+        ROLE_OTHER2: ROLE_USER
+        ROLE_OTHER3: ROLE_USER
 
     encoders:
         AppBundle\Entity\UserEntity:
