@@ -340,7 +340,7 @@ class SRPController extends Controller
 		$last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesAndOrderedByDate(['SRP'], 500);
         $last500Summary = new TransactionSummaryModel($last500Transactions);
 
-        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['SRP']);
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findTransactionTotalsByTypesAndStatus(['SRP'], "Complete");
 
         return $this->render('srp/admin.html.twig', array(
             'page_name' => 'SRP Queue', 'sub_text' => 'Requests', 'last500Transactions' => $last500Transactions,

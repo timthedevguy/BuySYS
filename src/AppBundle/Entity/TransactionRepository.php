@@ -6,29 +6,7 @@ use Doctrine\ORM\EntityRepository;
 class TransactionRepository extends EntityRepository {
 	
 	private $types = ["P", "PS", "S", "SRP"];
-	
-	/* REPLACE */
-    public function countOpenTransactionsByTypes($types = null) {
-		
-		return $this->findCountByTypes($types);
-		
-    }
-	public function findAcceptedTransactionTotalsByTypes($types = null) {
-		
-		return $this->findTransactionTotalsByTypesAndStatus($types, "Complete");
-		
-    }
-	public function findAllVisibleByUser($user) {
-		
-        return $this->findAllByUserTypesAndExcludeStatus($user);
-		
-    }
-	public function findValidTransactionsByTypesOrderedByDate($types = null, $limit = 5000) {
-		
-		return $this->findTotalsByTypesAndExcludeStatus($types, $excludeStatus = "Estimate", $limit);
-		
-	}
-	/* END REPLACE */
+
 	
 	/* All */
     public function findAll() {
@@ -51,8 +29,7 @@ class TransactionRepository extends EntityRepository {
 	/* Types */
     public function findAllByTypes($types = null) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -62,8 +39,7 @@ class TransactionRepository extends EntityRepository {
 	
     public function findCountByTypes($types = null) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -75,8 +51,7 @@ class TransactionRepository extends EntityRepository {
 	/* Types And Statuses */
 	public function findAllByTypesAndStatus($types = null, $status = "Pending") {
 
-		if(empty($types))
-			$types = $this->types;
+		if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -86,8 +61,7 @@ class TransactionRepository extends EntityRepository {
 	
 	public function findCountByTypesAndStatus($types = null, $status = "Pending") {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -100,8 +74,7 @@ class TransactionRepository extends EntityRepository {
     /* Statistics */
     public function findTransactionTotalsByTypesAndStatus($types = null, $status = "Pending") {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 
         return $this->getEntityManager()
             ->createQuery(
@@ -111,15 +84,13 @@ class TransactionRepository extends EntityRepository {
     }
 	public function findCountByUser($user, $types = null) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->findCountByUserAndTypes($user);
     }
 	public function findTotalsByTypesAndStatus($types = null, $status = "Pending", $limit = 5000) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 
         return $this->getEntityManager()
             ->createQuery(
@@ -128,8 +99,7 @@ class TransactionRepository extends EntityRepository {
     }
 	public function findTotalsByTypesAndExcludeStatus($types = null, $excludeStatus = "Pending", $limit = 5000) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 
         return $this->getEntityManager()
             ->createQuery(
@@ -141,8 +111,7 @@ class TransactionRepository extends EntityRepository {
 	/* User and Types */
     public function findAllByUserAndTypes($user, $types = null) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -152,8 +121,7 @@ class TransactionRepository extends EntityRepository {
 
     public function findCountByUserAndTypes($user, $types = null) {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -165,8 +133,7 @@ class TransactionRepository extends EntityRepository {
 	/* User, Types And Status */
     public function findAllByUserTypesAndStatus($user, $types = null, $status = "Pending") {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -176,8 +143,7 @@ class TransactionRepository extends EntityRepository {
 
     public function findCountByUserTypesAndStatus($user, $types = null, $status = "Pending") {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -189,8 +155,7 @@ class TransactionRepository extends EntityRepository {
 	/* User, Types And Exclude Status */
     public function findAllByUserTypesAndExcludeStatus($user, $types = null, $status = "Estimate") {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
@@ -200,8 +165,7 @@ class TransactionRepository extends EntityRepository {
 
     public function findCountByUserTypesAndExcludeStatus($user, $types = null, $status = "Estimate") {
 
-		if(empty($types))
-			$types = $this->types;
+        if(empty($types)) {$types = $this->types;}
 		
         return $this->getEntityManager()
             ->createQuery(
