@@ -11,3 +11,4 @@
 /web/bundles/
 .idea/
 composer.lock
+*.bak

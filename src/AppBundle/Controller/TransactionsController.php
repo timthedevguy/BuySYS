@@ -16,21 +16,60 @@ use AppBundle\Entity\TranactionEntity;
 class TransactionsController extends Controller
 {
     /**
-     * @Route("/admin/buy/transactions", name="admin_transactions")
+     * @Route("/admin/sellorder/transactions", name="admin_sell_order_transactions")
      */
-    public function indexAction(Request $request)
+    public function sellOrderAction(Request $request)
     {
 
-        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesAndOrderedByDate(['P', 'PS', 'S'], 500);
+        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array('P'), 500);
         $last500Summary = new TransactionSummaryModel($last500Transactions);
 
-        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotals(['P', 'PS', 'S']);
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['P', 'PS', 'S']);
 
         return $this->render('transaction/index.html.twig', array(
-            'page_name' => 'Contract Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
+            'page_name' => 'Sell Order Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
             'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
         ));
     }
+
+
+    /**
+     * @Route("/admin/buyorder/transactions", name="admin_buy_order_transactions")
+     */
+    public function buyOrderAction(Request $request)
+    {
+
+        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array('S'), 500);
+        $last500Summary = new TransactionSummaryModel($last500Transactions);
+
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['S']);
+
+
+        return $this->render('transaction/index.html.twig', array(
+            'page_name' => 'Buy Order Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
+            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
+        ));
+    }
+
+
+    /**
+     * @Route("/admin/srp/transactions", name="admin_srp_transactions")
+     */
+    public function srpAction(Request $request)
+    {
+
+        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array('SRP'), 500);
+        $last500Summary = new TransactionSummaryModel($last500Transactions);
+
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['SRP']);
+
+
+        return $this->render('transaction/index.html.twig', array(
+            'page_name' => 'SRP Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
+            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
+        ));
+    }
+
 
     /**
      * @Route("/admin/transaction/process", name="ajax_process_transaction")
@@ -171,13 +210,14 @@ class TransactionsController extends Controller
      */
     public function ajax_getTransactionBadges(Request $request) {
 
-        $purchaseQueueBadge = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findCountByTypesAndStatus(['P'], 'Pending');
-        $SRPQueueBadge = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findCountByTypesAndStatus(['SRP'], 'Pending');
+        $purchaseQueueBadge = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->countOpenTransactionsByTypes(array('P'));
+        $salesQueueBadge = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->countOpenTransactionsByTypes(array('S'));
+        $srpQueueBadge = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->countOpenTransactionsByTypes(array('SRP'));
 
-        return new JsonResponse([
-			'purchaseQueueBadge' => $purchaseQueueBadge,
-			'SRPQueueBadge' => $SRPQueueBadge
-		]);
+        return new JsonResponse(array(
+            'purchaseQueueBadge' => (int) $purchaseQueueBadge,
+            'salesQueueBadge' => (int) $salesQueueBadge,
+            'SRPQueueBadge' => (int) $srpQueueBadge));
     }
 
 }
