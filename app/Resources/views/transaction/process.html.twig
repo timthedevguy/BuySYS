@@ -1,3 +1,25 @@
+
+{% if transactionType == 'P' %}
+    {% set requiresValidation = true %}
+    {% set instructions =
+            '<p>This transaction requires a contract be accepted from a player. If no contract is present then DO NOT PAY THEM!</p>
+             <p>You may verify the cotract items by pasting its contents below or by manually comparing the contract to a list.</p>'
+    %}
+{% elseif transactionType == 'S' %}
+    {% set requiresValidation = true %}
+    {% set instructions =
+            '<p>This transaction requires a contract made to the player. Be sure to include the cost in the contract!</p>
+             <p>You may verify the cotract items by pasting its contents below or by manually comparing the contract to a list.</p>'
+    %}
+{% elseif transactionType == 'SRP' %}
+    {% set requiresValidation = false %}
+    {% set instructions =
+            '<p>This transaction requires a payment made to the player. If this is not a valid SRP request then DO NOT PAY THEM!</p>
+             <p>You may validate the request by [...] .</p>'
+    %}
+{% endif %}
+
+
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h4 class="modal-title">Processing Transaction</h4>
@@ -6,12 +28,17 @@
 <div class="modal-body" >
     <div class="buyback-results-container">
         <div>
-            {% if transaction.type == "P" or transaction.type == "PS" %}
+            {% if requiresValidation %}
                 <div class="col-md-12" style="text-align: center">
-                    <p>This transaction requires a contract be accepted from a player. If no contract is present then DO NOT PAY THEM!</p>
-                    <p>You may verify the contract by pasting its contents below or by manually comparing the contract to a list.</p>
+            {% else %}
+                <div class="col-md-12" style="text-align: center">
+            {% endif %}
+                    {{ instructions|raw }}
                 </div>
+
+
                 <hr />
+            {% if requiresValidation %}
                 <div class="col-md-6">
                     {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
                     {{ form_start(form) }}
@@ -23,6 +50,8 @@
                         </div>
                     {{ form_end(form) }}
                 </div>
+            {% endif %}
+
                 <div class="col-md-6">
                     <table class="table table-striped">
                         <tr>
@@ -39,7 +68,7 @@
                         </tr>
                         <tr>
                             <th>From:</th>
-                            {% if transaction.user == null %}
+                            {% if transaction.user == null %} <!-- no more guests. This is here for legacy apps-->
                                 <td>Guest</td>
                             {% else %}
                                 <td>{{ transaction.user.username }}</td>
@@ -53,6 +82,7 @@
                 </div>
                 <br />
 
+            {% if requiresValidation %}
                 <div class="container col-md-12">
                     <ul class="nav nav-tabs">
                         <li class="active">
@@ -89,7 +119,6 @@
                         </div>
                     </div>
                 </div>
-
             {% endif %}
         </div>
     </div>
