@@ -4,96 +4,74 @@
 
     <script type="text/javascript">
 
-
-
-        $(document).ready(function (e) {
-
-
-
+        $(document).ready(function (e)
+        {
             {% if is_granted('ROLE_ADMIN') %}
-
                 setBadging();
-
             {% endif %}
 
-
-
-            $("#search-btn").click(function(e) {
-
-
-
+            $("#search-btn").click(function(e)
+            {
                 doSearch();
-
             });
 
-
-
-            $("#search-input").keydown(function(e) {
-
-
-
-                if(e.keyCode == 13) {
-
-
-
+            $("#search-input").keydown(function(e)
+            {
+                if(e.keyCode == 13)
+                {
                     doSearch();
-
                 }
-
             });
-
         });
 
-
-
-        function doSearch() {
-
-
-
+        function doSearch()
+        {
             $( "#base_modal_content" ).html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
 
             $('#base_modal').modal({backdrop: "static"});
 
-
-
             $.post('{{path('ajax_lookup_price')}}', {id: $("#search-input").val()},
-
                 function(response)
-
                 {
-
                     $( "#base_modal_content" ).html( response );
-
                 }
-
             , "html");
 
-
-
             $("#search-input").val("");
-
         }
 
+        function setBadging()
+        {
+            $.post('{{path('ajax_transaction_badging')}}', function(response)
+            {
+                var jsonResponse = JSON.parse(response);
+                console.log(jsonResponse);
 
-
-        function setBadging() {
-
-            $.post('{{path('ajax_transaction_badging')}}', function(response) {
-
-
-
-                    var jsonResponse = JSON.parse(response);
-
-
-
-                    updatePurchaseQueueBadge(typeof(jsonResponse.purchaseQueueBadge) == 'number' ? jsonResponse.purchaseQueueBadge : 0);
-
-                    updateSRPQueueBadge(typeof(jsonResponse.SRPQueueBadge) == 'number' ? jsonResponse.SRPQueueBadge : 0);
-
-
+                updateQueueBadge($( "#purchaseQueueBadge" ), typeof(jsonResponse.purchaseQueueBadge) == 'number' ? jsonResponse.purchaseQueueBadge : 0);
+                updateQueueBadge($( "#salesQueueBadge" ), typeof(jsonResponse.salesQueueBadge) == 'number' ? jsonResponse.salesQueueBadge : 0);
+                updateQueueBadge($( "#SRPQueueBadge" ), typeof(jsonResponse.SRPQueueBadge) == 'number' ? jsonResponse.SRPQueueBadge : 0);
 
 			} , "html");
+        }
 
+        function updateQueueBadge(element, addedValue)
+        {
+            console.log(addedValue);
+            var oldVal = element.html();
+            if (oldVal === "")
+            {
+                oldVal = 0;
+            }
+
+            var newVal = parseInt(oldVal) + parseInt(addedValue);
+            if (newVal <= 0)
+            {
+                element.html("");
+            }
+            else
+            {
+                element.html(numberToString(newVal));
+            }
         }
 
     </script>
@@ -250,8 +228,8 @@
 
 			<li class="header">SHIP REPLACEMENT</li>
 
-			<li class="{{(page_name == "SRP Tools" ? 'active' : '')}}"><a href="{{ path('srp') }}"><i class="fa fa-money"></i> <span>SRP Tools</span></a></li>
-			<li class="{{(page_name == "My Recent Losses" ? 'active' : '')}}"><a href="{{ path('losses') }}"><i class="fa fa-money"></i> <span>My Recent Losses</span></a></li>
+			<li class="{{(page_name == "SRP Tools" ? 'active' : '')}}"><a href="{{ path('srp') }}"><i class="fa fa-grav"></i> <span>SRP Tools</span></a></li>
+			<li class="{{(page_name == "My Recent Losses" ? 'active' : '')}}"><a href="{{ path('losses') }}"><i class="fa fa-free-code-camp "></i> <span>My Recent Losses</span></a></li>
 
             <li class='header'>MEMBER</li>
 
@@ -269,10 +247,31 @@
 
 				{% if is_granted('ROLE_BUY_ADMIN') %}
 
-				<li class="{{(page_name == "Contract Queue" ? 'active' : '')}}"><a href="{{ path('admin_transactions') }}"><i class="fa fa-exchange"></i> <span>Corp Purchase Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
+				    <li class="{{(page_name == "Sell Order Queue" ? 'active' : '')}}"><a href="{{ path('admin_sell_order_transactions') }}">
+                    <i class="fa fa-cubes"></i>
+                    <i class="fa fa-exchange"></i>
+                    <i class="fa fa-money"></i>
+                    <span>Sell Order Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
 
 				{% endif %}
+                {% if is_granted('ROLE_SELL_ADMIN') %}
 
+                    <li class="{{(page_name == "Buy Order Queue" ? 'active' : '')}}"><a href="{{ path('admin_buy_order_transactions') }}">
+                    <i class="fa fa-credit-card"></i>
+                    <i class="fa fa-exchange"></i>
+                    <i class="fa fa-cubes"></i>
+                    <span>Buy Order Queue</span> <span class="badge bg-green" id="salesQueueBadge"></span></a></li>
+
+                {% endif %}
+            {% if is_granted('ROLE_SRP_ADMIN') %}
+
+                <li class="{{(page_name == "SRP Queue" ? 'active' : '')}}"><a href="{{ path('admin_srp_transactions') }}">
+                <i class="fa fa-grav"></i>
+                <i class="fa fa-exchange"></i>
+                <i class="fa fa-money"></i>
+                <span>SRP Queue</span> <span class="badge bg-green" id="SRPQueueBadge"></span></a></li>
+
+            {% endif %}
 
 
 				{% if is_granted('ROLE_SYSTEM_ADMIN') %}

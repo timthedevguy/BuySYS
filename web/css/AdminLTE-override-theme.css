@@ -537,8 +537,7 @@ a:focus {
 }
 .sidebar-menu > li .label,
 .sidebar-menu > li .badge {
-  margin-top: 3px;
-  margin-right: 5px;
+  float: right;
 }
 .sidebar-menu li.header {
   padding: 10px 25px 10px 15px;
