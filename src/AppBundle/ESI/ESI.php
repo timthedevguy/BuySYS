@@ -3,15 +3,16 @@ namespace AppBundle\ESI;
 
 use GuzzleHttp\Client;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Swagger\Client\Api;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use nullx27\ESI\Api;
 
 /*
  * Magic function accepts anything called and maps it to API_NAMESPACES, which I hardcoded for convenience.
  * Follow the ESI documentation for the endpoints to send the right data. Headers are done for you.
  *
- * Usage:
- * $ESI = new ESI($this->get('session'));
- * $walletSummary = $ESI->getCharactersCharacterIdWallets(["character_id" => $this->getUser()->getCharacterId()]);
+ * Usage via Controller:
+ * $ESI = new ESI($this->get('eve_sso'), $request->getSession());
+ * $walletSummary = $ESI->getCharactersCharacterIdWallets(["characterId" => $this->getUser()->getCharacterId()]);
  * $walletSummary[0]['balance']
  */
 
@@ -24,14 +25,29 @@ class ESI
 	const API_NAMESPACES = [
 		"AllianceAPI" => ["getAlliances", "getAlliancesAllianceId"],
 		"WalletApi" => ["getCharactersCharacterIdWallets"],
-		"KillmailsApi" => ["getCharactersCharacterIdKillmailsRecent"]
+		"KillmailsApi" => ["getCharactersCharacterIdKillmailsRecent"],
+		"MailApi" => ["postCharactersCharacterIdMail"]
 	];
 	
 	protected $session;
 
-    public function __construct(Session $session)
+    public function __construct(\EveBundle\API\SSO $eveSSO, Session $session)
     {
         $this->session = $session;
+		
+		if(strtotime($session->get("esi_access_expire")) <= time()+10) {
+			
+			$refreshToken = $eveSSO->updateWithRefreshToken($session->get("esi_refresh_token"));
+			
+			$accessTokenValue = $refreshToken->getAccessTokenValue();
+			$accessTokenExpire = $refreshToken->getExpiry();
+			$refreshTokenValue = $refreshToken->getRefreshToken();
+			
+			$session->set("esi_access_token", $accessTokenValue);
+			$session->set("esi_access_expire", $accessTokenExpire);
+			$session->set("esi_refresh_token", $refreshTokenValue);
+			
+		}
     }
 	
 	public function __call($method, $arguments)
@@ -51,7 +67,7 @@ class ESI
 			return ["Error" => "Unknown method '".$method."'..."];
 		}
 		
-		$class = "Swagger\\Client\\Api\\".$found;
+		$class = "nullx27\\ESI\\Api\\".$found;
 		$api_instance = new $class();
 		
 		try {
@@ -74,14 +90,17 @@ class ESI
 					$apiParamProvided = $this->session->get("esi_access_token");
 				}
 				
+				if($apiParamName == "user_agent") {
+					$apiParamProvided = "AmSYS";
+				}
+				
 				if(!$apiParamOptional && $apiParamProvided === null) {
 					$api_requirements_met = $apiParamName;
 					break;
 				}
 				
 				$api_params[$param->getName()] = $apiParamProvided;
-			}
-			
+			}			
 			
 			if($api_requirements_met !== true) {
 				if(gettype($api_requirements_met) == "boolean") {
@@ -92,11 +111,17 @@ class ESI
 				}
 			}
 			
+			$result = null;
 			try {
 				$result = call_user_func_array(array($api_instance, $method), $api_params);
 				return $result;
-			} catch (\Exception $e) {
-				return ["Error" => "Error when calling ".$method.": ".$e->getMessage()];
+			}
+			catch(\nullx27\ESI\ApiException $e) {
+				return ["Error" => "Error when calling ".$method.": ".$e->getMessage(), "headers" => $e->getResponseHeaders (), "body" => $e->getResponseBody()];
+			}
+			catch(Exception $e) {
+				return ["Error" => "Error when calling ".$method.": ".$e->getMessage(), "type" => gettype($e)];
+				
 			}
 		}
 		catch (Exception $e) {

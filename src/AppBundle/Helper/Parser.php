@@ -21,25 +21,30 @@ class Parser extends Helper
         // Check first entry to determine parser type
         $item = explode("\t", $rawInputArray[0]); // Split by TAB
 
-        $oParser = ParserUtils::getParserForItem($item);
+        $oParser = ParserUtils::getParserForItem($raw, $item);
 
         // Loop through results and apply parser
         foreach($rawInputArray as $line)
         {
             $line = trim($line);
             $lineItem = $oParser->parseLine($line, $types);
-
-            if($lineItem->getTypeId() == 0) //parser failed - try hueristic
+			
+            if(!$lineItem || method_exists($lineItem, 'getTypeId') === false || $lineItem->getTypeId() == 0) //parser failed - try hueristic
             {
-                $lineItem = ParserUtils::getParserForItem($lineItem)->parseLine($line, $types);
+                //$lineItem = ParserUtils::getParserForItem($lineItem)->parseLine($line, $types);
             }
 
             $results[] = $lineItem;
         }
+		
+		$fixedResults = [];
+		foreach($results as $result)
+			if($result && method_exists($result, 'getTypeId'))
+				$fixedResults []= $result;
 
 
         // Return results
-        return $results;
+        return $fixedResults;
     }
 
 }
@@ -63,13 +68,20 @@ class ParserUtils
         return $rawNumber;
     }
 
-    public static function getParserForItem($item)
+    public static function getParserForItem($raw, $item)
     {
         $oParser = new HueristicParser(); //default to hueristic
 
-        if(count($item) > 1) // If tabs, likely copy/pasted from game
+		if(preg_match('%^\[(.+),(.+)\]%U', $raw))
+		{
+            $oParser = new EFTInputParser();
+		}
+		elseif(preg_match('%([1-9][0-9]*(;[0-9]*)?:)+:+%U', $raw))
+		{
+			// DNA
+		}
+        elseif(count($item) > 1) // If tabs, likely copy/pasted from game
         {
-
             // Check format of copy/paste and call appropriate parser
             if(count($item) == 3) //Remote View Can in Station
             {
@@ -97,6 +109,8 @@ abstract class TabbedParser implements IParser
 {
     public function parseTabbedLine(&$line, &$itemTypes, $nameIndex, $quantityIndex)
     {
+		if(empty($line)) return false;
+		
         $lineItem = null;
 
         // Split by TAB
@@ -152,7 +166,6 @@ class InventoryParser extends TabbedParser
 
 class RemoteViewCanParser extends TabbedParser
 {
-
     public function parseLine(&$line, &$itemTypes)
     {
         return self::parseTabbedLine($line, $itemTypes, 0, 2);
@@ -196,6 +209,39 @@ class UserInputParser extends TabbedParser
         $formattedLine = trim($formattedLine);
 
         return self::parseTabbedLine($formattedLine, $itemTypes, 1, 0);
+    }
+}
+
+class EFTInputParser extends TabbedParser
+{
+    public function parseLine(&$line, &$itemTypes)
+    {		
+		if(preg_match('%^\[(.+)(,(.+)?)\]$%U', $line, $match)) {
+			$formattedLine = "1\t".trim($match[1]);
+			return self::parseTabbedLine($formattedLine, $itemTypes, 1, 0);
+		}
+		
+		if(!$line) return false; /* Ignore empty lines */
+		if(preg_match('%^\[empty (low|med|high|rig|subsystem) slot\]$%', trim($line))) return false;
+		if(strpos($line, ',') !== false) {
+			list($module, $charge) = explode(',', $line, 2);
+			$module = trim($module);
+			$charge = trim($charge);
+		} else {
+			$module = $line; /* Already trimmed */
+			$charge = false;
+		}
+
+		if(preg_match('%^(.+)(\s+)x([0-9]+)$%U', $module, $match)) {
+			$module = $match[1];
+			$qty = (int)$match[3];
+			if(!$qty) return false; /* Foobar x0 ?! */
+		} else {
+			$qty = 1;
+		}
+		
+		$formattedLine = $qty."\t".trim($module);
+		return self::parseTabbedLine($formattedLine, $itemTypes, 1, 0);
     }
 }
 

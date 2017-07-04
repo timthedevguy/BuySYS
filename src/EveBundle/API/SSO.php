@@ -75,6 +75,48 @@ class SSO
     }
 
 
+    public function updateWithRefreshToken($refreshToken)
+    {
+        $ssoToken = new SSOToken();
+
+        try
+        {
+            $client = new Client([
+                'base_uri' => self::$SSO_LOGIN_URI,
+                'timeout' => self::$defaultTimeout,
+                'headers' => [
+                    'Authorization' => $this->basicAuthHeader,
+                    'Content-Type' => 'application/x-www-form-urlencoded'
+                ]
+            ]);
+
+            // Create our Response Object to get Access Token
+            $response = $client->post('/oauth/token', [
+                'query' => [
+                    'grant_type' => 'refresh_token',
+                    'refresh_token' => $refreshToken
+                ]
+            ]);
+
+            // Decode the response body to JSON
+            $responseJson = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+
+            $ssoToken
+                ->setAccessTokenValue(array_key_exists('access_token', $responseJson) ? $responseJson['access_token'] : null)
+                ->setExpiry(array_key_exists('expires_in', $responseJson) ? date("m/d/Y h:i:s a", time() + $responseJson['expires_in']) : null)
+                ->setTokenType(array_key_exists('token_type', $responseJson) ? $responseJson['token_type'] : null)
+                ->setRefreshToken(array_key_exists('refresh_token', $responseJson) ? $responseJson['refresh_token'] : null);
+
+        }
+        catch (Exception $e)
+        {
+            throw $e;
+        }
+
+        return $ssoToken;
+    }
+
+
     public function getSSOCharacterToken($accessTokenValue)
     {
         $characterToken = new CharacterToken();
