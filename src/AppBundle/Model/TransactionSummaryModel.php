@@ -28,24 +28,24 @@ class TransactionSummaryModel {
     public function __construct(&$transactions)
     {
         //loop through provided transactions
-        foreach ($transactions as $elementKey => $transaction) {
+        foreach ($transactions as $elementKey => $transaction)
+        {
 
-            if($transaction->getStatus() == "Complete") { //set accepted values
+            if($transaction->getStatus() == "Complete")
+            { //set accepted values
                 $this->totalTransactionAccepted++;
 
-                if ($transaction->getType() == "P" || $transaction->getType() == "PS" ) {
-                    $this->totalGrossAccepted += $transaction->getGross();
-                    $this->totalNetAccepted += $transaction->getNet();
-                }
-            } elseif ($transaction->getStatus() == "Pending") { //set pending values
+                $this->totalGrossAccepted += $transaction->getGross();
+                $this->totalNetAccepted += $transaction->getNet();
+            }
+            elseif ($transaction->getStatus() == "Pending")
+            { //set pending values
                 $this->totalTransactionPending++;
 
-                if (in_array($transaction->getType(), ["P", "PS", "SRP"])) {
-                    $this->totalGrossPending += $transaction->getGross();
-                    $this->totalNetPending += $transaction->getNet();
-                }
+                $this->totalGrossPending += $transaction->getGross();
+                $this->totalNetPending += $transaction->getNet();
             }
-            //ignore Pending or Declined transactions
+            //ignore Estimates and Declined transactions
         }
 
         //set profits as difference between gross and net
