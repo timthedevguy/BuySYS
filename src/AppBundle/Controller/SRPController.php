@@ -142,7 +142,7 @@ class SRPController extends Controller
 		///build transaction
         $transaction = new TransactionEntity();
         $transaction->setUser($this->getUser());
-        $transaction->setType("P"); //will reset to PS if accepted with shares
+        $transaction->setType("SRP"); //will reset to PS if accepted with shares
         $transaction->setIsComplete(false);
         $transaction->setOrderId($transaction->getType() . uniqid());
         $transaction->setGross(0);
@@ -336,14 +336,16 @@ class SRPController extends Controller
      * @Route("/srp/admin", name="srp_admin")
      */
     public function adminAction(Request $request)
-    {	
-        return $this->render('srp/srp.html.twig', [
-            'base_dir' => 'test',
-			'page_name' => 'SRP Approval Queue',
-			'sub_text' => 'Accept or Deny SRP Requests',
-			'userCharacterName' => $this->getUser()->getUsername(),
-			'history' => [],
-			'hiddenTypes' => array(670)]);
+    {
+		$last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesAndOrderedByDate(['SRP'], 500);
+        $last500Summary = new TransactionSummaryModel($last500Transactions);
+
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['SRP']);
+
+        return $this->render('srp/admin.html.twig', array(
+            'page_name' => 'SRP Queue', 'sub_text' => 'Requests', 'last500Transactions' => $last500Transactions,
+            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
+        ));
     }
 	
 	/**
