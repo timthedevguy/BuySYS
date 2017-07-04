@@ -20,56 +20,37 @@ class TransactionsController extends Controller
      */
     public function sellOrderAction(Request $request)
     {
-
-        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array('P'), 500);
-        $last500Summary = new TransactionSummaryModel($last500Transactions);
-
-        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['P', 'PS', 'S']);
-
-        return $this->render('transaction/index.html.twig', array(
-            'page_name' => 'Sell Order Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
-            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
-        ));
+        return $this->action('P', 'Sell Order Queue');
     }
-
 
     /**
      * @Route("/admin/buyorder/transactions", name="admin_buy_order_transactions")
      */
     public function buyOrderAction(Request $request)
     {
-
-        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array('S'), 500);
-        $last500Summary = new TransactionSummaryModel($last500Transactions);
-
-        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['S']);
-
-
-        return $this->render('transaction/index.html.twig', array(
-            'page_name' => 'Buy Order Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
-            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
-        ));
+        return $this->action('S', 'Buy Order Queue');
     }
-
 
     /**
      * @Route("/admin/srp/transactions", name="admin_srp_transactions")
      */
     public function srpAction(Request $request)
     {
+        return $this->action('SRP', 'SRP Queue') ;
+    }
 
-        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array('SRP'), 500);
+    private function action(string $typeId, string $pageName = 'Transaction Queue', int $maxResults = 500)
+    {
+        $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array($typeId), $maxResults);
         $last500Summary = new TransactionSummaryModel($last500Transactions);
 
         $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['SRP']);
 
-
         return $this->render('transaction/index.html.twig', array(
-            'page_name' => 'SRP Queue', 'sub_text' => 'Transactions', 'last500Transactions' => $last500Transactions,
-            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary
+            'page_name' => $pageName, 'sub_text' => 'Process Transactions', 'last500Transactions' => $last500Transactions,
+            'last500Summary' => $last500Summary, 'totalSummary' => $totalSummary, 'transactionType' => $typeId
         ));
     }
-
 
     /**
      * @Route("/admin/transaction/process", name="ajax_process_transaction")
@@ -82,15 +63,19 @@ class TransactionsController extends Controller
 
         $form->handleRequest($request);
 
-        // Get Transaction Id
+        // Get Transaction Id / type
         // Get our list of Items
         $order_id = $request->request->get('id');
+        dump($order_id);
 
-        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        $transaction = $transactions->findOneByOrderId($order_id);
+        $transaction = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity')->findOneByOrderId($order_id);
+        dump($transaction);
 
-        $template = $this->render('transaction/process.html.twig', Array ( 'transaction' => $transaction, 'form' => $form->createView()));
-        return $template;
+        return $this->render('transaction/process.html.twig', Array (
+            'transaction' => $transaction,
+            'form' => $form->createView(),
+            'transactionType' => $transaction->getType()
+        ));
     }
 
     /**

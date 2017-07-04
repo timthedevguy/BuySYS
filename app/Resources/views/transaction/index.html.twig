@@ -2,12 +2,35 @@
 
 {% block body %}
 
+    {% if transactionType == 'P' %}
+        {% set headerText = ' Item Purchases (From Members)' %}
+        {% set firstIcon = 'fa-cubes' %}
+        {% set lastIcon = 'fa-money' %}
+        {% set firstMetric = 'PURCHASE COST' %}
+        {% set centerMetric = 'PURCHASE REQUESTS' %}
+        {% set lastMetric = 'PURCHASE PROFIT' %}
+    {% elseif transactionType == 'S' %}
+        {% set headerText = ' Item Sales (To Members)' %}
+        {% set firstIcon = 'fa-credit-card' %}
+        {% set lastIcon = 'fa-cubes' %}
+        {% set firstMetric = 'SALES COST' %}
+        {% set centerMetric = 'SALE REQUESTS' %}
+        {% set lastMetric = 'SALES PROFIT' %}
+    {% elseif transactionType == 'SRP' %}
+        {% set headerText = ' SRP Payouts (To Members)' %}
+        {% set firstIcon = 'fa-grav' %}
+        {% set lastIcon = 'fa-money' %}
+        {% set firstMetric = 'SRP EXPENSE' %}
+        {% set centerMetric = 'SRP REQUESTS' %}
+        {% set lastMetric = 'PROFIT' %}
+    {% endif %}
+
 <div class="row">
     <div class="col-lg-4 col-md-6">
         <div class="info-box">
             <span class="info-box-icon bg-green"><i class="fa fa-credit-card"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Pending Expense</span>
+                <span class="info-box-text">Pending {{ firstMetric }}</span>
                 <span class="info-box-number" id="netPending">{{last500Summary.totalNetPending|number_format(0, '.', ',')}}</span>
                 <span class="text-muted"></span>
             </div><!-- /.info-box-content -->
@@ -17,7 +40,7 @@
         <div class="info-box">
             <span class="info-box-icon bg-green"><i class="fa fa-cart-arrow-down"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Pending Contracts</span>
+                <span class="info-box-text">Pending {{ centerMetric }}</span>
                 <span class="info-box-number" id="transactionPending">{{last500Summary.totalTransactionPending|number_format(0, '.', ',')}}</span>
                 <span class="text-muted"></span>
             </div><!-- /.info-box-content -->
@@ -27,7 +50,7 @@
         <div class="info-box">
             <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Pending Profit</span>
+                <span class="info-box-text">Pending {{ lastMetric }}</span>
                 <span class="info-box-number" id="profitPending">{{last500Summary.totalProfitPending|number_format(0, '.', ',')}}</span>
                 <span class="text-muted"></span>
             </div><!-- /.info-box-content -->
@@ -39,7 +62,12 @@
     <div class="col-md-12">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-balance-scale"></i> Corporation Item Purchases (From Members)</h3>
+                <h3 class="box-title">
+                    <i class="fa {{ firstIcon }}"></i>
+                    <i class="fa fa-exchange"></i>
+                    <i class="fa {{ lastIcon }}"></i>
+                    <span style="margin-left: 7px;">{{ corpTicker }}{{ headerText }}</span>
+                </h3>
             </div><!-- /.box-header -->
             <div class="box-body">
                 <table class="table table-striped data-table" id="transactions-table">
@@ -100,7 +128,7 @@
         <div class="info-box">
             <span class="info-box-icon bg-gray"><i class="fa fa-credit-card"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Total Expense</span>
+                <span class="info-box-text">Total {{ firstMetric }}</span>
                 <span class="info-box-number" id="totalExpense">{{totalSummary.totalNetAccepted|number_format(0, '.', ',')}}</span>
                 <span class="text-muted"></span>
             </div><!-- /.info-box-content -->
@@ -110,7 +138,7 @@
         <div class="info-box">
             <span class="info-box-icon bg-gray"><i class="fa fa-cart-plus"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Total Accepted Contracts</span>
+                <span class="info-box-text">Total Accepted {{ centerMetric }}</span>
                 <span class="info-box-number" id="totalAccepted">{{totalSummary.totalTransactionsAccepted|number_format(0, '.', ',')}}</span>
                 <span class="text-muted"></span>
             </div><!-- /.info-box-content -->
@@ -120,7 +148,7 @@
         <div class="info-box">
             <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">Total Profit</span>
+                <span class="info-box-text">Total {{ lastMetric }}</span>
                 <span class="info-box-number" id="totalProfit">{{(totalSummary.totalGrossAccepted - totalSummary.totalNetAccepted)|number_format(0, '.', ',')}}</span>
                 <span class="text-muted"></span>
             </div><!-- /.info-box-content -->

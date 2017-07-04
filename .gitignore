@@ -12,3 +12,4 @@
 .idea/
 composer.lock
 *.bak
+src/AppBundle/Controller/TransactionsController.php
