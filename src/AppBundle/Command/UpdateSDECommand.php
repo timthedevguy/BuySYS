@@ -135,8 +135,8 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             $bar->finish();
 			
-			$prices = json_decode(file_get_contents("https://crest-tq.eveonline.com/insuranceprices/"), true);
-			if(isset($prices['items'])) {
+			$prices = json_decode(file_get_contents("https://esi.tech.ccp.is/latest/insurance/prices/?datasource=tranquility&language=en-us"), true);
+			if(isset($prices[0]['levels'])) {
 				
 				$database = $this->getContainer()->getParameter('database_name');
 				$database_user = $this->getContainer()->getParameter('database_user');
@@ -147,13 +147,13 @@ class UpdateSDECommand extends ContainerAwareCommand
 				$output->writeln('');
 				$output->writeln('<info>Importing ship insurance values...</info>');
 				
-				$bar = new ProgressBar($output, count($prices['items']));
+				$bar = new ProgressBar($output, count($prices));
 				$bar->start();
 				
 				$queries = [];
-				foreach($prices['items'] as $item) {
-					foreach($item['insurance'] as $level) {
-						$queries []= "(".$item['type']['id'].", '".$level['level']."', ".$level['cost'].", ".$level["payout"].")";
+				foreach($prices as $ship) {
+					foreach($ship['levels'] as $level) {
+						$queries []= "(".$ship['type_id'].", '".$level['name']."', ".$level['cost'].", ".$level["payout"].")";
 					}
 					$bar->advance();
 				}
