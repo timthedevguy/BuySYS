@@ -1,0 +1,259 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <form method="post" action="{{ path('admin_alliance_market_settings') }}">
+                    <div class="box-header with-border">
+                        <!--<h3 class="box-title"><i class="fa fa-balance-scale"></i> Outstanding Material Sales</h3>-->
+                    </div><!-- /.box-header -->
+                    <div class="box-body alt-form-group">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="maintenance_mode_base" class="control-label">Deny All by Default</label>
+                                    <p>If this option is enabled then nothing will be purchased unless specificly allowed in Buyback Rules.</p>
+                                    <p class="text-info">Warning: This can cause some interesting scenarios when enabled.  For instance, when enabled
+                                    and a user attempts to Sell 'Scordite' the system will reject it.  If an admin adds 'Scordite' to the allow
+                                    list (and refining options are on) the system will still reject it due to not being allowed to purchase
+                                    the refined goods.  This option works best when refining is disabled.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                                        <label>
+                                            <input type="checkbox" id="buyback_default_buyaction_deny" data-t="default_buyaction_deny" {{ (settings.buyback_default_buyaction_deny == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="default_buyaction_deny" name="buyback_default_buyaction_deny" value="{{ (settings.buyback_default_buyaction_deny == "1") ? "1" : "0" }}"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">System Id</label>
+                                    <p>System Id to pull prices from.  You can find a list <a target="_blank" href="http://eve-marketdata.com/developers/solarsystems.php">here</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <!--<div class="input-group">-->
+                                        <input class="form-control" type="text" id="source_id" name="buyback_source_id" value="{{ settings.buyback_source_id }}"/>
+                                        <!--<span class="input-group-addon iga-button global-search-button"><i class="fa fa-search" aria-hidden="true"></i></span>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="source_type" class="control-label">Source Type</label>
+                                    <p>Source type will be the type of stat data to use.  For current Eve Central data the choices are 'all', 'buy' and 'sell'.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="text" id="source_type" name="buyback_source_type" value="{{ settings.buyback_source_type }}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="source_stat" class="control-label">Source Statistic</label>
+                                    <p>Source statistic is the stat field to use.  For current Eve Central data the choices are 'avg', 'wavg', 'variance', 'max', 'min', 'stdDev', 'median' and 'fivePercent'.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" type="text" id="source_stat" name="buyback_source_stat" value="{{ settings.buyback_source_stat }}"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label class="control-label">Base Tax Rates</label>
+                                    <p>Base tax rates can be set on a per Role basis.  Not all roles have to be used.  Roles
+                                    can be assigned to contacts by importing your contacts in with an API Key.  Or you can
+                                    assign these roles to Users and Corps/Alliances.</p>
+                                    <p>The role names are arbitrary and have no meaning other than how you assign them
+                                    in the Access Control screens.  You could, for example, set a -10 as a ROLE_ALLY if
+                                    wanted.</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Tax</th>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_MEMBER</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_member_tax" value="{{ settings.buyback_role_member_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_ALLY</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_ally_tax" value="{{ settings.buyback_role_ally_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_FRIEND</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_friend_tax" value="{{ settings.buyback_role_friend_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_OTHER1</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other1_tax" value="{{ settings.buyback_role_other1_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_OTHER2</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other2_tax" value="{{ settings.buyback_role_other2_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ROLE_OTHER3</td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other3_tax" value="{{ settings.buyback_role_other3_tax }}"/>
+                                                    <span class="input-group-addon">%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
+                                    <p>This option will value any item that can be reprocessed by Refining Skill by it's mineral yield at the Refining Rate listed below.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                                        <label>
+                                            <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (settings.buyback_value_minerals == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="value_minerals" name="buyback_value_minerals" value="{{ (settings.buyback_value_minerals == "1") ? "1" : "0" }}"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="maintenance_mode_base" class="control-label">Value Salvage by Minerals</label>
+                                    <p>This option will value any item that can be reprocessed by Salvaging Skill by it's mineral yield at the Refining Rate listed below.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                                        <label>
+                                            <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (settings.buyback_value_salvage == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="value_salvage" name="buyback_value_salvage" value="{{ (settings.buyback_value_salvage == "1") ? "1" : "0" }}"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">Ore Refining Rate</label>
+                                    <p>Lowest rate at which we refine ore at.</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="ore_refine_rate" name="buyback_ore_refine_rate" value="{{ settings.buyback_ore_refine_rate }}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">Ice Refining Rate</label>
+                                    <p>Lowest rate at which we refine ice at.</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="ice_refine_rate" name="buyback_ice_refine_rate" value="{{ settings.buyback_ice_refine_rate }}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <label for="source_id" class="control-label">Salvage Refining Rate</label>
+                                    <p>Lowest rate at which we salvage stuff at.</a>.</p>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" id="salvage_refine_rate" name="buyback_salvage_refine_rate" value="{{ settings.buyback_salvage_refine_rate }}"/>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                <!-- /.box-body -->
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-success pull-right">Save Changes</button>
+                    </div>
+                </form>
+            </div><!-- /.box -->
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+
+    $(function () {
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' // optional
+        });
+    });
+
+    $(document).ready(function() {
+
+        $('input').on('ifChecked', function(event){
+            $('#'+$(this).attr('data-t')).val("1");
+        });
+
+        $('input').on('ifUnchecked', function(event){
+            $('#'+$(this).attr('data-t')).val("0");
+        });
+    });
+
+</script>
+
+{% endblock %}

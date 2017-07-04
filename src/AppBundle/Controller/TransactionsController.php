@@ -9,11 +9,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use AppBundle\Model\BuyBackModel;
-use AppBundle\Form\BuyBackForm;
+use AppBundle\Model\MarketRequestModel;
+use AppBundle\Form\AllianceMarketForm;
 use AppBundle\Entity\TranactionEntity;
 
-class CorpPurchaseController extends Controller
+class TransactionsController extends Controller
 {
     /**
      * @Route("/admin/buy/transactions", name="admin_transactions")
@@ -34,13 +34,13 @@ class CorpPurchaseController extends Controller
     }
 
     /**
-     * @Route("/admin/buy/transaction/process", name="ajax_process_transaction")
+     * @Route("/admin/transaction/process", name="ajax_process_transaction")
      */
     public function ajax_ProcessAction(Request $request)
     {
         // Set up text area form for comparing transaction
-        $bb = new BuyBackModel();
-        $form = $this->createForm(BuyBackForm::class, $bb);
+        $bb = new MarketRequestModel();
+        $form = $this->createForm(AllianceMarketForm::class, $bb);
 
         $form->handleRequest($request);
 
@@ -56,7 +56,7 @@ class CorpPurchaseController extends Controller
     }
 
     /**
-     * @Route("/admin/buy/transaction/close", name="ajax_close_transaction")
+     * @Route("/admin/transaction/close", name="ajax_close_transaction")
      */
     public function ajax_CloseAction(Request $request)
     {
@@ -96,7 +96,7 @@ class CorpPurchaseController extends Controller
     }
 
     /**
-     * @Route("/admin/buy/transaction/reopen", name="ajax_reopen_transaction")
+     * @Route("/admin/transaction/reopen", name="ajax_reopen_transaction")
      */
     public function ajax_ReopenAction(Request $request)
     {
@@ -124,24 +124,20 @@ class CorpPurchaseController extends Controller
         $order_id = $request->query->get('id');
         $order_type = $request->query->get('transaction_type');
 
-        if($order_type == "P") {
+        $em = $this->getDoctrine('default')->getManager();
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
-            $em = $this->getDoctrine('default')->getManager();
-            $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+        $template = $this->render('transaction/view-p.html.twig', Array ( 'transaction' => $transaction ));
+        return $template;
 
-            $template = $this->render('transaction/view-p.html.twig', Array ( 'transaction' => $transaction ));
-            return $template;
-        }
-
-        return  new Response('ERROR');
     }
 
     /**
-     * @Route("/admin/buy/transaction/validate", name="ajax_validate_transaction")
+     * @Route("/admin/transaction/validate", name="ajax_validate_transaction")
      */
     public function ajax_ValidateTransaction(Request $request)
     {
-
+        dump($request);
         // Get list of items from stored transaction
         $orderId = $request->request->get('orderId');
         $pasteData = $request->request->get('formInput');

@@ -1,0 +1,63 @@
+
+{% if transactionType == 'P' %}
+    {% set pageURL = path('buyback') %}
+    {% set amount = total_value|round() %}
+{% elseif transactionType == 'S' %}
+    {% set pageURL = path('sales') %}
+    {% set amount = total_value|number_format(0, '.', ',') %}
+{% endif %}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title">Thank you for your submission!</h4>
+    </div>
+    <div class="modal-body" >
+        <div class="alliance-market-results-container">
+            {% if transactionType == 'P' %}
+                <p>Please create a private 'Item Exchange' contract to <b>{{ contractCorp }}</b> for the materials entered here.</p>
+                <ol>
+                    <li>Items should be contracted from {{ contractLocation }}</li>
+                    <li>Copy and Paste the 'Amount' to the 'I will receive' field in the contract</li>
+                    <li>Copy and Paste the 'Auth Code' to the 'Comment' field, this <strong>MUST</strong> be present if you wish to get paid!</li>
+                </ol>
+            {% elseif transactionType == 'S' %}
+                <p>The items requested will be delivered to you shortly!</p>
+                <ol>
+                    <li>Items will be contracted to you from {{ contractLocation }}</li>
+                    <li>The 'Amount' below will be the price of the contract</li>
+                    <li>You may check the status of this transaction at any time on this site</li>
+                </ol>
+            {% endif %}
+            <table class="table table-striped">
+                <tr>
+                    <th>Amount</th>
+                    <td>{{amount}}</td>
+                </tr>
+                <tr>
+                    <th>Auth Code</th>
+                    <td>{{auth_code}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        {#<a href="{{ pageURL }}">#}
+            <button type="button" id='alliancemarketacceptclose' class="btn btn-warning" data-dismiss="modal">Close</button>
+        {#</a>#}
+    </div>
+</div>
+
+{% block javascripts %}
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $("#alliancemarketacceptclose").click(function(e) {
+            window.location.href = '{{ pageURL }}';
+        });
+    });
+
+</script>
+
+{% endblock %}

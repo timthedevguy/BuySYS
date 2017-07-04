@@ -37,7 +37,7 @@ class SystemAdminController extends Controller
     }
 
     /**
-     * @Route("/system/admin/settings/buyback", name="admin_buyback_settings")
+     * @Route("/system/admin/settings/market", name="admin_alliance_market_settings")
      */
     public function buybackSettingsAction(Request $request)
     {
@@ -60,7 +60,7 @@ class SystemAdminController extends Controller
             $settings[$setting->getName()] = $setting->getValue();
         }
 
-        return $this->render('buyback/settings.html.twig', array(
+        return $this->render('admin/alliance_market_settings.html.twig', array(
             'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'settings' => $settings));
     }
 

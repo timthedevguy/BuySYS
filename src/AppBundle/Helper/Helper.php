@@ -78,7 +78,6 @@ class Helper
         $this->setSetting("buyback_source_id", "30002510");
         $this->setSetting("buyback_source_type", "buy");
         $this->setSetting("buyback_source_stat", "fivePercent");
-        $this->setSetting("buyback_default_tax", "15");
         $this->setSetting("buyback_ore_refine_rate", "70");
         $this->setSetting("buyback_ice_refine_rate", "70");
         $this->setSetting("buyback_salvage_refine_rate", "60");
@@ -90,6 +89,10 @@ class Helper
         $this->setSetting('buyback_role_other1_tax', '10');
         $this->setSetting('buyback_role_other2_tax', '0');
         $this->setSetting('buyback_role_other3_tax', '0');
-		
+
+        $this->setSetting('buyback_default_buyaction_deny', '0');
     }
 }
+
+
+		

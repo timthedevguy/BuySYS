@@ -4,8 +4,8 @@ app:
 logout:
     path: /logout
 #quick_estimate:
-#  path:  /buyback/quick
+#  path:  /alliance_market/quick
 #  defaults: { _controller: AppBundle:BuyBack:quickEstimate }
 #accept_offer:
-#    path: /buyback/accept
+#    path: /alliance_market/accept
 #    defaults: { _controller: AppBundle:BuyBack:acceptOffer }

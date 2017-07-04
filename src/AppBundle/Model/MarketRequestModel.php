@@ -1,7 +1,7 @@
 <?php
 namespace AppBundle\Model;
 
-class BuyBackModel
+class MarketRequestModel
 {
     protected $items;
 

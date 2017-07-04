@@ -10,7 +10,7 @@ use EveBundle\Entity\DgmTypeAttributesEntity;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * Market Helper provides the needed logic to value an item using all provided buyback rules
+ * Market Helper provides the needed logic to value an item using all provided alliance_market rules
  */
 class Market extends Helper
 {
