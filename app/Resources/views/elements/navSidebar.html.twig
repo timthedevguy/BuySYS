@@ -47,9 +47,9 @@
                 var jsonResponse = JSON.parse(response);
                 console.log(jsonResponse);
 
-                updateQueueBadge($( "#purchaseQueueBadge" ), typeof(jsonResponse.purchaseQueueBadge) == 'number' ? jsonResponse.purchaseQueueBadge : 0);
-                updateQueueBadge($( "#salesQueueBadge" ), typeof(jsonResponse.salesQueueBadge) == 'number' ? jsonResponse.salesQueueBadge : 0);
-                updateQueueBadge($( "#SRPQueueBadge" ), typeof(jsonResponse.SRPQueueBadge) == 'number' ? jsonResponse.SRPQueueBadge : 0);
+                updateQueueBadge($( "#purchaseQueueBadge" ), parseInt(jsonResponse.purchaseQueueBadge) >= 0 ? jsonResponse.purchaseQueueBadge : 0);
+                updateQueueBadge($( "#salesQueueBadge" ), parseInt(jsonResponse.salesQueueBadge) >= 0 ? jsonResponse.salesQueueBadge : 0);
+                updateQueueBadge($( "#SRPQueueBadge" ), parseInt(jsonResponse.SRPQueueBadge) >= 0 ? jsonResponse.SRPQueueBadge : 0);
 
 			} , "html");
         }

@@ -44,7 +44,7 @@ class TransactionsController extends Controller
         $last500Transactions = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findValidTransactionsByTypesOrderedByDate(array($typeId), $maxResults);
         $last500Summary = new TransactionSummaryModel($last500Transactions);
 
-        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotals();
+        $totalSummary = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAcceptedTransactionTotalsByTypes(['SRP']);
 
         return $this->render('transaction/index.html.twig', array(
             'page_name' => $pageName, 'sub_text' => 'Process Transactions', 'last500Transactions' => $last500Transactions,
