@@ -44,7 +44,7 @@ class DashboardController extends Controller
             $em->flush();
         }
         $this->get('session')->set('userPreferences', $preferences);
-        return $this->render('dashboard/index.html.twig', [
+        return $this->render('home/dashboard.html.twig', [
             'base_dir' => 'test',
             'page_name' => 'Dashboard',
             'sub_text' => 'User Dashboard',
