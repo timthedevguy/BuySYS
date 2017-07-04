@@ -113,7 +113,7 @@ class QuicklookController extends Controller
                 $hideCan = true;
                 break;
         }
-        return $this->render('quicklook/quicklook.html.twig', array(
+        return $this->render('home/quicklook.html.twig', array(
             'page_name' => 'Quicklook', 'sub_text' => $subText, 'results' => $results, 'hideCan' => $hideCan, 'eveCentralOK' => $eveCentralOK ));
         // Logic
     }
