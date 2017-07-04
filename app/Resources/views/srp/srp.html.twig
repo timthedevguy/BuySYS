@@ -6,6 +6,48 @@
 
 	
     <div class="row">
+	
+		<div class="col-lg-6">
+
+            <div class="box">
+
+                <div class="box-header with-border">
+
+                    <h3 class="box-title"><i class="fa fa-money "></i> Fitting Estimator</h3>
+
+                </div>
+
+                <div class="box-body">
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                                {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
+
+                                {{ form_start(form) }}
+
+                                {{ form_row(form.items, {'attr': {'placeholder': 'Paste formatted fit here. (EFT Format preferred)', 'style': 'height:200px;'}}) }}
+
+                                <div id="buyback_submits" class="right_justify_submits">
+
+                                    <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
+
+                                    <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
+
+                                </div>
+
+                                {{ form_end(form) }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 		
 		<div class="col-xs-12 col-lg-6">
 		
@@ -110,47 +152,6 @@
 
         </div>
 		
-		<div class="col-lg-6">
-
-            <div class="box">
-
-                <div class="box-header with-border">
-
-                    <h3 class="box-title"><i class="fa fa-money "></i> Fitting Estimator</h3>
-
-                </div>
-
-                <div class="box-body">
-
-                    <div class="row">
-
-                        <div class="col-md-12">
-
-                                {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
-
-                                {{ form_start(form) }}
-
-                                {{ form_row(form.items, {'attr': {'placeholder': 'Paste formatted fit here', 'style': 'height:200px;'}}) }}
-
-                                <div id="buyback_submits" class="right_justify_submits">
-
-                                    <input type="button" id="buyback_clear" class="btn btn-danger " value="Clear">
-
-                                    <input type="button" id="buyback_quick_submit" class="btn btn-success " value="Get Estimate">
-
-                                </div>
-
-                                {{ form_end(form) }}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
 		
     </div>
 
@@ -187,7 +188,7 @@
 	{
 		$('#base_modal').modal({backdrop: "static"});
 		$("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
-		$.post('{{path('ajax_srp_quick_estimate')}}', {'buy_back_form[items]': $("#buy_back_form_items").val()},
+		$.post('{{path('ajax_srp_quick_estimate')}}', {'alliance_market_form[items]': $("#alliance_market_form_items").val()},
 			function(response)
 			{
 				$( "#base_modal_content" ).html( response );
@@ -198,12 +199,12 @@
 	});
 
 	$("#buyback_clear").click(function(e) {
-		$("#buy_back_form_items").val('');
+		$("#alliance_market_form_items").val('');
 	});
 
 
 
-	$("#buy_back_form_items").bind("paste", function(e) {
+	$("#alliance_market_form_items").bind("paste", function(e) {
 		var pData = e.originalEvent.clipboardData.getData('text');
 		var numberOfLineBreaks = (pData.match(/\n/g)||[]).length;
 		if(numberOfLineBreaks > 500) {

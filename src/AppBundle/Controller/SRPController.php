@@ -13,8 +13,8 @@ use AppBundle\Helper\MarketHelper;
 use EveBundle\Entity\TypeEntity;
 use AppBundle\Entity\InsurancesEntity;
 
-use AppBundle\Model\BuyBackModel;
-use AppBundle\Form\BuyBackForm;
+use AppBundle\Model\MarketRequestModel;
+use AppBundle\Form\AllianceMarketForm;
 use AppBundle\Model\TransactionSummaryModel;
 
 class SRPController extends Controller
@@ -48,7 +48,7 @@ class SRPController extends Controller
 		1538 => 500000000, //"Force Auxiliary",
 	];
 	
-	private function lineItemsToSRP(&$lineItems = [], $estLossValue = 0) {
+	private function lineItemsToSRP(&$lineItems = [], $estLossValue = 0) {		
 		$srpOffered = 0;
 		$lossValue = 0;
 		$lossTypeID = null;
@@ -57,6 +57,22 @@ class SRPController extends Controller
 		$reason = null;
         $hasInvalid = $hasWarning = false;
 		$typeIDs = [];
+		
+		if(!$lineItems || count($lineItems) == 0) {
+			$hasInvalid = true;
+			$reason = "There were no items parsed from your input. [".$lineItems[0]->getTypeId()."] ".print_r($lineItems, true)."...";
+			return [
+				"lossType" => null,
+				"lossGross" => null,
+				"lossNet" => null,
+				"lossInsurance" => null,
+				"lossSRP" => null,
+				"orderId" => null,
+				"hasInvalid" => $hasInvalid,
+				"hasWarning" => $hasWarning,
+				"reason" => $reason
+			];
+		}
 		
 		/* FIND THE SHIP! */
 		foreach($lineItems as $lineItem) {
@@ -108,13 +124,12 @@ class SRPController extends Controller
 			];
 		}
 		
-		$orig = $this->get('helper')->getSetting("buyback_source_type");
-		
+		$orig = $this->get('helper')->getSetting("buyback_source_type");		
 		$this->get('helper')->setSetting("buyback_source_type", "sell");
         $this->get('market')->forceCacheUpdateForTypes($typeIDs);	
         $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIDs);
         $this->get('market')->forceCacheUpdateForTypes($typeIDs);	
-		$this->get('helper')->getSetting("buyback_source_type", $orig);
+		$this->get('helper')->setSetting("buyback_source_type", $orig);
 	
 		//get DB manager
 		$em = $this->getDoctrine()->getManager('default');
@@ -148,9 +163,9 @@ class SRPController extends Controller
 				$lineItem->setMarketPrice(0);
 				$lineItem->setGrossPrice(0);
 				$lineItem->setNetPrice(0);
-				if(isset($typePrices[$lineItem->getTypeId()]) && $typePrices[$lineItem->getTypeId()]['adjusted'] > 0) {
+				if(isset($typePrices[$lineItem->getTypeId()]) && $typePrices[$lineItem->getTypeId()]['market'] > 0) {
 					$lossValue += $lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['market'];
-					$lineItem->setMarketPrice($typePrices[$lineItem->getTypeId()]['adjusted']);
+					$lineItem->setMarketPrice($typePrices[$lineItem->getTypeId()]['market']);
 					$lineItem->setGrossPrice($lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['market']);
 					$lineItem->setNetPrice($lineItem->getQuantity() * $typePrices[$lineItem->getTypeId()]['adjusted']);
 				}
@@ -203,8 +218,8 @@ class SRPController extends Controller
      */
     public function indexAction(Request $request)
     {	
-        $fModel = new BuyBackModel();
-        $form = $this->createForm(BuyBackForm::class, $fModel);
+        $fModel = new MarketRequestModel();
+        $form = $this->createForm(AllianceMarketForm::class, $fModel);
         $form->handleRequest($request);
 		
         $oSRP = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['SRP'], "Estimate");
@@ -212,7 +227,7 @@ class SRPController extends Controller
 	
         return $this->render('srp/srp.html.twig', [
             'base_dir' => 'test',
-			'page_name' => 'My SRP Requests',
+			'page_name' => 'SRP Tools',
 			'sub_text' => null,
 			'form' => $form->createView(),
 			'srpSummary' => $srpSummary]);
@@ -223,8 +238,8 @@ class SRPController extends Controller
      */
     public function quickEstimateAction(Request $request)
 	{
-		$fModel = new BuyBackModel();
-        $form = $this->createForm(BuyBackForm::class, $fModel);
+		$fModel = new MarketRequestModel();
+        $form = $this->createForm(AllianceMarketForm::class, $fModel);
         $form->handleRequest($request);
 
         // Parse form input
