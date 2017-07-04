@@ -78,40 +78,6 @@
                 });
             }
 
-            function updatePurchaseQueueBadge(addedValue) {
-
-                var element = $( "#purchaseQueueBadge" )
-
-                var oldVal = element.html();
-                if (oldVal === "") {
-                    oldVal = 0;
-                }
-
-                var newVal = parseInt(oldVal) + parseInt(addedValue);
-                if (newVal <= 0) {
-                    element.html("");
-                } else {
-                    element.html(numberToString(newVal));
-                }
-            }
-
-            function updateSRPQueueBadge(addedValue) {
-
-                var element = $( "#SRPQueueBadge" )
-
-                var oldVal = element.html();
-                if (oldVal === "") {
-                    oldVal = 0;
-                }
-
-                var newVal = parseInt(oldVal) + parseInt(addedValue);
-                if (newVal <= 0) {
-                    element.html("");
-                } else {
-                    element.html(numberToString(newVal));
-                }
-            }
-
         </script>
     </head>
     <body class="hold-transition skin-blue sidebar-mini fixed">

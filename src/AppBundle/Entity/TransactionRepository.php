@@ -7,12 +7,12 @@ class TransactionRepository extends EntityRepository {
 	
 	private $types = ["P", "PS", "S", "SRP"];
 
-    public function findValidTransactionsOrderedByDate($limit = 5000) {
+    public function findValidTransactionsByTypesOrderedByDate($types = null, $limit = 5000) {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.status <> :excludeStatus ORDER BY t.created DESC'
-            )->setParameter('excludeStatus', 'Estimate')->setMaxResults($limit)->getResult();
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.status <> :excludeStatus ORDER BY t.created DESC'
+            )->setParameter('types', $types)->setParameter('excludeStatus', 'Estimate')->setMaxResults($limit)->getResult();
     }
 
     public function findAcceptedTransactionTotals() {
@@ -24,13 +24,13 @@ class TransactionRepository extends EntityRepository {
             )->setParameter('status', 'Complete')->getOneOrNullResult();
     }
 
-    public function countOpenPurchaseTransactions() {
+    public function countOpenTransactionsByTypes($types = null) {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT count(t) as openPurchaseTransactions
-                      FROM AppBundle:TransactionEntity t WHERE t.status = :status'
-            )->setParameter('status', 'Pending')->getSingleScalarResult();
+                'SELECT count(t) as openTransactions
+                      FROM AppBundle:TransactionEntity t WHERE t.type IN (:types) AND t.status = :status'
+            )->setParameter('types', $types)->setParameter('status', 'Pending')->getSingleScalarResult();
     }
 
     public function findAllVisibleByUser($user) {
