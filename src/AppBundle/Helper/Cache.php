@@ -59,7 +59,7 @@ class Cache extends Helper
         //$helper = $this->getContainer()->get('helper');
 
         $eveCentralOK = $this->market->isEveCentralAlive();
-        $this->setSetting("eveCentralOK", $eveCentralOK);
+        $this->setSetting("eveCentralOK", $eveCentralOK, 'global');
 
         if($eveCentralOK == true)
         {

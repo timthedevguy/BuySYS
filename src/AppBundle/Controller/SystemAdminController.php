@@ -66,7 +66,7 @@ class SystemAdminController extends Controller
         {
             foreach($request->request->keys() as $setting)
             {
-                $this->get('helper')->setSetting($setting, $request->request->get($setting));
+                $this->get('helper')->setSetting($setting, $request->request->get($setting), $settingsType);
             }
             $this->addFlash('success', 'Settings saved!');
         }
@@ -128,21 +128,6 @@ class SystemAdminController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('admin_buyback_exclusions');
-    }
-
-    /**
-     * @Route("/system/admin/settings/mode", name="ajax_admin_buyback_mode")
-     */
-    public function ajax_ExclusionModeAction(Request $request)
-    {
-        $mode = $request->request->get("mode");
-
-        $this->get("helper")->setSetting("buyback_whitelist_mode", $mode);
-
-        $response = new Response();
-        $response->setStatusCode(200);
-
-        return $response;
     }
 
     /**

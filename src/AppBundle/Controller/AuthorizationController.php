@@ -212,8 +212,8 @@ class AuthorizationController extends Controller
 
             //add/update API to settings DB for future use
             $helper = $this->get('helper');
-            $helper->setSetting('ContactAPIKey', $apiKey);
-            $helper->setSetting('ContactAPICode', $apiCode);
+            $helper->setSetting('ContactAPIKey', $apiKey, 'global');
+            $helper->setSetting('ContactAPICode', $apiCode, 'global');
         }
         catch (Exception $e)
         {

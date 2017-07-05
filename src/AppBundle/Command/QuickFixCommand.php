@@ -31,13 +31,13 @@ class QuickFixCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getContainer()->get('helper');
-        $helper->setSetting('buyback_default_buyaction_deny', '0');
+        $helper->setSetting('buyback_default_buyaction_deny', '0', 'P');
 
-        $helper->setSetting('buyback_role_member_tax',  $helper->getSetting('buyback_default_tax'));
-        $helper->setSetting('buyback_role_ally_tax', '6');
-        $helper->setSetting('buyback_role_friend_tax', '8');
-        $helper->setSetting('buyback_role_other1_tax', '10');
-        $helper->setSetting('buyback_role_other2_tax', '0');
-        $helper->setSetting('buyback_role_other3_tax', '0');
+        $helper->setSetting('buyback_role_member_tax',  $helper->getSetting('buyback_default_tax', 'P'), 'P');
+        $helper->setSetting('buyback_role_ally_tax', '6', 'P');
+        $helper->setSetting('buyback_role_friend_tax', '8', 'P');
+        $helper->setSetting('buyback_role_other1_tax', '10', 'P');
+        $helper->setSetting('buyback_role_other2_tax', '0', 'P');
+        $helper->setSetting('buyback_role_other3_tax', '0', 'P');
     }
 }
