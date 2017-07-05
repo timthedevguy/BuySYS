@@ -1,3 +1,18 @@
+
+{% if transaction.type == 'P' %}
+    {% set instructions =
+    '<p>This transaction required a contract from you (the player) to '~ contractCorp ~' (the corp).</p>'
+    %}
+{% elseif transaction.type == 'S' %}
+    {% set instructions =
+    '<p>This transaction results in a contract from '~ contractCorp ~' (the corp) to you (the player).</p>'
+    %}
+{% elseif transaction.type == 'SRP' %}
+    {% set instructions =
+    '<p>This transaction requires that you lost a SRP eligible ship during an eligible PvP engagement.'
+    %}
+{% endif %}
+
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h4 class="modal-title">Transaction Details</h4>
@@ -7,14 +22,10 @@
     <div class="buyback-results-container">
         <div>
             <div class="col-md-6">
-                    <p><span class="label label-warning">THIS CONTRACT HAS SHARES!!!!!</span>  This transaction required a contract from you (the player) to {{ contractCorp }} (the corp).</p>
+                    {{ instructions | raw }}
             </div>
             <div class="col-md-6">
                 <table class="table table-striped">
-                    <tr>
-                        <th>Shares</th>
-                        <td><span class="label label-warning">{{share_value}} Shares</span></td>
-                    </tr>
                     <tr>
                         <th>Order Id:</th>
                         <td>{{ transaction.orderid }}</td>
@@ -64,9 +75,41 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" id="viewtransaction-button" class="btn btn-warning" data-dismiss="modal">Ok</button>
+    {% if transaction.status == 'Pending' %}
+        <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Cancel Transaction</button>
+    {% endif %}
+    <button type="button" id="viewtransaction-button" class="btn btn-info" data-dismiss="modal">Ok</button>
 </div>
 
 {% block javascripts %}
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+
+        $("#processDecline-button").click(function (e) {
+
+            $.post('{{path('ajax_decline_transaction')}}', {id: "{{ transaction.orderid }}"},
+                function(response)
+                {
+                    //update UI in table
+                    $("#row-{{transaction.orderid}}").toggleClass("danger");
+                    $("#row-{{transaction.orderid}} .label-success").removeClass("label-success").addClass("label-danger").html("Cancelled");
+
+                    //update info boxes
+                    updateInfoBox($("#pendingSales"), -1);
+                    updateInfoBox($("#pendingIncome"), {{ transaction.net * -1 }});
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        updatePurchaseQueueBadge(-1);
+                    {% endif %}
+                }
+                , "html");
+
+        });
+
+
+    });
+
+</script>
 {% endblock %}
