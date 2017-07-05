@@ -23,25 +23,12 @@ use AppBundle\Helper\MarketHelper;
 class AllianceMarketController extends Controller
 {
 
-
     /**
      * @Route("/alliance_market/sellorders", name="buyback")
      */
     public function buybackAction(Request $request)
     {
-        $bb = new MarketRequestModel();
-        $form = $this->createForm(AllianceMarketForm::class, $bb);
-
-        $form->handleRequest($request);
-        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array('P'));
-        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
-
-        $transactionSummary = new TransactionSummaryModel($oTransaction);
-
-        return $this->render('alliance_market/index.html.twig', array(
-            'transactionType' => 'P', 'page_name' => 'Sell Orders', 'sub_text' => 'Sell your stuff!', 'form' => $form->createView(),
-            'oTransaction' => $oTransaction, 'transactionSummary'=> $transactionSummary, 'news' => $news, 'eveCentralOK' => $eveCentralOK ));
+        return $this->action($request, 'P', 'Sell Orders', 'Sell your stuff!');
     }
 
     /**
@@ -49,22 +36,24 @@ class AllianceMarketController extends Controller
      */
     public function salesAction(Request $request)
     {
-        $bb = new MarketRequestModel();
-        $form = $this->createForm(AllianceMarketForm::class, $bb);
+        return $this->action($request, 'S', 'Buy Orders', 'Place a buy order!');
+    }
 
+    private function action(Request &$request, string $transactionType, string $pageName = 'Market Orders', string $subText = 'Create an Order!')
+    {
+        $form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
         $form->handleRequest($request);
+
         $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
-        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array('S'));
+        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array($transactionType));
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         $transactionSummary = new TransactionSummaryModel($oTransaction);
 
         return $this->render('alliance_market/index.html.twig', array(
-            'transactionType' => 'S', 'page_name' => 'Buy Orders', 'sub_text' => 'Place a buy order!', 'form' => $form->createView(),
+            'transactionType' => $transactionType, 'page_name' => $pageName, 'sub_text' => $subText, 'form' => $form->createView(),
             'oTransaction' => $oTransaction, 'transactionSummary'=> $transactionSummary, 'news' => $news, 'eveCentralOK' => $eveCentralOK ));
     }
-
-
 
 
     /**
@@ -90,7 +79,8 @@ class AllianceMarketController extends Controller
             $items = $this->get('parser')->GetLineItemsFromPasteData($rawRequestItems);
 
             // Check to make sure it parsed correctly
-            if($items == null || count($items) <= 0) {
+            if($items == null || count($items) <= 0)
+            {
                 return $this->render('alliance_market/novalid.html.twig');
             }
 
@@ -107,16 +97,17 @@ class AllianceMarketController extends Controller
             foreach($items as $item)
             {
                 // Check if price is -1, means Can Buy is False
-                if($typePrices[$item->getTypeId()]['adjusted'] == -1) {
-
+                if($typePrices[$item->getTypeId()]['adjusted'] == -1)
+                {
                     // Set to all 0 and mark as invalid
                     $item->setMarketPrice(0);
                     $item->setGrossPrice(0);
                     $item->setNetPrice(0);
                     $item->setTax(0);
                     $item->setIsValid(false);
-                } else {
-
+                }
+                else
+                {
                     // Set prices
                     $item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
                     $item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
@@ -132,29 +123,29 @@ class AllianceMarketController extends Controller
 
             //build transaction
             $transaction = new TransactionEntity();
-            $transaction->setUser($this->getUser());
+                $transaction->setUser($this->getUser());
 
-            $transaction->setType($transactionType);
+                $transaction->setType($transactionType);
 
+                $transaction->setIsComplete(false);
+                $transaction->setOrderId($transaction->getType() . uniqid());
+                $transaction->setGross(0);
+                $transaction->setNet(0);
+                $transaction->setCreated(new \DateTime("now"));
+                $transaction->setStatus("Estimate");
 
-            $transaction->setIsComplete(false);
-            $transaction->setOrderId($transaction->getType() . uniqid());
-            $transaction->setGross(0);
-            $transaction->setNet(0);
-            $transaction->setCreated(new \DateTime("now"));
-            $transaction->setStatus("Estimate");
             $em->persist($transaction);
 
-            //add line items to transaction
             $hasInvalid = false;
-
-            /* @var $lineItem LineItemEntity */
             foreach($items as $lineItem)
             {
-                if($lineItem->getIsValid()) {
+                if($lineItem->getIsValid())
+                {
                     $em->persist($lineItem);
                     $transaction->addLineitem($lineItem);
-                } else {
+                }
+                else
+                {
                     $hasInvalid = true;
                 }
             }
