@@ -1,0 +1,76 @@
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-8">
+            <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
+            <p>This option will value any item that can be reprocessed by Refining Skill by it's mineral yield at the Refining Rate listed below.</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                <label>
+                    <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (settings.buyback_value_minerals == "1") ? 'checked' : '' }}/>
+                    <input type="hidden" id="value_minerals" name="buyback_value_minerals" value="{{ (settings.buyback_value_minerals == "1") ? "1" : "0" }}"/>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-8">
+            <label for="maintenance_mode_base" class="control-label">Value Salvage by Minerals</label>
+            <p>This option will value any item that can be reprocessed by Salvaging Skill by it's mineral yield at the Refining Rate listed below.</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
+                <label>
+                    <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (settings.buyback_value_salvage == "1") ? 'checked' : '' }}/>
+                    <input type="hidden" id="value_salvage" name="buyback_value_salvage" value="{{ (settings.buyback_value_salvage == "1") ? "1" : "0" }}"/>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-8">
+            <label for="source_id" class="control-label">Ore Refining Rate</label>
+            <p>Lowest rate at which we refine ore at.</a>.</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input class="form-control" type="text" id="ore_refine_rate" name="buyback_ore_refine_rate" value="{{ settings.buyback_ore_refine_rate }}"/>
+                <span class="input-group-addon">%</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-8">
+            <label for="source_id" class="control-label">Ice Refining Rate</label>
+            <p>Lowest rate at which we refine ice at.</a>.</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input class="form-control" type="text" id="ice_refine_rate" name="buyback_ice_refine_rate" value="{{ settings.buyback_ice_refine_rate }}"/>
+                <span class="input-group-addon">%</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-8">
+            <label for="source_id" class="control-label">Salvage Refining Rate</label>
+            <p>Lowest rate at which we salvage stuff at.</a>.</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input class="form-control" type="text" id="salvage_refine_rate" name="buyback_salvage_refine_rate" value="{{ settings.buyback_salvage_refine_rate }}"/>
+                <span class="input-group-addon">%</span>
+            </div>
+        </div>
+    </div>
+</div>
+

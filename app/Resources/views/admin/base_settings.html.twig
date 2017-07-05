@@ -2,10 +2,45 @@
 
 {% block body %}
 
+
+    {% if settingsType == 'P' %}
+        {% set currentPath = path('admin_settings_buyback') %}
+        {% set actionText = 'purchased' %}
+        {% set rulesName = 'Buyback' %}
+    {% elseif settingsType == 'S' %}
+        {% set currentPath = path('admin_settings_sales') %}
+        {% set actionText = 'sold' %}
+        {% set rulesName = 'Sales' %}
+    {% elseif settingsType == 'SRP' %}
+        {% set currentPath = path('admin_settings_srp') %}
+        {% set actionText = "SRP'd" %}
+        {% set rulesName = 'SRP' %}
+    {% endif %}
+
+    <ul class="nav nav-tabs">
+
+        {% if settingsType == 'P' %}
+            <li class="active"><a href="#">Sell Orders Settings</a></li>
+            <li><a href="{{ path('admin_settings_sales') }}">Buy Orders Settings</a></li>
+            <li><a href="{{ path('admin_settings_srp') }}">SRP Settings</a></li>
+        {% elseif settingsType == 'S' %}
+            <li><a href="{{ path('admin_settings_buyback') }}">Sell Orders Settings</a></li>
+            <li class="active"><a href="#">Buy Orders Settings</a></li>
+            <li><a href="{{ path('admin_settings_srp') }}">SRP Settings</a></li>
+        {% elseif settingsType == 'SRP' %}
+            <li><a href="{{ path('admin_settings_buyback') }}">Sell Orders Settings</a></li>
+            <li><a href="{{ path('admin_settings_sales') }}">Buy Orders Settings</a></li>
+            <li class="active"><a href="#">SRP Settings</a></li>
+        {% endif %}
+
+    </ul>
     <div class="row">
         <div class="col-md-12">
             <div class="box">
-                <form method="post" action="{{ path('admin_alliance_market_settings') }}">
+                <div class="col-sm-8">
+                    <p>this is where...</p>
+                </div>
+                <form method="post" action="{{ currentPath }}">
                     <div class="box-header with-border">
                         <!--<h3 class="box-title"><i class="fa fa-balance-scale"></i> Outstanding Material Sales</h3>-->
                     </div><!-- /.box-header -->
@@ -14,10 +49,10 @@
                             <div class="row">
                                 <div class="col-sm-8">
                                     <label for="maintenance_mode_base" class="control-label">Deny All by Default</label>
-                                    <p>If this option is enabled then nothing will be purchased unless specificly allowed in Buyback Rules.</p>
+                                    <p>If this option is enabled then nothing will be valued unless specifically allowed in Rules.</p>
                                     <p class="text-info">Warning: This can cause some interesting scenarios when enabled.  For instance, when enabled
-                                    and a user attempts to Sell 'Scordite' the system will reject it.  If an admin adds 'Scordite' to the allow
-                                    list (and refining options are on) the system will still reject it due to not being allowed to purchase
+                                    and a user attempts to Sell 'Scordite' the system will not value it.  If an admin adds 'Scordite' to the allow
+                                    list (and refining options are on) the system will still not value it due to not being allowed to value
                                     the refined goods.  This option works best when refining is disabled.</p>
                                 </div>
                                 <div class="col-sm-4">
@@ -141,80 +176,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="maintenance_mode_base" class="control-label">Value Ore by Minerals</label>
-                                    <p>This option will value any item that can be reprocessed by Refining Skill by it's mineral yield at the Refining Rate listed below.</p>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
-                                        <label>
-                                            <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (settings.buyback_value_minerals == "1") ? 'checked' : '' }}/>
-                                            <input type="hidden" id="value_minerals" name="buyback_value_minerals" value="{{ (settings.buyback_value_minerals == "1") ? "1" : "0" }}"/>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="maintenance_mode_base" class="control-label">Value Salvage by Minerals</label>
-                                    <p>This option will value any item that can be reprocessed by Salvaging Skill by it's mineral yield at the Refining Rate listed below.</p>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
-                                        <label>
-                                            <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (settings.buyback_value_salvage == "1") ? 'checked' : '' }}/>
-                                            <input type="hidden" id="value_salvage" name="buyback_value_salvage" value="{{ (settings.buyback_value_salvage == "1") ? "1" : "0" }}"/>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="source_id" class="control-label">Ore Refining Rate</label>
-                                    <p>Lowest rate at which we refine ore at.</a>.</p>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="input-group">
-                                        <input class="form-control" type="text" id="ore_refine_rate" name="buyback_ore_refine_rate" value="{{ settings.buyback_ore_refine_rate }}"/>
-                                        <span class="input-group-addon">%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="source_id" class="control-label">Ice Refining Rate</label>
-                                    <p>Lowest rate at which we refine ice at.</a>.</p>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="input-group">
-                                        <input class="form-control" type="text" id="ice_refine_rate" name="buyback_ice_refine_rate" value="{{ settings.buyback_ice_refine_rate }}"/>
-                                        <span class="input-group-addon">%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <label for="source_id" class="control-label">Salvage Refining Rate</label>
-                                    <p>Lowest rate at which we salvage stuff at.</a>.</p>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="input-group">
-                                        <input class="form-control" type="text" id="salvage_refine_rate" name="buyback_salvage_refine_rate" value="{{ settings.buyback_salvage_refine_rate }}"/>
-                                        <span class="input-group-addon">%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+                        {% if settingsType == 'P' %}
+                            {% include 'admin/buyback_settings.html.twig' %}
+                        {% endif %}
 
                     </div>
                 <!-- /.box-body -->

@@ -92,7 +92,7 @@ class NewsController extends Controller
 
         $id = $request->query->get('id');
 
-        return $this->render('elements/confirm.html.twig', array('modal' => '#news_modal', 'id' => $id, 'returnPath' => 'ajax_delete_news',
+        return $this->render('news/confirm.html.twig', array('modal' => '#news_modal', 'id' => $id, 'returnPath' => 'ajax_delete_news',
         'functionToRun' => 'deleteRow', 'args' => $id));
     }
 
@@ -130,7 +130,7 @@ class NewsController extends Controller
     {
         $news = $this->getDoctrine()->getRepository('AppBundle:NewsEntity', 'default')->findAllOrderedByDate();
 
-        $template = $this->render('elements/navControlTab1.html.twig', Array ( 'items' => $news ));
+        $template = $this->render('news/navControlTab1.html.twig', Array ( 'items' => $news ));
         return $template;
     }
 }

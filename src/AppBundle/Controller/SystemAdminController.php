@@ -37,31 +37,54 @@ class SystemAdminController extends Controller
     }
 
     /**
-     * @Route("/system/admin/settings/market", name="admin_alliance_market_settings")
+     * @Route("/system/admin/settings/buyback", name="admin_settings_buyback")
      */
     public function buybackSettingsAction(Request $request)
     {
-        if($request->getMethod() == 'POST') {
+        return $this->action($request, 'P', 'App Settings', 'Sell Order Settings');
+    }
 
-            foreach($request->request->keys() as $setting) {
+    /**
+     * @Route("/system/admin/settings/sales", name="admin_settings_sales")
+     */
+    public function salesSettingsAction(Request $request)
+    {
+        return $this->action($request, 'S', 'App Settings', 'Buy Order Settings');
+    }
 
+    /**
+     * @Route("/system/admin/settings/srp", name="admin_settings_srp")
+     */
+    public function srpSettingsAction(Request $request)
+    {
+        return $this->action($request, 'SRP', 'App Settings', 'SRP Settings');
+    }
+
+    private function action(Request $request, string $settingsType, string $pageName = 'App Settings', string $subText = 'System Settings')
+    {
+        if($request->getMethod() == 'POST')
+        {
+            foreach($request->request->keys() as $setting)
+            {
                 $this->get('helper')->setSetting($setting, $request->request->get($setting));
             }
-
             $this->addFlash('success', 'Settings saved!');
         }
 
-        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')
-            ->findSettingsByPrefix('buyback');
+        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')->findSettingsByPrefix('buyback');
+
         $settings = array();
-
-        foreach($allSettings as $setting) {
-
+        foreach($allSettings as $setting)
+        {
             $settings[$setting->getName()] = $setting->getValue();
         }
 
-        return $this->render('admin/alliance_market_settings.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'settings' => $settings));
+        return $this->render('admin/base_settings.html.twig', array(
+            'page_name' => $pageName,
+            'sub_text' => $subText,
+            'settings' => $settings,
+            'settingsType' => $settingsType
+        ));
     }
 
     /**
