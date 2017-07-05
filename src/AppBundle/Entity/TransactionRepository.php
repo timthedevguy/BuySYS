@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityRepository;
 
 class TransactionRepository extends EntityRepository {
 	
-	private $types = ["P", "PS", "S", "SRP"];
+	private $types = ["P", "S", "SRP"];
 
 	
 	/* All */

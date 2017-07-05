@@ -15,6 +15,8 @@ use AppBundle\Entity\TranactionEntity;
 
 class TransactionsController extends Controller
 {
+
+    //MAIN PAGE ACTIONS
     /**
      * @Route("/admin/sellorder/transactions", name="admin_sell_order_transactions")
      */
@@ -53,47 +55,14 @@ class TransactionsController extends Controller
         ));
     }
 
-    /**
-     * @Route("/admin/transaction/process", name="ajax_process_transaction")
-     */
-    public function ajax_ProcessAction(Request $request)
-    {
-        // Set up text area form for comparing transaction
-        $bb = new MarketRequestModel();
-        $form = $this->createForm(AllianceMarketForm::class, $bb);
 
-        $form->handleRequest($request);
-
-        // Get Transaction Id / type
-        // Get our list of Items
-        $order_id = $request->request->get('id');
-
-        $transaction = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity')->findOneByOrderId($order_id);
-
-        return $this->render('transaction/process.html.twig', Array (
-            'transaction' => $transaction,
-            'form' => $form->createView(),
-            'transactionType' => $transaction->getType()
-        ));
-    }
-
+    //MODIFY TRANSACTION ACTIONS
     /**
      * @Route("/admin/transaction/close", name="ajax_close_transaction")
      */
     public function ajax_CloseAction(Request $request)
     {
-        // Handles the Transaction (IE Closes it)
-        $order_id = $request->request->get('id');
-
-        //$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        //$transaction = $transactions->findOneByOrderId($order_id);
-        $em = $this->getDoctrine('default')->getManager();
-        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
-
-        $transaction->setIsComplete(true);
-        $transaction->setStatus("Complete");
-        $em->flush();
-
+        $this->modifyTransaction($request->request->get('id'), "Complete");
         return new Response('OK');
     }
 
@@ -102,18 +71,7 @@ class TransactionsController extends Controller
      */
     public function ajax_DeclineAction(Request $request)
     {
-        // Handles the Transaction (IE Closes it)
-        $order_id = $request->request->get('id');
-
-        //$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        //$transaction = $transactions->findOneByOrderId($order_id);
-        $em = $this->getDoctrine('default')->getManager();
-        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
-
-        $transaction->setIsComplete(true);
-        $transaction->setStatus("Cancelled");
-        $em->flush();
-
+        $this->modifyTransaction($request->request->get('id'), "Cancelled");
         return new Response('OK');
     }
 
@@ -122,19 +80,39 @@ class TransactionsController extends Controller
      */
     public function ajax_ReopenAction(Request $request)
     {
-        // Handles the Transaction (IE Closes it)
-        $order_id = $request->request->get('id');
-
-        //$transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        //$transaction = $transactions->findOneByOrderId($order_id);
-        $em = $this->getDoctrine('default')->getManager();
-        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
-
-        $transaction->setIsComplete(false);
-        $transaction->setStatus("Pending");
-        $em->flush();
-
+        $this->modifyTransaction($request->request->get('id'), "Pending");
         return new Response('OK');
+    }
+
+    private function modifyTransaction(string $transactionId, string $status)
+    {
+        $em = $this->getDoctrine('default')->getManager();
+        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($transactionId);
+
+        $transaction->setIsComplete($status != "Pending");
+        $transaction->setStatus($status);
+
+        $em->flush();
+    }
+
+
+    //VIEW TRANSACTION ACTIONS
+    /**
+     * @Route("/admin/transaction/process", name="ajax_process_transaction")
+     */
+    public function ajax_ProcessAction(Request $request)
+    {
+        // Set up text area form for comparing transaction
+        $form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
+        $form->handleRequest($request);
+
+        $transaction = $this->getTransactionById($request->request->get('id'));
+
+        return $this->render('transaction/validate.html.twig', Array (
+            'transaction' => $transaction,
+            'form' => $form->createView(),
+            'transactionType' => $transaction->getType()
+        ));
     }
 
     /**
@@ -142,39 +120,30 @@ class TransactionsController extends Controller
      */
     public function ajax_ViewAction(Request $request)
     {
-        // Handles the Transaction (IE Closes it)
-        $order_id = $request->query->get('id');
-        $order_type = $request->query->get('transaction_type');
-
-        $em = $this->getDoctrine('default')->getManager();
-        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
-
-        $template = $this->render('transaction/view-p.html.twig', Array ( 'transaction' => $transaction ));
-        return $template;
-
+        return $this->render('transaction/view.html.twig', Array (
+            'transaction' => $this->getTransactionById($request->query->get('id'))
+        ));
     }
 
+    private function getTransactionById(string $transactionId) {
+        return $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity')->findOneByOrderId($transactionId);
+    }
+
+
+    //REVIEW TRANSACTION ACTION
     /**
      * @Route("/admin/transaction/validate", name="ajax_validate_transaction")
      */
     public function ajax_ValidateTransaction(Request $request)
     {
-        dump($request);
-        // Get list of items from stored transaction
-        $orderId = $request->request->get('orderId');
+        // Get items posted in request (copied from game contract)
+        $requestItems = Array();
         $pasteData = $request->request->get('formInput');
 
-        $transactions = $this->getDoctrine('default')->getRepository('AppBundle\Entity\TransactionEntity');
-        $transaction = $transactions->findOneByOrderId($orderId);
+        $transaction = $this->getTransactionById($request->request->get('orderId'));
         $transactionItems = $transaction->getLineitems();
 
-
-        // Get items posted in request (copied from game contract)
-        if ($pasteData == null || $pasteData == "")
-        {
-            $requestItems = Array();
-        }
-        else
+        if (!empty($pasteData))
         {
             $requestItems = $this->get('parser')->GetLineItemsFromPasteData($pasteData);
         }
@@ -183,12 +152,12 @@ class TransactionsController extends Controller
         $lineItemComparison = $this->get('lineItemComparator')->CompareLineItems($transactionItems, $requestItems);
 
         // Build response
-        $template = $this->render('transaction/verify.html.twig', Array ( 'lineItemComparison' => $lineItemComparison));
-        return $template;
+        return $this->render('transaction/auto_verify.html.twig', Array ( 'lineItemComparison' => $lineItemComparison));
 
     }
 
 
+    //BADGING
     /**
      * @Route("/admin/transaction/badging", name="ajax_transaction_badging")
      */
@@ -203,5 +172,4 @@ class TransactionsController extends Controller
             'salesQueueBadge' => (int) $salesQueueBadge,
             'SRPQueueBadge' => (int) $srpQueueBadge));
     }
-
 }
