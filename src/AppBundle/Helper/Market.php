@@ -27,13 +27,14 @@ class Market extends Helper
      * are processed.
      *
      * @param $typeIds Array of TypeIDs
+     * @param array $settingType String type of settings to use (i.e. 'P', 'S', "SRP')
      */
-    public function forceCacheUpdateForTypes($typeIds)
+    public function forceCacheUpdateForTypes($typeIds, $settingType)
     {
         // Get Settings
-        $bb_source_id = $this->getSetting("source_id", "P");
-        $bb_source_type = $this->getSetting("source_type", "P");
-        $bb_source_stat = $this->getSetting("source_stat", "P");
+        $bb_source_id = $this->getSetting("source_id", $settingType);
+        $bb_source_type = $this->getSetting("source_type", $settingType);
+        $bb_source_stat = $this->getSetting("source_stat", $settingType);
 
         $jsonData = $this->getEveCentralDataForTypes($typeIds, $bb_source_id);
 
@@ -90,9 +91,10 @@ class Market extends Helper
      *
      * @param $typeId
      * @param $refiningSkill
+     * @param array $settingType String type of settings to use (i.e. 'P', 'S', "SRP')
      * @return array
      */
-    public function getRefinedMaterialsForType($typeId, $refiningSkill)
+    public function getRefinedMaterialsForType($typeId, $refiningSkill, $settingType)
     {
         $results = array();
 
@@ -102,13 +104,13 @@ class Market extends Helper
         switch($refiningSkill)
         {
             case 'Ice':
-                $refineRate = $this->getSetting('ice_refine_rate', 'P');
+                $refineRate = $this->getSetting('ice_refine_rate', $settingType);
                 break;
             case 'Ore':
-                $refineRate = $this->getSetting('ore_refine_rate', 'P');
+                $refineRate = $this->getSetting('ore_refine_rate', $settingType);
                 break;
             case 'Salvage':
-                $refineRate = $this->getSetting('salvage_refine_rate', 'P');
+                $refineRate = $this->getSetting('salvage_refine_rate', $settingType);
                 break;
         }
 
@@ -147,14 +149,15 @@ class Market extends Helper
      *  ['rules']       string List of applied Rules
      *
      * @param $typeId
+     * @param array $settingType String type of settings to use (i.e. 'P', 'S', "SRP')
      * @return array Merged Buyback Rule
      */
-    public function getMergedBuybackRuleForType($typeId) {
+    public function getMergedBuybackRuleForType($typeId, $settingType) {
 
         // Get System Settings
-        $bb_value_minerals = $this->getSetting("value_minerals", "P");
-        $bb_value_salvage = $this->getSetting("value_salvage", "P");
-        $bb_deny_all = $this->getSetting("default_buyaction_deny", "P");
+        $bb_value_minerals = $this->getSetting("value_minerals", $settingType);
+        $bb_value_salvage = $this->getSetting("value_salvage", $settingType);
+        $bb_deny_all = $this->getSetting("default_buyaction_deny", $settingType);
 
         // Fancy SQL to get Types, GroupID, MarketID and Refining Skill in one go
         $evedataConnection = $this->doctrine->getManager('evedata')->getConnection();
@@ -279,34 +282,40 @@ class Market extends Helper
         // Get Tax
         $base_tax = 0;
 
-        if ($this->authorizationChecker->isGranted('ROLE_MEMBER')) {
-
-            $base_tax = $this->getSetting('role_member_tax', 'P');
-        } else if ($this->authorizationChecker->isGranted('ROLE_ALLY')) {
-
-            $base_tax = $this->getSetting('role_ally_tax', 'P');
-        } else if ($this->authorizationChecker->isGranted('ROLE_FRIEND')) {
-
-            $base_tax = $this->getSetting('role_friend_tax', 'P');
-        } else if ($this->authorizationChecker->isGranted('ROLE_GUEST')) {
-
-            $base_tax = $this->getSetting('role_guest_tax', 'P');
-        } else if ($this->authorizationChecker->isGranted('ROLE_OTHER1')) {
-
-            $base_tax = $this->getSetting('role_other1_tax', 'P');
-        } else if ($this->authorizationChecker->isGranted('ROLE_OTHER2')) {
-
-            $base_tax = $this->getSetting('role_other2_tax', 'P');
-        } else if ($this->authorizationChecker->isGranted('ROLE_OTHER3')) {
-
-            $base_tax = $this->getSetting('role_other3_tax', 'P');
+        if ($this->authorizationChecker->isGranted('ROLE_MEMBER'))
+        {
+            $base_tax = $this->getSetting('role_member_tax', $settingType);
+        }
+        else if ($this->authorizationChecker->isGranted('ROLE_ALLY'))
+        {
+            $base_tax = $this->getSetting('role_ally_tax', $settingType);
+        }
+        else if ($this->authorizationChecker->isGranted('ROLE_FRIEND'))
+        {
+            $base_tax = $this->getSetting('role_friend_tax', $settingType);
+        }
+        else if ($this->authorizationChecker->isGranted('ROLE_GUEST'))
+        {
+            $base_tax = $this->getSetting('role_guest_tax', $settingType);
+        }
+        else if ($this->authorizationChecker->isGranted('ROLE_OTHER1'))
+        {
+            $base_tax = $this->getSetting('role_other1_tax', $settingType);
+        }
+        else if ($this->authorizationChecker->isGranted('ROLE_OTHER2'))
+        {
+            $base_tax = $this->getSetting('role_other2_tax', $settingType);
+        }
+        else if ($this->authorizationChecker->isGranted('ROLE_OTHER3'))
+        {
+            $base_tax = $this->getSetting('role_other3_tax', $settingType);
         }
 
         $options['tax'] += $base_tax;
 
         // Tax can never be below zero, we aren't giving ISK away!
-        if($options['tax'] < 0) {
-
+        if($options['tax'] < 0)
+        {
             $options['tax'] = 0;
         }
 
@@ -323,109 +332,107 @@ class Market extends Helper
      *  ['adjusted']    float Price after all Buyback Rules
      *
      * @param array $typeIds Array of TypeIds
+     * @param array $settingType String type of settings to use (i.e. 'P', 'S', "SRP')
      * @return array Array of TypeId Keys with market Price values
      */
-    public function getBuybackPricesForTypes($typeIds, $skipTaxCalculation = false)
+    public function getBuybackPricesForTypes($typeIds, $settingType, $skipTaxCalculation = false)
     {
         $results = array();
 
         // Get only Unique TypeIds
         $uniqueTypeIds = array_values(array_unique($typeIds));
 
+        $em = $this->doctrine->getManager('default');
         $cacheRepository = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default');
 
+        //remove stale records
+        $cacheRepository->deleteAllOlderThanMinutes(15);
+
         // Get current cache entries
-        $em = $this->doctrine->getManager('default');
-        $cachedItems = $cacheRepository->findAllByTypeIds($uniqueTypeIds);
+        $cachedItems = $cacheRepository->findAllByTypeIdsAndSettingType($uniqueTypeIds, $settingType);
 
-        // If record isn't stale then remove it from the list to pull
-        foreach($cachedItems as $cacheItem) {
+        // If we have a cached item, then remove it from the list to pull
+        foreach($cachedItems as $cacheItem)
+        {
+            // Add existing cache entry
+            $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
+            $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
 
-            // Is the Timestamp later than now + 15 minutes
-            if (date_timestamp_get($cacheItem->getLastPull()) > (date_timestamp_get(new \DateTime("now")) - 900)) {
-
-                // Add existing cache entry
-                $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
-                $results[$cacheItem->getTypeId()]['adjusted'] = $cacheItem->getAdjusted();
-
-                // Remove the item so it doesn't get refreshed
-                unset($uniqueTypeIds[array_search($cacheItem->getTypeID(), $uniqueTypeIds)]);
-            }
+            // Remove the item so it doesn't get refreshed
+            unset($uniqueTypeIds[array_search($cacheItem->getTypeID(), $uniqueTypeIds)]);
         }
 
         // Get just our TypeIds
         $uniqueTypeIds = array_values($uniqueTypeIds);
 
         // Update Cache for remaining TypeIds
-        if(count($uniqueTypeIds) > 0) {
-
+        if(count($uniqueTypeIds) > 0)
+        {
             // Get Eve Central Settings
-            $bb_source_id = $this->getSetting("source_id", "P");
-            $bb_source_type = $this->getSetting("source_type", "P");
-            $bb_source_stat = $this->getSetting("source_stat", "P");
+            $bb_source_id = $this->getSetting("source_id", $settingType);
+            $bb_source_type = $this->getSetting("source_type", $settingType);
+            $bb_source_stat = $this->getSetting("source_stat", $settingType);
 
             // Get updated Stats from Eve Central
             $eveCentralResults = $this->getEveCentralDataForTypes($uniqueTypeIds, $bb_source_id);
 
             // Parse eve central data
-            foreach ($eveCentralResults as $eveCentralResult) {
-
+            foreach ($eveCentralResults as $eveCentralResult)
+            {
                 // Get the Cache Item
                 $typeId = $eveCentralResult[$bb_source_type]["forQuery"]["types"][0];
-                $cacheItem = $cacheRepository->findOneByTypeID($typeId);
 
-                if (!$cacheItem) {
-
-                    // If CacheItem is Null then create and populate it
-                    $cacheItem = new CacheEntity();
-                    $cacheItem->setTypeId($typeId);
-                    $em->persist($cacheItem);
-                }
+                // If CacheItem is Null then create and populate it
+                $cacheItem = new CacheEntity();
+                $cacheItem->setTypeId($typeId);
+                $em->persist($cacheItem);
 
                 // Set Final stats
                 $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
                 $cacheItem->setLastPull(new \DateTime("now"));
                 $cacheItem->setAdjusted(0.0);
 
-                $mergedRule = $this->getMergedBuybackRuleForType($typeId);
+                $mergedRule = $this->getMergedBuybackRuleForType($typeId, $settingType);
                 $adjustedPrice = $cacheItem->getMarket();
 
                 // Check if we can even buy this item
-                if ($mergedRule['canbuy'] == true ) {
-
+                if ($mergedRule['canbuy'] == true )
+                {
                     // Is the refined flag set?
-                    if ($mergedRule['isrefined'] == true) {
-
+                    if ($mergedRule['isrefined'] == true)
+                    {
                         // Gets the refined materials
-                        $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill']);
+                        $materials = $this->getRefinedMaterialsForType($typeId, $mergedRule['refineskill'], $settingType);
                         // Get the prices
-                        $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials), true);
+                        $materialPrices = $this->getBuybackPricesForTypes(array_keys($materials), $settingType, true);
                         // Is refined so reset the adjusted price
                         $adjustedPrice = 0.0;
 
                         // Get new price
-                        foreach ($materials as $materialTypeId => $quantity) {
-
+                        foreach ($materials as $materialTypeId => $quantity)
+                        {
                             $adjustedPrice += ($materialPrices[$materialTypeId]['market'] * $quantity['adjusted']);
                         }
 
                         $cacheItem->setAdjusted($adjustedPrice);
 
-                        if ($mergedRule['isrefined'] == true & $mergedRule['refineskill'] == "Ore") {
-
+                        if ($mergedRule['isrefined'] == true & $mergedRule['refineskill'] == "Ore")
+                        {
                             // Adjust Price by portion size
                             $cacheItem->setAdjusted($cacheItem->getAdjusted()/ $mergedRule['portionSize']);
                         }
-                    } else {
-
+                    }
+                    else
+                    {
                         // Process the rest of the rules
-                        if ($mergedRule['price'] == 0 ) {
-
+                        if ($mergedRule['price'] == 0 )
+                        {
                             // Price isn't set so calculate the taxes
                             //$cacheItem->setAdjusted($adjustedPrice * ((100 - $mergedRule['tax']) / 100));
                             $cacheItem->setAdjusted($adjustedPrice);
-                        } else {
-
+                        }
+                        else
+                        {
                             $cacheItem->setAdjusted($mergedRule['price']);
                         }
                     }
@@ -433,9 +440,9 @@ class Market extends Helper
                     $em->flush();
 
                     $results[$cacheItem->getTypeId()]['market'] = $cacheItem->getMarket();
-
-                } else {
-
+                }
+                else
+                {
                     $cacheItem->setAdjusted(-1);
                     $em->flush();
 
@@ -447,13 +454,14 @@ class Market extends Helper
             }
         }
 
-        if(!$skipTaxCalculation) {
+        if(!$skipTaxCalculation)
+        {
             // Calculate final price by applying taxes
-            foreach (array_keys($results) as $typeid) {
-
-                if (!array_key_exists('options', $results[$typeid])) {
-
-                    $results[$typeid]['options'] = $this->getMergedBuybackRuleForType($typeid);
+            foreach (array_keys($results) as $typeid)
+            {
+                if (!array_key_exists('options', $results[$typeid]))
+                {
+                    $results[$typeid]['options'] = $this->getMergedBuybackRuleForType($typeid, $settingType);
                 }
 
                 $results[$typeid]['adjusted'] = $results[$typeid]['adjusted'] * ((100 - $results[$typeid]['options']['tax']) / 100);
@@ -474,16 +482,14 @@ class Market extends Helper
     {
         $results = array();
 		
-		if(count($typeIds) == 1 && is_array($typeIds[0]))
-			$typeIds = $typeIds[0];
+		if(count($typeIds) == 1 && is_array($typeIds[0])) {$typeIds = $typeIds[0];}
 
         if(count($typeIds) > 0)
         {
-			
 			$chunks = array_chunk($typeIds, 20);
             // Lookup in batches of 20
-            foreach($chunks as $chunk) {
-
+            foreach($chunks as $chunk)
+            {
                 // Build EveCentral Query string
                 $queryString = "https://api.eve-central.com/api/marketstat/json?typeid=" . implode(",", $chunk) . "&usesystem=" . $fromSystemId;
 

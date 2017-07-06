@@ -58,7 +58,7 @@
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                                         <label>
-                                            <input type="checkbox" id="default_buyaction_deny" data-t="buyaction_deny" {{ (settings.default_buyaction_deny == "1") ? 'checked' : '' }}/>
+                                            <input type="checkbox" id="default_buyaction_deny" data-t="hidden_default_buyaction_deny" {{ (settings.default_buyaction_deny == "1") ? 'checked' : '' }}/>
                                             <input type="hidden" id="hidden_default_buyaction_deny" name="default_buyaction_deny" value="{{ (settings.default_buyaction_deny == "1") ? "1" : "0" }}"/>
                                         </label>
                                     </div>

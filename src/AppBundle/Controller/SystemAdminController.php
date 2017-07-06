@@ -115,20 +115,20 @@ class SystemAdminController extends Controller
 //            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
 //            'exclusions' => $exclusions, 'form' => $form->createView()));
 //    }
-
-    /**
-     * @Route("/system/admin/settings/exclusions/delete", name="admin_delete_exclusion")
-     */
-    public function deleteExclusionAction(Request $request)
-    {
-        $exclusion = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->
-        findOneById($request->query->get('id'));
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($exclusion);
-        $em->flush();
-
-        return $this->redirectToRoute('admin_buyback_exclusions');
-    }
+//
+//    /**
+//     * @Route("/system/admin/settings/exclusions/delete", name="admin_delete_exclusion")
+//     */
+//    public function deleteExclusionAction(Request $request)
+//    {
+//        $exclusion = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->
+//        findOneById($request->query->get('id'));
+//        $em = $this->getDoctrine()->getManager();
+//        $em->remove($exclusion);
+//        $em->flush();
+//
+//        return $this->redirectToRoute('admin_buyback_exclusions');
+//    }
 
     /**
      * @Route("/system/admin/tools", name="admin_tools")
@@ -155,17 +155,15 @@ class SystemAdminController extends Controller
     {
         $success = $this->get('cache')->UpdateCache();
 
-        if($success == true) {
-
+        if($success == true)
+        {
             $this->addFlash('success', "Repopulated Cache with defaults");
-        } else {
-
+        }
+        else
+        {
             $this->addFlash('error', "There was an issue repopulating the Cache, Eve Central may be down.");
         }
-
         return $this->redirectToRoute('admin_tools');
     }
-
-
 
 }

@@ -61,6 +61,18 @@ class QuickFixCommand extends ContainerAwareCommand
         $helper->setSetting('role_other2_tax', '0', 'P');
         $helper->setSetting('role_other3_tax', '0', 'P');
 
-
+        foreach(array('S', 'SRP') as $settingType)
+        {
+            $this->setSetting('default_buyaction_deny', '0', $settingType);
+            $this->setSetting("source_id", "30000142", $settingType);
+            $this->setSetting("source_type", "buy", $settingType);
+            $this->setSetting("source_stat", "fivePercent", $settingType);
+            $this->setSetting('role_member_tax', '5', $settingType);
+            $this->setSetting('role_ally_tax', '6', $settingType);
+            $this->setSetting('role_friend_tax', '8', $settingType);
+            $this->setSetting('role_other1_tax', '10', $settingType);
+            $this->setSetting('role_other2_tax', '0', $settingType);
+            $this->setSetting('role_other3_tax', '0', $settingType);
+        }
     }
 }
