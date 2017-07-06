@@ -137,7 +137,7 @@ class RuleController extends Controller
         $rule->setAttribute('Is Refined');
         $rule->setValue('No');
 
-        if($this->get("helper")->getSetting("buyback_value_minerals") == 1)
+        if($this->get("helper")->getSetting("value_minerals", "P") == 1)
         {
             $rule->setValue('Yes');
         }
@@ -150,7 +150,7 @@ class RuleController extends Controller
         $rule->setAttribute('Is Refined');
         $rule->setValue('No');
 
-        if($this->get("helper")->getSetting("buyback_value_salvage") == 1)
+        if($this->get("helper")->getSetting("value_salvage", "P") == 1)
         {
             $rule->setValue('Yes');
         }
@@ -163,7 +163,7 @@ class RuleController extends Controller
         $rule->setAttribute('Can Buy');
         $rule->setValue('Yes');
 
-        if($this->get('helper')->getSetting('buyback_default_buyaction_deny') == 1)
+        if($this->get('helper')->getSetting('default_buyaction_deny', 'P') == 1)
         {
             $rule->setValue('No');
         }

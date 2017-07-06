@@ -46,7 +46,7 @@ class AuthorizationController extends Controller
         $contactResult = $em->getRepository('AppBundle:ContactEntity')->getContactSummary();
 
         $helper = $this->get('helper');
-        $apiKey = $helper->getSetting('ContactAPIKey');
+        $apiKey = $helper->getSetting('ContactAPIKey', 'global');
         $apiCode = null;
         if (!empty($apiKey))
         {
@@ -203,7 +203,7 @@ class AuthorizationController extends Controller
         }
         elseif ($apiCode === '*****')
         {
-            $apiCode = $this->get('helper')->getSetting('ContactAPICode');
+            $apiCode = $this->get('helper')->getSetting('ContactAPICode', 'global');
         }
 
         try
@@ -212,8 +212,8 @@ class AuthorizationController extends Controller
 
             //add/update API to settings DB for future use
             $helper = $this->get('helper');
-            $helper->setSetting('ContactAPIKey', $apiKey);
-            $helper->setSetting('ContactAPICode', $apiCode);
+            $helper->setSetting('ContactAPIKey', $apiKey, 'global');
+            $helper->setSetting('ContactAPICode', $apiCode, 'global');
         }
         catch (Exception $e)
         {

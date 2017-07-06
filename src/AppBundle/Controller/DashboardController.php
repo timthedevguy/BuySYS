@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $form = $this->createForm(AllianceMarketForm::class, $bb);
         $form->handleRequest($request);
 
-        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
+        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK", "global");
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
         $oSales = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserTypesAndExcludeStatus($this->getUser(), ['P', 'PS'], "Estimate");
@@ -71,9 +71,9 @@ class DashboardController extends Controller
             $typeId = $request->request->get('id');
 
             // Get Settings
-            $bb_source_type = $this->get('helper')->getSetting("buyback_source_type");
-            $bb_source_stat = $this->get('helper')->getSetting("buyback_source_stat");
-            $bb_source_id =  $this->get('helper')->getSetting("buyback_source_id");
+            $bb_source_type = $this->get('helper')->getSetting("source_type", "P");
+            $bb_source_stat = $this->get('helper')->getSetting("source_stat", "P");
+            $bb_source_id =  $this->get('helper')->getSetting("source_id", "P");
 
             $amarrData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002187");
             $jitaData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30000142");

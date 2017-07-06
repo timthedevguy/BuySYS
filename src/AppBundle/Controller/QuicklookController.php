@@ -33,7 +33,7 @@ class QuicklookController extends Controller
         $results = Array();
         $subText = "";
         $hideCan = false;
-        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
+        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK", "global");
 
         switch($ore_type) {
             case "high":

@@ -263,70 +263,47 @@
                     <span>Buy Order Queue</span> <span class="badge bg-green" id="salesQueueBadge"></span></a></li>
 
                 {% endif %}
-            {% if is_granted('ROLE_SRP_ADMIN') %}
+                {% if is_granted('ROLE_SRP_ADMIN') %}
 
-                <li class="{{(page_name == "SRP Queue" ? 'active' : '')}}"><a href="{{ path('admin_srp_transactions') }}">
-                <i class="fa fa-grav"></i>
-                <i class="fa fa-exchange"></i>
-                <i class="fa fa-money"></i>
-                <span>SRP Queue</span> <span class="badge bg-green" id="SRPQueueBadge"></span></a></li>
+                    <li class="{{(page_name == "SRP Queue" ? 'active' : '')}}"><a href="{{ path('admin_srp_transactions') }}">
+                    <i class="fa fa-grav"></i>
+                    <i class="fa fa-exchange"></i>
+                    <i class="fa fa-money"></i>
+                    <span>SRP Queue</span> <span class="badge bg-green" id="SRPQueueBadge"></span></a></li>
 
-            {% endif %}
+                {% endif %}
+
+        {% endif %}
+
+        {% if is_granted('ROLE_SYSTEM_ADMIN') %}
+
+            <li class="header">SYSTEM</li>
+
+            <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
+
+            <li class="{{(page_name == "Admin Tools" ? 'active' : '')}}"><a href="{{path('admin_tools')}}"><i class="fa fa-wrench" aria-hidden="true"></i> <span>Admin Tools</span></a></li>
 
 
-				{% if is_granted('ROLE_SYSTEM_ADMIN') %}
 
-                <li class="header">SYSTEM</li>
+            <li class="{{(page_name == "Access Control" ? 'active' : '')}}"><a href="#"><i class="fa fa-address-card"></i> <span>Access Control</span><i class="fa fa-angle-left pull-right"></i></a>
 
-                    <li class="{{(page_name == "News" ? 'active' : '')}}"><a href="{{path('admin_news')}}"><i class="fa fa-newspaper-o"></i> <span>News</span></a></li>
+                <ul class="treeview-menu">
 
-                    <li class="{{(page_name == "Admin Tools" ? 'active' : '')}}"><a href="{{path('admin_tools')}}"><i class="fa fa-wrench" aria-hidden="true"></i> <span>Admin Tools</span></a></li>
+                    <li><a href="{{ path('admin_users') }}"><i class="fa fa-users"></i> <span>Users</span></a></li>
 
+                    <li><a href="{{ path('admin_authorization') }}"><i class="fa fa-clipboard"></i> <span>Authorization</span></a></li>
 
+                </ul>
 
-                    <li class="{{(page_name == "Access Control" ? 'active' : '')}}"><a href="#"><i class="fa fa-address-card"></i> <span>Access Control</span><i class="fa fa-angle-left pull-right"></i></a>
+            </li>
 
-                        <ul class="treeview-menu">
+            <li class="{{(page_name == "App Settings" ? 'active' : '')}}"><a href="{{ path('admin_settings_buyback') }}"><i class="fa fa-cogs"></i> <span>App Settings</span></a></li>
 
-                            <li><a href="{{ path('admin_users') }}"><i class="fa fa-users"></i> <span>Users</span></a></li>
-
-                            <li><a href="{{ path('admin_authorization') }}"><i class="fa fa-clipboard"></i> <span>Authorization</span></a></li>
-
-                        </ul>
-
-                    </li>
-
-                    <li class="{{(page_name == "Settings" ? 'active' : '')}}"><a href="#"><i class="fa fa-cogs"></i> <span>Settings</span><i class="fa fa-angle-left pull-right"></i></a>
-
-                        <ul class="treeview-menu">
-
-                            <li><a href="{{ path('admin_alliance_market_settings') }}"><i class="fa fa-cogs"></i> <span>Buyback Settings</span></a></li>
-
-                            <li><a href="{{ path('admin_buyback_rules') }}"><i class="fa fa-filter"></i> <span>Buyback Rules</span></a></li>
-
-                        </ul>
-
-                    </li>
-
-				{% endif %}
-
-			
-
-				{% if is_granted('ROLE_SRP_ADMIN') %}
-
-				<li class="{{(page_name == "SRP Admin" ? 'active' : '')}}"><a href="{{ path('srp_admin') }}"><i class="fa fa-money"></i> <span>SRP Requests</span> <span class="badge bg-green" id="srpQueueBadge"></span></a></li>
-
-				{% endif %}
-
-				
+            <li class="{{(page_name == "Buyback Rules" ? 'active' : '')}}"><a href="{{ path('admin_buyback_rules') }}"><i class="fa fa-filter"></i> <span>Buyback Rules</span></a></li>
 
         {% endif %}
 
     </ul><!-- /.sidebar-menu -->
-
-  </section>
-
-  <!-- /.sidebar -->
-
+  </section><!-- /.sidebar -->
 </aside>
 

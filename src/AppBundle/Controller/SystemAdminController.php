@@ -37,61 +37,84 @@ class SystemAdminController extends Controller
     }
 
     /**
-     * @Route("/system/admin/settings/market", name="admin_alliance_market_settings")
+     * @Route("/system/admin/settings/buyback", name="admin_settings_buyback")
      */
     public function buybackSettingsAction(Request $request)
     {
-        if($request->getMethod() == 'POST') {
-
-            foreach($request->request->keys() as $setting) {
-
-                $this->get('helper')->setSetting($setting, $request->request->get($setting));
-            }
-
-            $this->addFlash('success', 'Settings saved!');
-        }
-
-        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')
-            ->findSettingsByPrefix('buyback');
-        $settings = array();
-
-        foreach($allSettings as $setting) {
-
-            $settings[$setting->getName()] = $setting->getValue();
-        }
-
-        return $this->render('admin/alliance_market_settings.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Settings', 'settings' => $settings));
+        return $this->action($request, 'P', 'App Settings', 'Sell Order Settings');
     }
 
     /**
-     * @Route("/system/admin/settings/exclusions", name="admin_buyback_exclusions")
+     * @Route("/system/admin/settings/sales", name="admin_settings_sales")
      */
-    public function exclusionsAction(Request $request)
+    public function salesSettingsAction(Request $request)
     {
-        $mode = $this->get("helper")->getSetting("buyback_whitelist_mode");
-        $form = $this->createForm(ExclusionForm::class);
+        return $this->action($request, 'S', 'App Settings', 'Buy Order Settings');
+    }
 
-        if($request->getMethod() == "POST") {
+    /**
+     * @Route("/system/admin/settings/srp", name="admin_settings_srp")
+     */
+    public function srpSettingsAction(Request $request)
+    {
+        return $this->action($request, 'SRP', 'App Settings', 'SRP Settings');
+    }
 
-            $form_results = $request->request->get('exclusion_form');
-            $exclusion = new ExclusionEntity();
-            $exclusion->setMarketGroupId($form_results['marketgroupid']);
-            $exclusion->setWhitelist($mode);
-            $group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->
-            findOneByMarketGroupID($exclusion->getMarketGroupId());
-            $exclusion->setMarketGroupName($group->getMarketGroupName());
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($exclusion);
-            $em->flush();
+    private function action(Request $request, string $settingsType, string $pageName = 'App Settings', string $subText = 'System Settings')
+    {
+        if($request->getMethod() == 'POST')
+        {
+            foreach($request->request->keys() as $setting)
+            {
+                $this->get('helper')->setSetting($setting, $request->request->get($setting), $settingsType);
+            }
+            $this->addFlash('success', 'Settings saved!');
         }
 
-        $exclusions = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
+        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')->findSettingsByTypes(Array($settingsType));
 
-        return $this->render('buyback/exclusions.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
-            'exclusions' => $exclusions, 'form' => $form->createView()));
+        $settings = array();
+        foreach($allSettings as $setting)
+        {
+            $settings[$setting->getName()] = $setting->getValue();
+        }
+
+        return $this->render('admin/base_settings.html.twig', array(
+            'page_name' => $pageName,
+            'sub_text' => $subText,
+            'settings' => $settings,
+            'settingsType' => $settingsType
+        ));
     }
+
+//    /**
+//     * @Route("/system/admin/settings/exclusions", name="admin_buyback_exclusions")
+//     */
+//    public function exclusionsAction(Request $request)
+//    {
+//        $mode = $this->get("helper")->getSetting("buyback_whitelist_mode");
+//        $form = $this->createForm(ExclusionForm::class);
+//
+//        if($request->getMethod() == "POST") {
+//
+//            $form_results = $request->request->get('exclusion_form');
+//            $exclusion = new ExclusionEntity();
+//            $exclusion->setMarketGroupId($form_results['marketgroupid']);
+//            $exclusion->setWhitelist($mode);
+//            $group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->
+//            findOneByMarketGroupID($exclusion->getMarketGroupId());
+//            $exclusion->setMarketGroupName($group->getMarketGroupName());
+//            $em = $this->getDoctrine()->getManager();
+//            $em->persist($exclusion);
+//            $em->flush();
+//        }
+//
+//        $exclusions = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
+//
+//        return $this->render('buyback/exclusions.html.twig', array(
+//            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
+//            'exclusions' => $exclusions, 'form' => $form->createView()));
+//    }
 
     /**
      * @Route("/system/admin/settings/exclusions/delete", name="admin_delete_exclusion")
@@ -105,21 +128,6 @@ class SystemAdminController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('admin_buyback_exclusions');
-    }
-
-    /**
-     * @Route("/system/admin/settings/mode", name="ajax_admin_buyback_mode")
-     */
-    public function ajax_ExclusionModeAction(Request $request)
-    {
-        $mode = $request->request->get("mode");
-
-        $this->get("helper")->setSetting("buyback_whitelist_mode", $mode);
-
-        $response = new Response();
-        $response->setStatusCode(200);
-
-        return $response;
     }
 
     /**

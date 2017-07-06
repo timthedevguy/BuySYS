@@ -20,12 +20,11 @@ class Helper
      * Provides quick method of getting a specific setting from the settings
      * table.
      */
-    public function getSetting($name)
+    public function getSetting(string $name, string $type = 'global')
     {
-        // Get Settings repository
-        $settings = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default');
-        // Grab our setting
-        $setting = $settings->findOneByName($name);
+        // get setting
+        $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
+            ->findOneBy(array('name' => $name, 'type' => $type));;
 
         // Did the setting exist?
         if($setting != null)
@@ -41,14 +40,16 @@ class Helper
     /*
      * Provides quick method of saving a specific setting to the settings table.
      */
-    public function setSetting($name, $value)
+    public function setSetting(string $name, string $value, string $type = 'global')
     {
-        // Get Settings Repository & the Entity Manager
-        $settings = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default');
-        $em = $this->doctrine->getManager();
         // Grab our Setting
-        $setting = $settings->findOneByName($name);
+        $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
+            ->findOneBy(array('name' => $name, 'type' => $type));
 
+        // Get Entity Manager
+        $em = $this->doctrine->getManager();
+
+        dump($setting);
         // Did the setting exist?
         if($setting != null)
         {
@@ -57,40 +58,49 @@ class Helper
             $em->flush();
         } else {
 
-            // No, create the setting, set Name & Value
+            // No, create the setting
             $setting = new SettingEntity();
             $setting->setName($name);
+            $setting->setType($type);
             $setting->setValue($value);
             // Inform Entity Manager to manage this Entity
             $em->persist($setting);
-            // Save to disk
             $em->flush();
         }
+        dump($setting);
+        dump($this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
+            ->findOneBy(array('name' => $name, 'type' => $type)));
     }
 
     /*
      * Generates all needed settings and sets default values
      */
-    public function generateDefaultSettings() {
+    public function generateDefaultSettings()
+    {
+        //GLOBAL SETTINGS
+        $this->setSetting('eveCentralOK', '1', 'global');
+        $this->setSetting("system_maintenance", "0", 'global');
 
-        $this->setSetting('eveCentralOK', '1');
-        $this->setSetting("system_maintenance", "0");
-        $this->setSetting("buyback_source_id", "30002510");
-        $this->setSetting("buyback_source_type", "buy");
-        $this->setSetting("buyback_source_stat", "fivePercent");
-        $this->setSetting("buyback_ore_refine_rate", "70");
-        $this->setSetting("buyback_ice_refine_rate", "70");
-        $this->setSetting("buyback_salvage_refine_rate", "60");
-        $this->setSetting('buyback_value_minerals', '1');
-        $this->setSetting('buyback_value_salvage', '1');
-        $this->setSetting('buyback_role_member_tax', '5');
-        $this->setSetting('buyback_role_ally_tax', '6');
-        $this->setSetting('buyback_role_friend_tax', '8');
-        $this->setSetting('buyback_role_other1_tax', '10');
-        $this->setSetting('buyback_role_other2_tax', '0');
-        $this->setSetting('buyback_role_other3_tax', '0');
+        //BUYBACK SETTINGS
+        $this->setSetting("source_id", "30002510", 'P');
+        $this->setSetting("source_type", "buy", 'P');
+        $this->setSetting("source_stat", "fivePercent", 'P');
+        $this->setSetting("ore_refine_rate", "70", 'P');
+        $this->setSetting("ice_refine_rate", "70", 'P');
+        $this->setSetting("salvage_refine_rate", "60", 'P');
+        $this->setSetting('value_minerals', '1', 'P');
+        $this->setSetting('value_salvage', '1', 'P');
+        $this->setSetting('role_member_tax', '5', 'P');
+        $this->setSetting('role_ally_tax', '6', 'P');
+        $this->setSetting('role_friend_tax', '8', 'P');
+        $this->setSetting('role_other1_tax', '10', 'P');
+        $this->setSetting('role_other2_tax', '0', 'P');
+        $this->setSetting('role_other3_tax', '0', 'P');
+        $this->setSetting('default_buyaction_deny', '0', 'P');
 
-        $this->setSetting('buyback_default_buyaction_deny', '0');
+        //SALES SETTINGS
+
+        //SRP SETTINGS
     }
 }
 

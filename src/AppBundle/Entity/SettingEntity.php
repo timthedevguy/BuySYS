@@ -11,54 +11,60 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class SettingEntity
 {
+    //FIELDS
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
     /**
      * @ORM\Column(type="string", length=255)
      */
     protected $name;
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $value;
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    protected $type = 'P'; //set default for existing installs
+
+
+    //GETTERS AND SETTERS
+    public function getId()
+    {
+        return $this->id;
+    }
 
     public function setName($name)
     {
         $this->name = $name;
-
         return $this;
     }
-
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $value;
-
     public function setValue($value)
     {
         $this->value = $value;
-
         return $this;
     }
-
     public function getValue()
     {
         return $this->value;
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function setType($type)
     {
-        return $this->id;
+        $this->type = $type;
+        return $this;
+    }
+    public function getType()
+    {
+        return $this->type;
     }
 }
