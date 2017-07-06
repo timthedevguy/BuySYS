@@ -8,8 +8,8 @@
         <div class="col-sm-4">
             <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                 <label>
-                    <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (settings.buyback_value_minerals == "1") ? 'checked' : '' }}/>
-                    <input type="hidden" id="value_minerals" name="buyback_value_minerals" value="{{ (settings.buyback_value_minerals == "1") ? "1" : "0" }}"/>
+                    <input type="checkbox" id="value_minerals_base" data-t="value_minerals" {{ (settings.value_minerals == "1") ? 'checked' : '' }}/>
+                    <input type="hidden" id="value_minerals" name="value_minerals" value="{{ (settings.value_minerals == "1") ? "1" : "0" }}"/>
                 </label>
             </div>
         </div>
@@ -24,8 +24,8 @@
         <div class="col-sm-4">
             <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                 <label>
-                    <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (settings.buyback_value_salvage == "1") ? 'checked' : '' }}/>
-                    <input type="hidden" id="value_salvage" name="buyback_value_salvage" value="{{ (settings.buyback_value_salvage == "1") ? "1" : "0" }}"/>
+                    <input type="checkbox" id="value_salvage_base" data-t="value_salvage" {{ (settings.value_salvage == "1") ? 'checked' : '' }}/>
+                    <input type="hidden" id="value_salvage" name="value_salvage" value="{{ (settings.value_salvage == "1") ? "1" : "0" }}"/>
                 </label>
             </div>
         </div>
@@ -39,7 +39,7 @@
         </div>
         <div class="col-sm-4">
             <div class="input-group">
-                <input class="form-control" type="text" id="ore_refine_rate" name="buyback_ore_refine_rate" value="{{ settings.buyback_ore_refine_rate }}"/>
+                <input class="form-control" type="text" id="ore_refine_rate" name="ore_refine_rate" value="{{ settings.ore_refine_rate }}"/>
                 <span class="input-group-addon">%</span>
             </div>
         </div>
@@ -53,7 +53,7 @@
         </div>
         <div class="col-sm-4">
             <div class="input-group">
-                <input class="form-control" type="text" id="ice_refine_rate" name="buyback_ice_refine_rate" value="{{ settings.buyback_ice_refine_rate }}"/>
+                <input class="form-control" type="text" id="ice_refine_rate" name="ice_refine_rate" value="{{ settings.ice_refine_rate }}"/>
                 <span class="input-group-addon">%</span>
             </div>
         </div>
@@ -67,7 +67,7 @@
         </div>
         <div class="col-sm-4">
             <div class="input-group">
-                <input class="form-control" type="text" id="salvage_refine_rate" name="buyback_salvage_refine_rate" value="{{ settings.buyback_salvage_refine_rate }}"/>
+                <input class="form-control" type="text" id="salvage_refine_rate" name="salvage_refine_rate" value="{{ settings.salvage_refine_rate }}"/>
                 <span class="input-group-addon">%</span>
             </div>
         </div>

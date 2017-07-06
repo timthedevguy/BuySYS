@@ -44,16 +44,18 @@ class Helper
     {
         // Grab our Setting
         $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
-            ->findOneBy(array('name' => $name, 'type' => $type));;
+            ->findOneBy(array('name' => $name, 'type' => $type));
 
         // Get Entity Manager
         $em = $this->doctrine->getManager();
 
+        dump($setting);
         // Did the setting exist?
         if($setting != null)
         {
             // Yes, set new Value and save
             $setting->setValue($value);
+            $em->flush();
         } else {
 
             // No, create the setting
@@ -63,10 +65,11 @@ class Helper
             $setting->setValue($value);
             // Inform Entity Manager to manage this Entity
             $em->persist($setting);
+            $em->flush();
         }
-
-        // Save to disk
-        $em->flush();
+        dump($setting);
+        dump($this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
+            ->findOneBy(array('name' => $name, 'type' => $type)));
     }
 
     /*

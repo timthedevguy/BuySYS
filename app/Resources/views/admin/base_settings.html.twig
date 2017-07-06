@@ -58,8 +58,8 @@
                                 <div class="col-sm-4">
                                     <div class="checkbox icheck" style="text-align:right;margin-right:30px;">
                                         <label>
-                                            <input type="checkbox" id="buyback_default_buyaction_deny" data-t="default_buyaction_deny" {{ (settings.buyback_default_buyaction_deny == "1") ? 'checked' : '' }}/>
-                                            <input type="hidden" id="default_buyaction_deny" name="buyback_default_buyaction_deny" value="{{ (settings.buyback_default_buyaction_deny == "1") ? "1" : "0" }}"/>
+                                            <input type="checkbox" id="default_buyaction_deny" data-t="buyaction_deny" {{ (settings.default_buyaction_deny == "1") ? 'checked' : '' }}/>
+                                            <input type="hidden" id="hidden_default_buyaction_deny" name="default_buyaction_deny" value="{{ (settings.default_buyaction_deny == "1") ? "1" : "0" }}"/>
                                         </label>
                                     </div>
                                 </div>
@@ -73,7 +73,7 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <!--<div class="input-group">-->
-                                        <input class="form-control" type="text" id="source_id" name="buyback_source_id" value="{{ settings.buyback_source_id }}"/>
+                                        <input class="form-control" type="text" id="source_id" name="source_id" value="{{ settings.source_id }}"/>
                                         <!--<span class="input-group-addon iga-button global-search-button"><i class="fa fa-search" aria-hidden="true"></i></span>
                                     </div>-->
                                 </div>
@@ -86,7 +86,7 @@
                                     <p>Source type will be the type of stat data to use.  For current Eve Central data the choices are 'all', 'buy' and 'sell'.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="source_type" name="buyback_source_type" value="{{ settings.buyback_source_type }}"/>
+                                    <input class="form-control" type="text" id="source_type" name="source_type" value="{{ settings.source_type }}"/>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                                     <p>Source statistic is the stat field to use.  For current Eve Central data the choices are 'avg', 'wavg', 'variance', 'max', 'min', 'stdDev', 'median' and 'fivePercent'.</p>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="form-control" type="text" id="source_stat" name="buyback_source_stat" value="{{ settings.buyback_source_stat }}"/>
+                                    <input class="form-control" type="text" id="source_stat" name="source_stat" value="{{ settings.source_stat }}"/>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
                                             <td>ROLE_MEMBER</td>
                                             <td>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_member_tax" value="{{ settings.buyback_role_member_tax }}"/>
+                                                    <input class="form-control" type="text" id="default_tax" name="role_member_tax" value="{{ settings.role_member_tax }}"/>
                                                     <span class="input-group-addon">%</span>
                                                 </div>
                                             </td>
@@ -131,7 +131,7 @@
                                             <td>ROLE_ALLY</td>
                                             <td>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_ally_tax" value="{{ settings.buyback_role_ally_tax }}"/>
+                                                    <input class="form-control" type="text" id="default_tax" name="role_ally_tax" value="{{ settings.role_ally_tax }}"/>
                                                     <span class="input-group-addon">%</span>
                                                 </div>
                                             </td>
@@ -140,7 +140,7 @@
                                             <td>ROLE_FRIEND</td>
                                             <td>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_friend_tax" value="{{ settings.buyback_role_friend_tax }}"/>
+                                                    <input class="form-control" type="text" id="default_tax" name="role_friend_tax" value="{{ settings.role_friend_tax }}"/>
                                                     <span class="input-group-addon">%</span>
                                                 </div>
                                             </td>
@@ -149,7 +149,7 @@
                                             <td>ROLE_OTHER1</td>
                                             <td>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other1_tax" value="{{ settings.buyback_role_other1_tax }}"/>
+                                                    <input class="form-control" type="text" id="default_tax" name="role_other1_tax" value="{{ settings.role_other1_tax }}"/>
                                                     <span class="input-group-addon">%</span>
                                                 </div>
                                             </td>
@@ -158,7 +158,7 @@
                                             <td>ROLE_OTHER2</td>
                                             <td>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other2_tax" value="{{ settings.buyback_role_other2_tax }}"/>
+                                                    <input class="form-control" type="text" id="default_tax" name="role_other2_tax" value="{{ settings.role_other2_tax }}"/>
                                                     <span class="input-group-addon">%</span>
                                                 </div>
                                             </td>
@@ -167,7 +167,7 @@
                                             <td>ROLE_OTHER3</td>
                                             <td>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" id="default_tax" name="buyback_role_other3_tax" value="{{ settings.buyback_role_other3_tax }}"/>
+                                                    <input class="form-control" type="text" id="default_tax" name="role_other3_tax" value="{{ settings.role_other3_tax }}"/>
                                                     <span class="input-group-addon">%</span>
                                                 </div>
                                             </td>

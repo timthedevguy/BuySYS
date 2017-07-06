@@ -71,7 +71,7 @@ class SystemAdminController extends Controller
             $this->addFlash('success', 'Settings saved!');
         }
 
-        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')->findSettingsByPrefix('buyback');
+        $allSettings = $this->getDoctrine()->getRepository('AppBundle:SettingEntity', 'default')->findSettingsByTypes(Array($settingsType));
 
         $settings = array();
         foreach($allSettings as $setting)

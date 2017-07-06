@@ -17,7 +17,7 @@ class SettingRepository extends EntityRepository {
     {
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT s FROM AppBundle:SettingEntity s WHERE s.type in :types'
+                'SELECT s FROM AppBundle:SettingEntity s WHERE s.type in (:types)'
             )->setParameter('types', $types)->getResult();
     }
 }
