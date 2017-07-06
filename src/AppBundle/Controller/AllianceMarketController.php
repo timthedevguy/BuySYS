@@ -44,7 +44,7 @@ class AllianceMarketController extends Controller
         $form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
         $form->handleRequest($request);
 
-        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK");
+        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK", "global");
         $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array($transactionType));
         $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 

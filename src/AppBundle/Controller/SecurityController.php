@@ -16,7 +16,7 @@ class SecurityController extends Controller
         // Get Maintenance Mode flag
         // Note: If null is returned then no settings exists, proceed to
         // generate them.
-        $isDown = $this->get("helper")->getSetting("system_maintenance");
+        $isDown = $this->get("helper")->getSetting("system_maintenance", 'global');
 
         if($isDown != null) {
 

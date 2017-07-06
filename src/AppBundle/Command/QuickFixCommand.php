@@ -31,13 +31,36 @@ class QuickFixCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getContainer()->get('helper');
-        $helper->setSetting('buyback_default_buyaction_deny', '0', 'P');
+        $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
-        $helper->setSetting('buyback_role_member_tax',  $helper->getSetting('buyback_default_tax', 'P'), 'P');
-        $helper->setSetting('buyback_role_ally_tax', '6', 'P');
-        $helper->setSetting('buyback_role_friend_tax', '8', 'P');
-        $helper->setSetting('buyback_role_other1_tax', '10', 'P');
-        $helper->setSetting('buyback_role_other2_tax', '0', 'P');
-        $helper->setSetting('buyback_role_other3_tax', '0', 'P');
+        //update existing values
+        $records = $em->getRepository("AppBundle:SettingEntity", 'default')->findAll();
+
+        foreach($records as $record)
+        {
+            if(preg_match('/buyback/', $record->getName()))
+            {
+                $record->setName(str_replace('buyback_', '', $record->getName())); //removing old prefix
+                $record->setType('P'); //adding type
+            }
+            else
+            {
+                $record->setType('global');
+            }
+        }
+        $em->flush();
+
+
+        //add new values
+        $helper->setSetting('default_buyaction_deny', '0', 'P');
+
+        $helper->setSetting('role_member_tax',  $helper->getSetting('default_tax', 'P'), 'P');
+        $helper->setSetting('role_ally_tax', '6', 'P');
+        $helper->setSetting('role_friend_tax', '8', 'P');
+        $helper->setSetting('role_other1_tax', '10', 'P');
+        $helper->setSetting('role_other2_tax', '0', 'P');
+        $helper->setSetting('role_other3_tax', '0', 'P');
+
+
     }
 }

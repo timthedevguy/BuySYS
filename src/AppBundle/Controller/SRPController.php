@@ -124,12 +124,12 @@ class SRPController extends Controller
 			];
 		}
 		
-		$orig = $this->get('helper')->getSetting("buyback_source_type");		
-		$this->get('helper')->setSetting("buyback_source_type", "sell");
+		$orig = $this->get('helper')->getSetting("source_type", "P");
+		$this->get('helper')->setSetting("source_type", "sell", "P");
         $this->get('market')->forceCacheUpdateForTypes($typeIDs);	
         $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIDs);
         $this->get('market')->forceCacheUpdateForTypes($typeIDs);	
-		$this->get('helper')->setSetting("buyback_source_type", $orig);
+		$this->get('helper')->setSetting("source_type", $orig, "P");
 	
 		//get DB manager
 		$em = $this->getDoctrine()->getManager('default');

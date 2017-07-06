@@ -87,34 +87,34 @@ class SystemAdminController extends Controller
         ));
     }
 
-    /**
-     * @Route("/system/admin/settings/exclusions", name="admin_buyback_exclusions")
-     */
-    public function exclusionsAction(Request $request)
-    {
-        $mode = $this->get("helper")->getSetting("buyback_whitelist_mode");
-        $form = $this->createForm(ExclusionForm::class);
-
-        if($request->getMethod() == "POST") {
-
-            $form_results = $request->request->get('exclusion_form');
-            $exclusion = new ExclusionEntity();
-            $exclusion->setMarketGroupId($form_results['marketgroupid']);
-            $exclusion->setWhitelist($mode);
-            $group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->
-            findOneByMarketGroupID($exclusion->getMarketGroupId());
-            $exclusion->setMarketGroupName($group->getMarketGroupName());
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($exclusion);
-            $em->flush();
-        }
-
-        $exclusions = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
-
-        return $this->render('buyback/exclusions.html.twig', array(
-            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
-            'exclusions' => $exclusions, 'form' => $form->createView()));
-    }
+//    /**
+//     * @Route("/system/admin/settings/exclusions", name="admin_buyback_exclusions")
+//     */
+//    public function exclusionsAction(Request $request)
+//    {
+//        $mode = $this->get("helper")->getSetting("buyback_whitelist_mode");
+//        $form = $this->createForm(ExclusionForm::class);
+//
+//        if($request->getMethod() == "POST") {
+//
+//            $form_results = $request->request->get('exclusion_form');
+//            $exclusion = new ExclusionEntity();
+//            $exclusion->setMarketGroupId($form_results['marketgroupid']);
+//            $exclusion->setWhitelist($mode);
+//            $group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->
+//            findOneByMarketGroupID($exclusion->getMarketGroupId());
+//            $exclusion->setMarketGroupName($group->getMarketGroupName());
+//            $em = $this->getDoctrine()->getManager();
+//            $em->persist($exclusion);
+//            $em->flush();
+//        }
+//
+//        $exclusions = $this->getDoctrine()->getRepository('AppBundle:ExclusionEntity')->findByWhitelist($mode);
+//
+//        return $this->render('buyback/exclusions.html.twig', array(
+//            'page_name' => 'Settings', 'sub_text' => 'Buyback Exclusions', 'mode' => $mode,
+//            'exclusions' => $exclusions, 'form' => $form->createView()));
+//    }
 
     /**
      * @Route("/system/admin/settings/exclusions/delete", name="admin_delete_exclusion")

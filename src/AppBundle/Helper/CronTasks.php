@@ -29,8 +29,8 @@ class CronTasks extends Helper
 
     private function updateContacts()
     {
-        $apiKey = $this->getSetting('ContactAPIKey');
-        $apiCode = $this->getSetting('ContactAPICode');
+        $apiKey = $this->getSetting('ContactAPIKey', 'global');
+        $apiCode = $this->getSetting('ContactAPICode', 'global');
 
         if (!empty($apiKey) && !empty($apiCode))
         {

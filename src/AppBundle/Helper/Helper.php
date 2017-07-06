@@ -79,22 +79,21 @@ class Helper
         $this->setSetting("system_maintenance", "0", 'global');
 
         //BUYBACK SETTINGS
-        $this->setSetting("buyback_source_id", "30002510", 'P');
-        $this->setSetting("buyback_source_type", "buy", 'P');
-        $this->setSetting("buyback_source_stat", "fivePercent", 'P');
-        $this->setSetting("buyback_ore_refine_rate", "70", 'P');
-        $this->setSetting("buyback_ice_refine_rate", "70", 'P');
-        $this->setSetting("buyback_salvage_refine_rate", "60", 'P');
-        $this->setSetting('buyback_value_minerals', '1', 'P');
-        $this->setSetting('buyback_value_salvage', '1', 'P');
-        $this->setSetting('buyback_role_member_tax', '5', 'P');
-        $this->setSetting('buyback_role_ally_tax', '6', 'P');
-        $this->setSetting('buyback_role_friend_tax', '8', 'P');
-        $this->setSetting('buyback_role_other1_tax', '10', 'P');
-        $this->setSetting('buyback_role_other2_tax', '0', 'P');
-        $this->setSetting('buyback_role_other3_tax', '0', 'P');
-
-        $this->setSetting('buyback_default_buyaction_deny', '0', 'P');
+        $this->setSetting("source_id", "30002510", 'P');
+        $this->setSetting("source_type", "buy", 'P');
+        $this->setSetting("source_stat", "fivePercent", 'P');
+        $this->setSetting("ore_refine_rate", "70", 'P');
+        $this->setSetting("ice_refine_rate", "70", 'P');
+        $this->setSetting("salvage_refine_rate", "60", 'P');
+        $this->setSetting('value_minerals', '1', 'P');
+        $this->setSetting('value_salvage', '1', 'P');
+        $this->setSetting('role_member_tax', '5', 'P');
+        $this->setSetting('role_ally_tax', '6', 'P');
+        $this->setSetting('role_friend_tax', '8', 'P');
+        $this->setSetting('role_other1_tax', '10', 'P');
+        $this->setSetting('role_other2_tax', '0', 'P');
+        $this->setSetting('role_other3_tax', '0', 'P');
+        $this->setSetting('default_buyaction_deny', '0', 'P');
 
         //SALES SETTINGS
 

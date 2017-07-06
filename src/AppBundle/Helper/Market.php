@@ -31,9 +31,9 @@ class Market extends Helper
     public function forceCacheUpdateForTypes($typeIds)
     {
         // Get Settings
-        $bb_source_id = $this->getSetting("buyback_source_id");
-        $bb_source_type = $this->getSetting("buyback_source_type");
-        $bb_source_stat = $this->getSetting("buyback_source_stat");
+        $bb_source_id = $this->getSetting("source_id", "P");
+        $bb_source_type = $this->getSetting("source_type", "P");
+        $bb_source_stat = $this->getSetting("source_stat", "P");
 
         $jsonData = $this->getEveCentralDataForTypes($typeIds, $bb_source_id);
 
@@ -102,13 +102,13 @@ class Market extends Helper
         switch($refiningSkill)
         {
             case 'Ice':
-                $refineRate = $this->getSetting('buyback_ice_refine_rate');
+                $refineRate = $this->getSetting('ice_refine_rate', 'P');
                 break;
             case 'Ore':
-                $refineRate = $this->getSetting('buyback_ore_refine_rate');
+                $refineRate = $this->getSetting('ore_refine_rate', 'P');
                 break;
             case 'Salvage':
-                $refineRate = $this->getSetting('buyback_salvage_refine_rate');
+                $refineRate = $this->getSetting('salvage_refine_rate', 'P');
                 break;
         }
 
@@ -152,10 +152,9 @@ class Market extends Helper
     public function getMergedBuybackRuleForType($typeId) {
 
         // Get System Settings
-        $bb_value_minerals = $this->getSetting("buyback_value_minerals");
-        $bb_value_salvage = $this->getSetting("buyback_value_salvage");
-        $bb_tax = $this->getSetting("buyback_default_tax");
-        $bb_deny_all = $this->getSetting("buyback_default_buyaction_deny");
+        $bb_value_minerals = $this->getSetting("value_minerals", "P");
+        $bb_value_salvage = $this->getSetting("value_salvage", "P");
+        $bb_deny_all = $this->getSetting("default_buyaction_deny", "P");
 
         // Fancy SQL to get Types, GroupID, MarketID and Refining Skill in one go
         $evedataConnection = $this->doctrine->getManager('evedata')->getConnection();
@@ -282,25 +281,25 @@ class Market extends Helper
 
         if ($this->authorizationChecker->isGranted('ROLE_MEMBER')) {
 
-            $base_tax = $this->getSetting('buyback_role_member_tax');
+            $base_tax = $this->getSetting('role_member_tax', 'P');
         } else if ($this->authorizationChecker->isGranted('ROLE_ALLY')) {
 
-            $base_tax = $this->getSetting('buyback_role_ally_tax');
+            $base_tax = $this->getSetting('role_ally_tax', 'P');
         } else if ($this->authorizationChecker->isGranted('ROLE_FRIEND')) {
 
-            $base_tax = $this->getSetting('buyback_role_friend_tax');
+            $base_tax = $this->getSetting('role_friend_tax', 'P');
         } else if ($this->authorizationChecker->isGranted('ROLE_GUEST')) {
 
-            $base_tax = $this->getSetting('buyback_role_guest_tax');
+            $base_tax = $this->getSetting('role_guest_tax', 'P');
         } else if ($this->authorizationChecker->isGranted('ROLE_OTHER1')) {
 
-            $base_tax = $this->getSetting('buyback_role_other1_tax');
+            $base_tax = $this->getSetting('role_other1_tax', 'P');
         } else if ($this->authorizationChecker->isGranted('ROLE_OTHER2')) {
 
-            $base_tax = $this->getSetting('buyback_role_other2_tax');
+            $base_tax = $this->getSetting('role_other2_tax', 'P');
         } else if ($this->authorizationChecker->isGranted('ROLE_OTHER3')) {
 
-            $base_tax = $this->getSetting('buyback_role_other3_tax');
+            $base_tax = $this->getSetting('role_other3_tax', 'P');
         }
 
         $options['tax'] += $base_tax;
@@ -361,9 +360,9 @@ class Market extends Helper
         if(count($uniqueTypeIds) > 0) {
 
             // Get Eve Central Settings
-            $bb_source_id = $this->getSetting("buyback_source_id");
-            $bb_source_type = $this->getSetting("buyback_source_type");
-            $bb_source_stat = $this->getSetting("buyback_source_stat");
+            $bb_source_id = $this->getSetting("source_id", "P");
+            $bb_source_type = $this->getSetting("source_type", "P");
+            $bb_source_stat = $this->getSetting("source_stat", "P");
 
             // Get updated Stats from Eve Central
             $eveCentralResults = $this->getEveCentralDataForTypes($uniqueTypeIds, $bb_source_id);
