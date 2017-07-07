@@ -12,7 +12,7 @@ use AppBundle\ESI\ESI;
 class SuggestionController extends Controller
 {
     /**
-     * @Route("/guest/suggestion", name="guest_suggestion")
+     * @Route("/suggestion", name="guest_suggestion")
      */
     public function indexAction(Request $request)
     {

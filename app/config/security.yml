@@ -32,9 +32,12 @@ security:
         - {path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/sso, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/devlogin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - {path: ^/guest/suggestion, roles: ROLE_USER }
+        - {path: ^/suggestion, roles: ROLE_USER }
         - {path: ^/pages, roles: ROLE_MEMBER }
-        - {path: ^/srp, roles: ROLE_MEMBER }
+        - {path: ^/alliance_market, roles: [ROLE_ENTITLEMENT_BUYBACK, ROLE_ENTITLEMENT_SALES] }
+        - {path: ^/alliance_market/sellorders, roles: ROLE_ENTITLEMENT_BUYBACK }
+        - {path: ^/alliance_market/buyorders, roles: ROLE_ENTITLEMENT_SALES }
+        - {path: ^/srp, roles: ROLE_ENTITLEMENT_SRP }
         - {path: ^/admin/buy, roles: ROLE_ADMIN }
         - {path: ^/admin/sell, roles: ROLE_ADMIN }
         - {path: ^/admin/srp, roles: ROLE_ADMIN }
