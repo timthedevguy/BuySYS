@@ -48,6 +48,14 @@ class UserEntity implements AdvancedUserInterface, \Serializable
      */
     protected $overrideRole = "";
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $entitlements = "";
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $overrideEntitlements = "";
+    /**
     * @ORM\Column(type="boolean")
     */
     protected $isActive;
@@ -126,6 +134,36 @@ class UserEntity implements AdvancedUserInterface, \Serializable
         return $this;
     }
 
+    public function getEntitlements()
+    {
+        return $this->entitlements;
+    }
+    public function setEntitlements($entitlements)
+    {
+        $this->entitlements = $entitlements;
+        return $this;
+    }
+    public function addEntitlement($entitlement)
+    {
+        $this->entitlements .= ",".$entitlement;
+        return $this;
+    }
+
+    public function getOverrideEntitlements()
+    {
+        return $this->overrideEntitlements;
+    }
+    public function setOverrideEntitlements($overrideEntitlements)
+    {
+        $this->overrideEntitlements = $overrideEntitlements;
+        return $this;
+    }
+    public function addOverrideEntitlement($entitlement)
+    {
+        $this->overrideEntitlements .= ",".$entitlement;
+        return $this;
+    }
+
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
@@ -163,15 +201,31 @@ class UserEntity implements AdvancedUserInterface, \Serializable
 
 
     //USED BY SYMFONY
-    public function getSalt() {
+    public function getSalt()
+    {
         return null;
     }
-    public function getRoles() {
-        if (!empty($this->overrideRole)) {
-            return explode(",", $this->overrideRole);
-        } else {
-            return explode(",", $this->role);
+    public function getRoles()
+    {
+        if (!empty($this->overrideRole))
+        {
+            $roles = explode(",", $this->overrideRole);
         }
+        else
+        {
+            $roles = explode(",", $this->role);
+        }
+
+        if (!empty($this->overrideEntitlements))
+        {
+            $entitlements = explode(",", $this->overrideEntitlements);
+        }
+        else
+        {
+            $entitlements = explode(",", $this->entitlements);
+        }
+
+        return array_merge($roles, $entitlements); //merge in entitlements (they're basically just more roles)
     }
     /** @see \Serializable::serialize() */
     public function serialize()

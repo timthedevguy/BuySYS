@@ -18,13 +18,15 @@ class ContactSummaryModel
      * @param $contactCount
      * @param $updatedDate
      * @param $selectedRole
+     * @param $selectedEntitlements
      */
-    public function __construct($contactLevel, $contactCount = 0, $updatedDate = null, $selectedRole = null)
+    public function __construct($contactLevel, $contactCount = 0, $updatedDate = null, $selectedRole = null, $selectedEntitlements = "")
     {
         $this->contactLevel = $contactLevel;
         $this->contactCount = $contactCount;
         $this->updatedDate = $updatedDate;
         $this->selectedRole = $selectedRole;
+        $this->selectedEntitlements = $selectedEntitlements;
     }
 
 
@@ -33,6 +35,7 @@ class ContactSummaryModel
     protected $contactCount;
     protected $updatedDate;
     protected $selectedRole;
+    protected $selectedEntitlements;
 
 
 
@@ -51,6 +54,7 @@ class ContactSummaryModel
     public function setContactLevel($contactLevel)
     {
         $this->contactLevel = $contactLevel;
+        return $this;
     }
 
     /**
@@ -67,6 +71,7 @@ class ContactSummaryModel
     public function setContactCount($contactCount)
     {
         $this->contactCount = $contactCount;
+        return $this;
     }
 
     /**
@@ -83,6 +88,7 @@ class ContactSummaryModel
     public function setUpdatedDate($updatedDate)
     {
         $this->updatedDate = $updatedDate;
+        return $this;
     }
 
     /**
@@ -99,6 +105,24 @@ class ContactSummaryModel
     public function setSelectedRole($selectedRole)
     {
         $this->selectedRole = $selectedRole;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSelectedEntitlements()
+    {
+        return $this->selectedRole;
+    }
+
+    /**
+     * @param mixed $selectedEntitlements
+     */
+    public function setSelectedEntitlements($selectedEntitlements)
+    {
+        $this->selectedEntitlements = $selectedEntitlements;
+        return $this;
     }
 
 

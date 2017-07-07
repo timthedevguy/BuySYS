@@ -38,6 +38,10 @@ class AuthorizationEntity
      */
     protected $role;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $entitlements = "";
 
 
 
@@ -129,6 +133,34 @@ class AuthorizationEntity
     public function setRole($role)
     {
         $this->role = $role;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEntitlements()
+    {
+        return $this->entitlements;
+    }
+
+    /**
+     * @param mixed $entitlements
+     * @return AuthorizationEntity
+     */
+    public function setEntitlements($entitlements)
+    {
+        $this->entitlements = $entitlements;
+        return $this;
+    }
+
+    /**
+     * @param mixed $entitlement
+     * @return AuthorizationEntity
+     */
+    public function addEntitlement($entitlement)
+    {
+        $this->entitlements .= ",".$entitlement;
         return $this;
     }
 }

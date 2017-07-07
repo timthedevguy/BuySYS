@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\ESI\ESI;
 use AppBundle\Entity\AuthorizationEntity;
-use AppBundle\Security\RoleManager;
+use AppBundle\Security\AuthorizationManager;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 class AuthorizationController extends Controller
@@ -78,14 +78,16 @@ class AuthorizationController extends Controller
             //set roles
             foreach ($contactAuths as $auth)
             {
-                $contactSummary[$auth->getName()]->setSelectedRole($auth->getRole());
+                $contactSummary[$auth->getName()]
+                    ->setSelectedRole($auth->getRole())
+                    ->setSelectedEntitlements($auth->getEntitlements());
             }
 
         }
 
 
         return $this->render('access_control/authorization.html.twig', array('page_name' => 'Access Control',
-            'sub_text' => '', 'items' => $manualItems, 'roles' => RoleManager::getBuybackRoles(), 'levels' => self::$contactLevelArray,
+            'sub_text' => '', 'items' => $manualItems, 'roles' => AuthorizationManager::getBuybackRoles(), 'levels' => self::$contactLevelArray,
             'contactSummary' => $contactSummary, 'apiKey' => $apiKey, 'apiCode' => $apiCode));
     }
 
@@ -133,7 +135,7 @@ class AuthorizationController extends Controller
                 ->setEveId($eveid)
                 ->setName($name)
                 ->setType($type)
-                ->setRole(RoleManager::getDefaultRole());
+                ->setRole(AuthorizationManager::getDefaultRole());
 
             $em->persist($entry);
             $em->flush();
@@ -161,8 +163,6 @@ class AuthorizationController extends Controller
     {
         $eveid = $request->request->get('eveid');
         $role = $request->request->get('role');
-        $name = $request->request->get('name');
-        $type = $request->request->get('type');
 
         // Get Entity Manager
         $em = $this->getDoctrine('default')->getManager();
@@ -170,11 +170,14 @@ class AuthorizationController extends Controller
 
         if(empty($entry))
         {
-            $entry = new AuthorizationEntity();
-            $entry->setEveId($eveid);
-            $entry->setName($name);
-            $entry->setType($type);
-            $entry->setRole($role);
+            $name = $request->request->get('name');
+            $type = $request->request->get('type');
+
+            $entry = (new AuthorizationEntity())
+                ->setEveId($eveid)
+                ->setName($name)
+                ->setType($type)
+                ->setRole($role);
 
             $em->persist($entry);
             $em->flush();
@@ -187,6 +190,43 @@ class AuthorizationController extends Controller
 
         return new Response("OK");
     }
+
+
+    /**
+     * @Route("/system/admin/authorization/update/entitlements", name="ajax_update_auth_entitlements")
+     */
+    public function ajax_UpdateAuthorizationEntitlements(Request $request)
+    {
+        $eveid = $request->request->get('eveid');
+        $entitlements = $request->request->get('entitlements');
+
+        // Get Entity Manager
+        $em = $this->getDoctrine('default')->getManager();
+        $entry = $this->getDoctrine('default')->getRepository('AppBundle:AuthorizationEntity')->findOneBy(array('eveid' => $eveid));
+
+        if(empty($entry))
+        {
+            $name = $request->request->get('name');
+            $type = $request->request->get('type');
+
+            $entry = (new AuthorizationEntity())
+                ->setEveId($eveid)
+                ->setName($name)
+                ->setType($type)
+                ->setEntitlements($entitlements);
+
+            $em->persist($entry);
+            $em->flush();
+        }
+        else
+        {
+            $entry->setEntitlements($entitlements);
+            $em->flush();
+        }
+
+        return new Response("OK");
+    }
+
 
 
     /**

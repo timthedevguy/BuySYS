@@ -3,7 +3,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Controller\AuthorizationController;
 use AppBundle\Entity\AuthorizationEntity;
-use AppBundle\Security\RoleManager;
+use AppBundle\Security\AuthorizationManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -78,7 +78,7 @@ class PopulateDbCommand extends ContainerAwareCommand
             ->setEveId(-999)
             ->setName("Default Access (Everyone Not Configured)")
             ->setType("")
-            ->setRole(RoleManager::getDefaultRole());
+            ->setRole(AuthorizationManager::getDefaultRole());
 
         $em->persist($defaultEntry);
         $em->flush();
@@ -89,7 +89,7 @@ class PopulateDbCommand extends ContainerAwareCommand
                 ->setEveId($id)
                 ->setName($level)
                 ->setType("contact")
-                ->setRole(RoleManager::getDefaultRole());
+                ->setRole(AuthorizationManager::getDefaultRole());
 
             $em->persist($entry);
             $em->flush();

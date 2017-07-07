@@ -2,7 +2,7 @@
 namespace AppBundle\Helper;
 
 use AppBundle\Helper\Helper;
-use AppBundle\Security\RoleManager;
+use AppBundle\Security\AuthorizationManager;
 
 /**
  * Handles Cache functions
@@ -11,7 +11,7 @@ class CronTasks extends Helper
 {
     private $roleManager;
 
-    public function __construct($doctrine, RoleManager $roleManager)
+    public function __construct($doctrine, AuthorizationManager $roleManager)
     {
         $this->doctrine = $doctrine;
         $this->roleManager = $roleManager;

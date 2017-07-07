@@ -1,7 +1,7 @@
 <?php
 namespace AppBundle\Controller;
 
-use AppBundle\Security\RoleManager;
+use AppBundle\Security\AuthorizationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,7 @@ class UserController extends Controller
         $users = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->findAll();
 
         return $this->render('access_control/users.html.twig', array(
-            'page_name' => 'Access Control', 'sub_text' => '', 'users' => $users, 'roles' => RoleManager::getRoles()
+            'page_name' => 'Access Control', 'sub_text' => '', 'users' => $users, 'roles' => AuthorizationManager::getRoles()
         ));
     }
 
@@ -69,6 +69,24 @@ class UserController extends Controller
         $user = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->find($id);
 
         $user->setOverrideRole($role);
+        $em->flush();
+
+        return new Response("OK");
+    }
+
+    /**
+     * @Route("/system/admin/users/updateOverrideEntitlement", name="ajax_update_user_override_entitlement")
+     */
+    public function ajax_UpdateOverrideEntitlement(Request $request)
+    {
+        $id = $request->request->get('id');
+        $entitlements = $request->request->get('entitlements');
+
+        // Get Entity Manager
+        $em = $this->getDoctrine('default')->getManager();
+        $user = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->find($id);
+
+        $user->setOverrideEntitlements($entitlements);
         $em->flush();
 
         return new Response("OK");

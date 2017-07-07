@@ -100,35 +100,6 @@
 
     </div>
 
-    <!-- Sidebar user panel (optional) -->
-
-    <!--<div class="user-panel">
-
-        <div class="info-other">
-
-            <ul id="subsystem_status">
-
-                <li class="header">SYSTEM STATUS</li>
-
-                <li><i class="fa fa-circle text-warning"></i> Mining Ops</li>
-
-                <li><i class="fa fa-circle text-danger"></i> Material Sales</li>
-
-                <li><i class="fa fa-circle text-danger"></i> Ship Sales</li>
-
-                <li><i class="fa fa-circle text-danger"></i> Raffles</li>
-
-                <li><i class="fa fa-circle text-success"></i> Material Buy Back</li>
-
-                <li><i class="fa fa-circle text-success"></i> Users</li>
-
-            </ul>
-
-        </div>
-
-    </div>-->
-
-
 
     <!-- search form (Optional) -->
 
@@ -216,61 +187,54 @@
 
 
 
-        <li class="header">{{ corpTicker }} MARKET</li>
+        {% if is_granted('ROLE_ENTITLEMENT_BUYBACK') or is_granted('ROLE_ENTITLEMENT_SALES') %}
+            <li class="header">{{ corpTicker }} MARKET</li>
 
-        <li class="{{(page_name == "My Sell Orders" ? 'active' : '')}}"><a href="{{ path('buyback') }}"><i class="fa fa-money"></i> <span>Sell Orders</span></a></li>
+            {% if is_granted('ROLE_ENTITLEMENT_BUYBACK') %}
+                <li class="{{(page_name == "My Sell Orders" ? 'active' : '')}}"><a href="{{ path('buyback') }}"><i class="fa fa-money"></i> <span>Sell Orders</span></a></li>
+            {% endif %}
+            {% if is_granted('ROLE_ENTITLEMENT_SALES') %}
+                <li class="{{(page_name == "My Buy Orders" ? 'active' : '')}}"><a href="{{ path('sales') }}"><i class="fa fa-credit-card"></i> <span>Buy Orders</span></a></li>
+            {% endif %}
+        {% endif %}
 
-        <li class="{{(page_name == "My Buy Orders" ? 'active' : '')}}"><a href="{{ path('sales') }}"><i class="fa fa-credit-card"></i> <span>Buy Orders</span></a></li>
-
-
-
-        {% if is_granted('ROLE_MEMBER') %}
-
+        {% if is_granted('ROLE_ENTITLEMENT_SRP') %}
 			<li class="header">SHIP REPLACEMENT</li>
 
 			<li class="{{(page_name == "SRP Tools" ? 'active' : '')}}"><a href="{{ path('srp') }}"><i class="fa fa-grav"></i> <span>SRP Tools</span></a></li>
 			<li class="{{(page_name == "My Recent Losses" ? 'active' : '')}}"><a href="{{ path('losses') }}"><i class="fa fa-free-code-camp "></i> <span>My Recent Losses</span></a></li>
+        {% endif %}
 
+        {% if is_granted('ROLE_MEMBER') %}
             <li class='header'>MEMBER</li>
 
             <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>
-
         {% endif %}
 
 
-
         {% if is_granted('ROLE_ADMIN') %}
-
             <li class="header">ACCOUNTING</li>
 
-			
-
 				{% if is_granted('ROLE_BUY_ADMIN') %}
-
 				    <li class="{{(page_name == "Sell Order Queue" ? 'active' : '')}}"><a href="{{ path('admin_sell_order_transactions') }}">
                     <i class="fa fa-cubes"></i>
                     <i class="fa fa-exchange"></i>
                     <i class="fa fa-money"></i>
                     <span>Sell Order Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
-
 				{% endif %}
                 {% if is_granted('ROLE_SELL_ADMIN') %}
-
                     <li class="{{(page_name == "Buy Order Queue" ? 'active' : '')}}"><a href="{{ path('admin_buy_order_transactions') }}">
                     <i class="fa fa-credit-card"></i>
                     <i class="fa fa-exchange"></i>
                     <i class="fa fa-cubes"></i>
                     <span>Buy Order Queue</span> <span class="badge bg-green" id="salesQueueBadge"></span></a></li>
-
                 {% endif %}
                 {% if is_granted('ROLE_SRP_ADMIN') %}
-
                     <li class="{{(page_name == "SRP Queue" ? 'active' : '')}}"><a href="{{ path('admin_srp_transactions') }}">
                     <i class="fa fa-grav"></i>
                     <i class="fa fa-exchange"></i>
                     <i class="fa fa-money"></i>
                     <span>SRP Queue</span> <span class="badge bg-green" id="SRPQueueBadge"></span></a></li>
-
                 {% endif %}
 
         {% endif %}
