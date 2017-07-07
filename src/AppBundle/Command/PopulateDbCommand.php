@@ -2,6 +2,8 @@
 namespace AppBundle\Command;
 
 use AppBundle\Controller\AuthorizationController;
+use AppBundle\Entity\AuthorizationEntity;
+use AppBundle\Security\RoleManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,10 +28,72 @@ class PopulateDbCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $helper = $this->getContainer()->get('helper');
-        $helper->generateDefaultSettings();
-
-        $roleManager = $this->getContainer()->get('role_manager');
-        $roleManager->setDefaultRoles();
+        $this->populateSettingsDefaults();
+        $this->populateRolesDefaults();
     }
+
+
+    //POPULATE FUNCTIONS
+    private function populateSettingsDefaults()
+    {
+        $helper = $this->getContainer()->get('helper');
+
+        //GLOBAL SETTINGS
+        $helper->setSetting('eveCentralOK', '1', 'global');
+        $helper->setSetting("system_maintenance", "0", 'global');
+
+        //COMMON SETTINGS
+        foreach(array('P', 'S', 'SRP') as $settingType)
+        {
+            $helper->setSetting('default_buyaction_deny', '0', $settingType);
+            $helper->setSetting("source_id", "30000142", $settingType);
+            $helper->setSetting("source_type", "buy", $settingType);
+            $helper->setSetting("source_stat", "fivePercent", $settingType);
+            $helper->setSetting('role_member_tax', '5', $settingType);
+            $helper->setSetting('role_ally_tax', '6', $settingType);
+            $helper->setSetting('role_friend_tax', '8', $settingType);
+            $helper->setSetting('role_other1_tax', '10', $settingType);
+            $helper->setSetting('role_other2_tax', '0', $settingType);
+            $helper->setSetting('role_other3_tax', '0', $settingType);
+        }
+
+        //BUYBACK SETTINGS
+        $helper->setSetting('value_minerals', '1', 'P');
+        $helper->setSetting('value_salvage', '1', 'P');
+        $helper->setSetting("ore_refine_rate", "70", 'P');
+        $helper->setSetting("ice_refine_rate", "70", 'P');
+        $helper->setSetting("salvage_refine_rate", "60", 'P');
+
+        //SALES SETTINGS
+
+        //SRP SETTINGS
+
+    }
+
+    private function populateRolesDefaults()
+    {
+        $em = $this->getContainer()->get('doctrine')->getEntityManager();
+
+        $defaultEntry = (new AuthorizationEntity())
+            ->setEveId(-999)
+            ->setName("Default Access (Everyone Not Configured)")
+            ->setType("")
+            ->setRole(RoleManager::getDefaultRole());
+
+        $em->persist($defaultEntry);
+        $em->flush();
+
+        foreach(AuthorizationController::getContactLevels() as $id => $level)
+        {
+            $entry = (new AuthorizationEntity())
+                ->setEveId($id)
+                ->setName($level)
+                ->setType("contact")
+                ->setRole(RoleManager::getDefaultRole());
+
+            $em->persist($entry);
+            $em->flush();
+        }
+    }
+
 }

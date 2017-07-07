@@ -22,19 +22,25 @@ class Helper
      */
     public function getSetting(string $name, string $type = 'global')
     {
-        // get setting
-        $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
-            ->findOneBy(array('name' => $name, 'type' => $type));;
+        //check cache first
+        $settingsCache = \SettingsCacheSingleton::getInstance();
+        $settingValue = $settingsCache->getSetting($name, $type);
 
-        // Did the setting exist?
-        if($setting != null)
+        if($settingValue == null)
         {
-            // Yes, return value
-            return $setting->getValue();
+            // if not in cache, check DB
+            $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
+                ->findOneBy(array('name' => $name, 'type' => $type));;
+
+            if($setting != null)
+            {
+                //if it was in DB, add to cache and return
+                $settingsCache->setSetting($setting->getName(), $setting->getType(), $setting->getValue());
+                $settingValue =  $setting->getValue();
+            }
         }
 
-        // No, return null
-        return null;
+        return $settingValue;
     }
 
     /*
@@ -49,15 +55,15 @@ class Helper
         // Get Entity Manager
         $em = $this->doctrine->getManager();
 
-        dump($setting);
         // Did the setting exist?
         if($setting != null)
         {
             // Yes, set new Value and save
             $setting->setValue($value);
             $em->flush();
-        } else {
-
+        }
+        else
+        {
             // No, create the setting
             $setting = new SettingEntity();
             $setting->setName($name);
@@ -67,45 +73,10 @@ class Helper
             $em->persist($setting);
             $em->flush();
         }
-        dump($setting);
-        dump($this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
-            ->findOneBy(array('name' => $name, 'type' => $type)));
-    }
 
-    /*
-     * Generates all needed settings and sets default values
-     */
-    public function generateDefaultSettings()
-    {
-        //GLOBAL SETTINGS
-        $this->setSetting('eveCentralOK', '1', 'global');
-        $this->setSetting("system_maintenance", "0", 'global');
-
-        //COMMON SETTINGS
-        foreach(array('P', 'S', 'SRP') as $settingType)
-        {
-            $this->setSetting('default_buyaction_deny', '0', $settingType);
-            $this->setSetting("source_id", "30000142", $settingType);
-            $this->setSetting("source_type", "buy", $settingType);
-            $this->setSetting("source_stat", "fivePercent", $settingType);
-            $this->setSetting('role_member_tax', '5', $settingType);
-            $this->setSetting('role_ally_tax', '6', $settingType);
-            $this->setSetting('role_friend_tax', '8', $settingType);
-            $this->setSetting('role_other1_tax', '10', $settingType);
-            $this->setSetting('role_other2_tax', '0', $settingType);
-            $this->setSetting('role_other3_tax', '0', $settingType);
-        }
-
-        //BUYBACK SETTINGS
-        $this->setSetting('value_minerals', '1', 'P');
-        $this->setSetting('value_salvage', '1', 'P');
-        $this->setSetting("ore_refine_rate", "70", 'P');
-        $this->setSetting("ice_refine_rate", "70", 'P');
-        $this->setSetting("salvage_refine_rate", "60", 'P');
-
-        //SALES SETTINGS
-
-        //SRP SETTINGS
+        //add to cache
+        $settingsCache = \SettingsCacheSingleton::getInstance();
+        $settingsCache->setSetting($name, $type, $value);
     }
 }
 

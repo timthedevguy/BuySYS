@@ -203,31 +203,6 @@ class RoleManager
         return $user;
     }
 
-
-    public function setDefaultRoles() {
-
-        $defaultEntry = (new AuthorizationEntity())
-            ->setEveId(-999)
-            ->setName("Default Access (Everyone Not Configured)")
-            ->setType("")
-            ->setRole(RoleManager::getDefaultRole());
-
-        $this->em->persist($defaultEntry);
-        $this->em->flush();
-
-        foreach(AuthorizationController::getContactLevels() as $id => $level)
-        {
-            $entry = (new AuthorizationEntity())
-                ->setEveId($id)
-                ->setName($level)
-                ->setType("contact")
-                ->setRole(RoleManager::getDefaultRole());
-
-            $this->em->persist($entry);
-            $this->em->flush();
-        }
-    }
-
     public function updateContacts($apiKey, $apiCode)
     {
         try
