@@ -76,7 +76,7 @@ class Helper
         }
 
         //add to cache
-        $settingsCache = \SettingsCacheSingleton::getInstance();
+        $settingsCache = SettingsCacheSingleton::getInstance();
         $settingsCache->setSetting($name, $type, $value);
     }
 }

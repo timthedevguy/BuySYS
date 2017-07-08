@@ -63,20 +63,27 @@ class Cache extends Helper
 
         if($eveCentralOK == true)
         {
+            $masterArray = array_merge( //faster as 1 array
+                $mineralOres,
+                $highSecOres,
+                $otherHighSecOres,
+                $lowSecOres,
+                $nullSecOres,
+                $gasOres,
+                $p0Ores,
+                $p1Ores,
+                $p2Ores,
+                $p3Ores,
+                $p4Ores,
+                $iceMinerals,
+                $iceMinerals
+            );
+
             // Begin Updating the Cache
-            $this->market->getBuybackPricesForTypes($mineralOres);
-            $this->market->getBuybackPricesForTypes($highSecOres);
-            $this->market->getBuybackPricesForTypes($otherHighSecOres);
-            $this->market->getBuybackPricesForTypes($lowSecOres);
-            $this->market->getBuybackPricesForTypes($nullSecOres);
-            $this->market->getBuybackPricesForTypes($gasOres);
-            $this->market->getBuybackPricesForTypes($p0Ores);
-            $this->market->getBuybackPricesForTypes($p1Ores);
-            $this->market->getBuybackPricesForTypes($p2Ores);
-            $this->market->getBuybackPricesForTypes($p3Ores);
-            $this->market->getBuybackPricesForTypes($p4Ores);
-            $this->market->getBuybackPricesForTypes($iceMinerals);
-            $this->market->getBuybackPricesForTypes($iceOres);
+            foreach(['P', 'S', 'SRP'] as $settingType)
+            {
+                $this->market->getBuybackPricesForTypes($masterArray, $settingType);
+            }
 
             return true;
         }

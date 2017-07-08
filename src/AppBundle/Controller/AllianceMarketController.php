@@ -66,6 +66,7 @@ class AllianceMarketController extends Controller
         $form = $this->createForm(AllianceMarketForm::class, $marketRequest);
         $form->handleRequest($request);
         $rawRequestItems = $marketRequest->getItems();
+        $transactionType = $request->request->get('transactionType');
 
         $transactionType = $request->request->get('transactionType');
 
@@ -92,7 +93,7 @@ class AllianceMarketController extends Controller
                 $typeIds[] = $item->getTypeId();
             }
 
-            $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds);
+            $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds, $transactionType);
 
             foreach($items as $item)
             {

@@ -384,13 +384,16 @@ class Market extends Helper
 
                 // If CacheItem is Null then create and populate it
                 $cacheItem = new CacheEntity();
-                $cacheItem->setTypeId($typeId);
+                $cacheItem
+                    ->setTypeId($typeId)
+                    ->setSettingType($settingType);
                 $em->persist($cacheItem);
 
                 // Set Final stats
-                $cacheItem->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat]);
-                $cacheItem->setLastPull(new \DateTime("now"));
-                $cacheItem->setAdjusted(0.0);
+                $cacheItem
+                    ->setMarket($eveCentralResult[$bb_source_type][$bb_source_stat])
+                    ->setLastPull(new \DateTime("now"))
+                    ->setAdjusted(0.0);
 
                 $mergedRule = $this->getMergedBuybackRuleForType($typeId, $settingType);
                 $adjustedPrice = $cacheItem->getMarket();
