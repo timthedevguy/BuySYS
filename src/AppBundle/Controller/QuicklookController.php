@@ -121,7 +121,7 @@ class QuicklookController extends Controller
     private function getQuickReview($typeIds) {
 
         $results = array();
-        $marketPrices = $this->get("market")->getBuybackPricesForTypes($typeIds);
+        $marketPrices = $this->get("market")->getBuybackPricesForTypes($typeIds, 'P');
 
         foreach($typeIds as $typeId) {
 

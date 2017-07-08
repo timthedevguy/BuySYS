@@ -42,14 +42,14 @@ services:
         class: AppBundle\Helper\LineItemComparator
         arguments: ['@market']
 
-    role_manager:
-            class: AppBundle\Security\RoleManager
+    auth_manager:
+            class: AppBundle\Security\AuthorizationManager
             arguments: ['@doctrine.orm.entity_manager', '@esi', '@eve_xml_api']
 
     eve_sso_authenticator:
             class: AppBundle\Security\EveSSOAuthenticator
-            arguments: ['@doctrine.orm.entity_manager', '@router', '@role_manager', '@eve_sso']
+            arguments: ['@doctrine.orm.entity_manager', '@router', '@auth_manager', '@eve_sso']
 
     cron_tasks:
         class: AppBundle\Helper\CronTasks
-        arguments: ['@doctrine', '@role_manager']
+        arguments: ['@doctrine', '@auth_manager']

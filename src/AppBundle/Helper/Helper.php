@@ -2,6 +2,7 @@
 namespace AppBundle\Helper;
 
 use AppBundle\Entity\SettingEntity;
+use AppBundle\Utilities\SettingsCacheSingleton;
 
 /* Helper
  *
@@ -23,7 +24,7 @@ class Helper
     public function getSetting(string $name, string $type = 'global')
     {
         //check cache first
-        $settingsCache = \SettingsCacheSingleton::getInstance();
+        $settingsCache = SettingsCacheSingleton::getInstance();
         $settingValue = $settingsCache->getSetting($name, $type);
 
         if($settingValue == null)
@@ -81,4 +82,3 @@ class Helper
 }
 
 
-		
