@@ -83,15 +83,21 @@ class ESI
 				$apiParamOptional = $param->isOptional();
 				$apiParamProvided = isset($arguments[$apiParamName]) ? $arguments[$apiParamName] : null;
 				
-				if($apiParamName == "token") {
-					if(empty($this->session)) {
-						return ["Error" => "No access_token from session."];
-					}
-					$apiParamProvided = $this->session->get("esi_access_token");
-				}
-				
-				if($apiParamName == "user_agent") {
-					$apiParamProvided = "AmSYS";
+				switch($apiParamName) {
+					case "token":
+						if(empty($this->session)) {
+							return ["Error" => "No access_token from session."];
+						}
+						$apiParamProvided = $this->session->get("esi_access_token");
+						break;
+						
+					case "user_agent":
+						$apiParamProvided = "AmSYS";
+						break;
+						
+					case "datasource":
+						$apiParamProvided = "tranquility";
+						break;
 				}
 				
 				if(!$apiParamOptional && $apiParamProvided === null) {

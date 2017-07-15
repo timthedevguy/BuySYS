@@ -15,7 +15,7 @@
     {% set requiresValidation = false %}
     {% set instructions =
             '<p>This transaction requires a payment made to the player. If this is not a valid SRP request then DO NOT PAY THEM!</p>
-             <p>You may validate the request by [...] .</p>'
+             <p>Validation of an SRP request is done manually. Check for a <a href="https://zkillboard.com/kill/' ~ transaction.orderid|replace({'SRP': null}) ~ '/" target="_blank">kill report</a> and/or ask the pilot about the engagement.</p>'
     %}
 {% endif %}
 

@@ -16,12 +16,11 @@
                                 <tr>																	<th class='hidden'>ID</th>																	<th>Icon</th>
                                     <th>Date</th>
                                     <th>Ship Type</th>
-                                    <th>Isk Amount</th>
                                     <th>SRP Status</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-									<tr>										<td colspan='6'>											<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>										</td>									</tr>								
+									<tr>										<td colspan='5'>											<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>										</td>									</tr>								
                                 </tbody>
                             </table>
                         </div>
@@ -39,7 +38,7 @@
 {% block javascripts %}
 
 <script type="text/javascript">
-    $(document).ready(function (e) {		$.get('{{path('ajax_mylosses_losses')}}', {}, function(response) {					$( "#zLosses ").parent().html( response );						$('#zLosses').DataTable({				"order": [[ 0, "desc" ]]			});						$(document).on("click", "a.requestSRP", function() {							var killID = $(this).data('killid');							$('#base_modal').modal({backdrop: "static"});				$("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");				$.post('{{path('ajax_srp_estimate')}}', {'zkillID': killID}, function(response) {					$("#base_modal_content" ).html( response );				}, "html");			});					}, "html");
+    $(document).ready(function (e) {		$.get('{{path('ajax_mylosses_losses')}}', {}, function(response) {					$( "#zLosses ").parent().html( response );						$('#zLosses').DataTable({				"order": [[ 0, "desc" ]]			});						$(document).on("click", "a.requestSRP", function() {							var killID = $(this).data('killid');							$('#base_modal').modal({backdrop: "static"});				$("#base_modal_content").html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");				$.post('{{path('ajax_srp_estimate')}}', {'killID': killID}, function(response) {					$("#base_modal_content" ).html( response );				}, "html");			});					}, "html");
     });
 </script>
 

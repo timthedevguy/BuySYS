@@ -48,7 +48,7 @@ class SRPController extends Controller
 		1538 => 500000000, //"Force Auxiliary",
 	];
 	
-	private function lineItemsToSRP(&$lineItems = [], $estLossValue = 0) {		
+	private function lineItemsToSRP(&$lineItems = [], $killID = null, $estLossValue = 0) {		
 		$srpOffered = 0;
 		$lossValue = 0;
 		$lossTypeID = null;
@@ -57,6 +57,10 @@ class SRPController extends Controller
 		$reason = null;
         $hasInvalid = $hasWarning = false;
 		$typeIDs = [];
+		
+		if(empty($killID)) {
+			$killID = "Estimate";
+		}
 		
 		if(!$lineItems || count($lineItems) == 0) {
 			$hasInvalid = true;
@@ -144,7 +148,7 @@ class SRPController extends Controller
         $transaction->setUser($this->getUser());
         $transaction->setType("SRP"); //will reset to PS if accepted with shares
         $transaction->setIsComplete(false);
-        $transaction->setOrderId($transaction->getType() . uniqid());
+        $transaction->setOrderId($transaction->getType() . $killID);
         $transaction->setGross(0);
         $transaction->setNet(0);
         $transaction->setCreated(new \DateTime("now"));
@@ -227,7 +231,7 @@ class SRPController extends Controller
 	
         return $this->render('srp/srp.html.twig', [
             'base_dir' => 'test',
-			'page_name' => 'SRP Tools',
+			'page_name' => 'My SRP',
 			'sub_text' => null,
 			'form' => $form->createView(),
 			'srpSummary' => $srpSummary]);
@@ -270,15 +274,15 @@ class SRPController extends Controller
     public function estimateAction(Request $request)
     {	
 		$hasInvalid = $reason = false;		
-        $zkillID = $request->request->get('zkillID');
+        $killID = $request->request->get('killID');
 		
-		if(!is_numeric($zkillID)) {
+		if(!is_numeric($killID)) {
 			$hasInvalid = true;
 			$reason = "Invalid ZKillboard ID";
 		}
 		else {
-			$zkillInfo = json_decode(file_get_contents("https://zkillboard.com/api/killID/".$zkillID."/json/"), true);
-			if($zkillInfo && isset($zkillInfo[0]) && isset($zkillInfo[0]['killID']) && $zkillInfo[0]['killID'] == $zkillID) {
+			$zkillInfo = json_decode(file_get_contents("https://zkillboard.com/api/killID/".$killID."/json/"), true);
+			if($zkillInfo && isset($zkillInfo[0]) && isset($zkillInfo[0]['killID']) && $zkillInfo[0]['killID'] == $killID) {
 				$lossTypeID = $zkillInfo[0]['victim']['shipTypeID'];
 				$type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($lossTypeID);
 				$groupID = $type->getGroupId();
@@ -303,7 +307,7 @@ class SRPController extends Controller
 					$lineItem->setTax(0);
 					$items []= $lineItem;
 				}
-				$results = self::lineItemsToSRP($items, $zkillInfo[0]['zkb']['totalValue']);
+				$results = self::lineItemsToSRP($items, $killID, $zkillInfo[0]['zkb']['totalValue']);
 
 				return $this->render('srp/results.html.twig', [
 					"lossValue" => $results['lossGross'],

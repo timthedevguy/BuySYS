@@ -38,6 +38,8 @@
 										<td>Accepted<span class='visible-lg'><br /><em>You should receive your ISK soon</em></span></td>
 										{% elseif transaction.getStatus() == 'Denied' %}
 										<td>Denied<span class='visible-lg'><br /><em>We have rejected this request.</em></span></td>
+										{% elseif transaction.getStatus() == 'Complete' %}
+										<td>Completed<span class='visible-lg'><br /><em>Your request was paid out.</em></span></td>
 										{% else %}
 										<td>In Queue<span class='visible-lg'><br /><em>We haven't reviewed your request yet</em></span></td>
 										{% endif %}

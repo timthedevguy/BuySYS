@@ -7,7 +7,6 @@ class TransactionRepository extends EntityRepository {
 	
 	private $types = ["P", "S", "SRP"];
 
-	
 	/* All */
     public function findAll() {
 		
@@ -25,6 +24,16 @@ class TransactionRepository extends EntityRepository {
             )->getSingleScalarResult();
     }
 	/* END All */
+	
+	/* ID */
+    public function findByOrderID($orderId) {
+		
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT t FROM AppBundle:TransactionEntity t WHERE t.orderId = :orderId'
+            )->setParameter('orderId', $orderId)->getOneOrNullResult();
+    }
+	/* END ID */
 	
 	/* Types */
     public function findAllByTypes($types = null) {

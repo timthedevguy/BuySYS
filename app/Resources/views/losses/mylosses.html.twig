@@ -3,8 +3,6 @@
 								
 									<div style='padding: 10px;'>
 										You have no recent losses. Congratulations.
-										<br /><br />
-										(Post your losses to zkillboard.com...)
 									</div>
 								
 							{% else %}
@@ -23,9 +21,7 @@
 
                                     <th>Ship Type</th>
 
-                                    <th>Isk Amount</th>
-
-                                    <th>SRP Status</th>
+                                    <th>Options</th>
 
                                 </tr>
 
@@ -35,29 +31,35 @@
 
                                 {% for loss in losses %}
 
-									<tr id="kill-{{loss.killID}}">
+									<tr id="kill-{{loss.killmail_id}}">
 
-										<td class='hidden'>{{loss.killID}}</td>
+										<td class='hidden'>{{loss.killmail_id}}</td>
 									
 										<td>
-											<a href="https://zkillboard.com/kill/{{loss.killID}}/" target="_blank">
-												<img src='https://imageserver.eveonline.com/Type/{{loss.victim.shipTypeID}}_64.png' />
+											<a href="https://zkillboard.com/kill/{{loss.killmail_id}}/" target="_blank">
+												<img src='https://imageserver.eveonline.com/Type/{{loss.victim.ship_type_id}}_64.png' />
 											</a>
 										</td>
 
 										<td>
-											<a href="https://zkillboard.com/kill/{{loss.killID}}/" target="_blank">
-												{{loss.killTime|date("D, M jS")}}<br />@ {{loss.killTime|date("G:s")}}
+											<a href="https://zkillboard.com/kill/{{loss.killmail_id}}/" target="_blank">
+												{{loss.killmail_time|date("D, M jS")}}<br />@ {{loss.killmail_time|date("G:s")}}
 											</a>
 										</td>
 
-										<td>{{loss.victim.shipTypeID}}</td>
-
-										<td>{{loss.zkb.totalValue|number_format(0, '.', ',')}}</td>
+										<td>{{loss.victim.ship_type_id}}</td>
 										
 										<td>
-											<a class="btn bg-green requestSRP" data-killid="{{loss.killID}}">SRP</a>
-											<a class="btn bg-blue">Order</a>
+										{% if loss.srp_status == "" %}
+											<a class="btn bg-green requestSRP" data-killid="{{loss.killmail_id}}">Request SRP</a>
+											<!--<a class="btn bg-blue">Order</a>-->
+										{% elseif loss.srp_status == "Complete" %}
+											Already SRP'd
+										{% elseif loss.srp_status == "Rejected" %}
+											Already SRP'd (Denied)
+										{% else %}
+											In Process...
+										{% endif %}
 										</td>
 
                                     </tr>
