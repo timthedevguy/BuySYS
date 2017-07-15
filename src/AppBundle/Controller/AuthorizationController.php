@@ -86,9 +86,16 @@ class AuthorizationController extends Controller
         }
 
 
-        return $this->render('access_control/authorization.html.twig', array('page_name' => 'Access Control',
-            'sub_text' => '', 'items' => $manualItems, 'roles' => AuthorizationManager::getBuybackRoles(), 'levels' => self::$contactLevelArray,
-            'contactSummary' => $contactSummary, 'apiKey' => $apiKey, 'apiCode' => $apiCode));
+        return $this->render('access_control/authorization.html.twig', array(
+            'page_name' => 'Access Control',
+            'sub_text' => '',
+            'items' => $manualItems,
+            'roles' => AuthorizationManager::getBuybackRoles(),
+            'entitlements' => AuthorizationManager::getEntitlements(),
+            'levels' => self::$contactLevelArray,
+            'contactSummary' => $contactSummary,
+            'apiKey' => $apiKey,
+            'apiCode' => $apiCode));
     }
 
     /**
@@ -248,7 +255,7 @@ class AuthorizationController extends Controller
 
         try
         {
-            $addedContacts = $this->get('role_manager')->updateContacts($apiKey, $apiCode);
+            $addedContacts = $this->get('auth_manager')->updateContacts($apiKey, $apiCode);
 
             //add/update API to settings DB for future use
             $helper = $this->get('helper');

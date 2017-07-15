@@ -12,11 +12,12 @@
                 <table class="table table-striped" id="users-table">
                     <thead>
                     <tr>
-                        <th>Character Name</th>
-                        <th>Manual Role (Overrides Auto-Applied Role) <a href="https://github.com/binarygod/AmSYS/wiki/5.-User-Roles" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
-                        <th>Auto-Applied Role</th>
-                        <th>Active</th>
-                        <th>Last Login</th>
+                        <th style="width: 15%">Character Name</th>
+                        <th style="width: 23%">Manual Role <br />(Overrides Auto-Applied Role) <a href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                        <th style="width: 12%">Auto-Applied Role</th>
+                        <th style="width: 24%">Manual Entitlements <br/>(Overrides Auto-Applied Entitlements) <a href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                        <th style="width: 14%">Auto-Applied Entitlements</th>
+                        <th style="width: 11%">Last Login</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -25,7 +26,7 @@
                             <td>{{user.username}}</td>
                             <td>
                                 <select data-id="{{user.id}}" name="overrideRole" class="form-control overrideRoleSelect" style="height: auto; width:auto;">
-                                    <option value=""></option>
+                                    <option value="">None Selected</option>
                                     {% for overrideRole in roles %}
                                         {% if overrideRole == user.overrideRole %}
                                             <option value="{{ overrideRole }}" selected>{{ overrideRole }}</option>
@@ -37,12 +38,17 @@
                             </td>
                             <td>{{user.role}}</td>
                             <td>
-                                {% if user.isActive == 1 %}
-                                    <i data-id="{{user.id}}" class="fa fa-check text-success toggle-active fake-link"></i>
-                                {% else %}
-                                    <i data-id="{{user.id}}" class="fa fa-ban text-danger toggle-active fake-link"></i>
-                                {% endif %}
+                                <select data-id="{{user.id}}" id="ms{{user.id}}" multiple="multiple" name="overrideEntitlements[]" class="form-control entitlementsOverrideSelect" style="height: auto; width:100%;">
+                                    {% for overrideEntitlement in entitlements %}
+                                        {% if overrideEntitlement in user.overrideEntitlements %}
+                                            <option value="{{ overrideEntitlement }}" selected>{{ overrideEntitlement }}</option>
+                                        {% else %}
+                                            <option value="{{ overrideEntitlement }}">{{ overrideEntitlement }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
                             </td>
+                            <td>{{user.entitlements}}</td>
                             <td>{{ user.lastlogin|date }}</td>
                         </tr>
                     {% endfor %}
@@ -68,8 +74,9 @@
             "order": [[0, "desc"]],
 
             "drawCallback": function( settings ) {
-                bindClickEvent();
+                multiselect();
                 bindRoleOverride();
+                bindEntitlementOverride();
             }
         });
 
@@ -89,39 +96,39 @@
         });
     }
 
-    function bindClickEvent() {
-        $(".fake-link").click(function(e)
-        {
+    function bindEntitlementOverride() {
+        $('.entitlementsOverrideSelect').on('change', function() {
+
             $id = $(this).attr("data-id");
-            $source = $(this);
-            //processTransaction($(this).html());
-            if($source.hasClass("fa-check")) {
+            $values = $('#ms'+$id+" option:selected").map(function(a, item){return item.value;});
 
-                //Need to disable
-                $.post('{{ path('ajax_disable_user') }}', {id: $id},
-                    function(response)
-                    {
-                        $source.removeClass("fa-check");
-                        $source.removeClass("text-success");
-                        $source.addClass("fa-ban");
-                        $source.addClass("text-danger");
-                    }
-                    , "html");
-            } else {
+            $valueArray = $.map($values, function(value, index) {
+                return [value];
+            });
+            $valueString = $valueArray.join(",");
 
-                //Need to enable
-                $.post('{{ path('ajax_enable_user') }}', {id: $id},
-                    function(response)
-                    {
-                        $source.removeClass("fa-ban");
-                        $source.removeClass("text-danger");
-                        $source.addClass("fa-check");
-                        $source.addClass("text-success");
-                    }
-                    , "html");
-            }
+            $.post('{{path('ajax_update_user_override_entitlement')}}', {'entitlements': $valueString, 'id': $id},
+                function(response)
+                {
+
+                }
+                , "html");
         });
     }
+
+    function multiselect() {
+
+        $('.entitlementsOverrideSelect').multiselect({
+            numberDisplayed: 0,
+            buttonWidth: '100%'
+        });
+
+        $('.overrideRoleSelect').multiselect({
+            numberDisplayed: 1,
+            buttonWidth: '100%'
+        });
+    }
+
 
     function processTransaction($id)
     {

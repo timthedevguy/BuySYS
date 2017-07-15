@@ -57,7 +57,8 @@
                                 <thead>
                                     <tr>
                                         <th style="width:27%;">Contact Level</th>
-                                        <th style="width:35%;">Applied Role  <a href="https://github.com/binarygod/AmSYS/wiki/5.-User-Roles" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                                        <th style="width:23%;">Applied Role  <a href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                                        <th style="width:24%;">Applied Entitlements  <a href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
                                         <th>Number of Contacts</th>
                                         <th style="width:7%;">Last Updated</th>
                                     </tr>
@@ -67,6 +68,7 @@
                                     {% for id,level in levels %}
                                         <tr>
                                             <td>{{ level }}</td>
+
                                             <td>
                                                 <select data-id="{{id}}" data-name="{{ level }}" data-type="contact"  name="autoRoleSelect" class="form-control roleSelect" style="height: auto; width:auto;">
                                                     {% for role in roles %}
@@ -78,7 +80,21 @@
                                                     {% endfor %}
                                                 </select>
                                             </td>
+
+                                            <td>
+                                                <select data-id="{{id}}" id="ms{{id}}" data-name="{{ level }}" data-type="contact" multiple="multiple" name="autoEntitlementsSelect[]" class="form-control entitlementsSelect" style="height: auto; width:auto;">
+                                                    {% for entitlement in entitlements %}
+                                                        {% if entitlement in contactSummary[level].selectedEntitlements %}
+                                                            <option value="{{ entitlement }}" selected>{{ entitlement }}</option>
+                                                        {% else %}
+                                                            <option value="{{ entitlement }}">{{ entitlement }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+
                                             <td>{{ contactSummary[level].contactCount }}</td>
+
                                             <td>
                                                 {% if contactSummary[level].updatedDate != null %}
                                                     {{ contactSummary[level].updatedDate|date("m/d/Y") }}
@@ -113,7 +129,7 @@
                 <div class="row">
                     <div class="col-md-9">
                         <input type="text" class="form-control" id="corp-search-input" name="corp-search-input"
-                               placeholder="Search for Alliance/Corporations">
+                               placeholder="Search for Alliance/Corporations to Add">
                     </div>
                     <div class="col-md-1">
                     </div>
@@ -122,15 +138,22 @@
                                name="corp-search-input" value="Search">
                     </div>
                 </div>
+                <br />
+                <br />
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-striped images-table top-margin-20">
+                        <table id="manual-table" class="table table-striped images-table top-margin-20">
+                            <thead>
                             <tr>
                                 <th style="width:27%;">Name</th>
-                                <th style="width:35%;">Applied Role <a href="https://github.com/binarygod/AmSYS/wiki/5.-User-Roles" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                                <th style="width:23%;">Applied Role <a href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
+                                <th style="width:24%;">Applied Entitlements <a href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)" target="_blank"><span class="fa fa-info-circle text-info" style="margin-left: 5px;"></span></a></th>
                                 <th>Type</th>
                                 <th style="width:7%;">Actions</th>
                             </tr>
+                            </thead>
+
+                            <tbody>
                             {% for item in items %}
                                 <tr>
                                     {% if item.type == 'A' %}
@@ -160,6 +183,18 @@
                                         </select>
                                     </td>
 
+                                    <td>
+                                        <select data-id="{{item.eveid}}" id="ms{{item.eveid}}" data-name="{{ item.name }}" data-type="{{ item.type }}" multiple="multiple" name="manualEntitlementsSelect[]" class="form-control entitlementsSelect" style="height: auto; width:auto;">
+                                            {% for entitlement in entitlements %}
+                                                {% if entitlement in item.entitlements %}
+                                                    <option value="{{ entitlement }}" selected>{{ entitlement }}</option>
+                                                {% else %}
+                                                    <option value="{{ entitlement }}">{{ entitlement }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+
                                     <td>{{ type }}</td>
                                     <td>
                                         {% if item.eveid != -999 %}
@@ -168,6 +203,7 @@
                                     </td>
                                 </tr>
                             {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -176,10 +212,13 @@
     </div>
 </div>
 
-<script>
+{% endblock %}
 
-    function doCorpSearch() {
+{% block javascripts %}
+<script type="text/javascript">
 
+    function doCorpSearch()
+    {
         $( "#base_modal_content" ).html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
         $('#base_modal').modal({backdrop: "static"});
 
@@ -193,7 +232,8 @@
         $("#search-input").val("");
     }
 
-    function doContactUpdate() {
+    function doContactUpdate()
+    {
         $( "#base_modal_content" ).html("<div style='text-align: center; font-size:200%; padding-top: 8%;'>Loading Contacts.  Please be patient, this may take a moment.</div><br /><div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
         $('#base_modal').modal({backdrop: "static"});
 
@@ -203,9 +243,12 @@
                 $( "#base_modal_content" ).html( "<div style='text-align: center; padding-top: 10%; padding-bottom:10%; font-size: 250%'>" + response + "</div>" );
 
                 var $timeout;
-                if(response.indexOf("ERROR") >= 0) {
+                if(response.indexOf("ERROR") >= 0)
+                {
                     $timeout = 2500;
-                } else {
+                }
+                else
+                {
                     $timeout = 750;
                 }
 
@@ -216,45 +259,92 @@
                     }, $timeout)
             }
             , "html");
-
     }
 
-    $(document).ready(function (e) {
+    $(document).ready(function (e)
+    {
+        $('#manual-table').DataTable({
+            "order": [[0, "desc"]],
 
-        $("#corp-search-button").click(function(e) {
+            "drawCallback": function( settings ) {
+                multiselect();
+                bindRoleOverride();
+                bindEntitlementOverride();
+            }
+        });
 
+        $("#corp-search-button").click(function(e)
+        {
             doCorpSearch();
         })
 
-        $("#corp-search-input").keydown(function(e) {
-
-            if(e.keyCode == 13) {
-
+        $("#corp-search-input").keydown(function(e)
+        {
+            if(e.keyCode == 13)
+            {
                 doCorpSearch();
             }
         });
 
-        $("#contact-button").click(function(e) {
-
+        $("#contact-button").click(function(e)
+        {
             doContactUpdate();
         });
-
     });
 
 
-    $('.roleSelect').on('change', function() {
+    function bindRoleOverride() {
+        $('.roleSelect').on('change', function() {
 
-        $eveid = $(this).attr("data-id");
-        $name = $(this).attr("data-name");
-        $type = $(this).attr("data-type");
+            $eveid = $(this).attr("data-id");
+            $name = $(this).attr("data-name");
+            $type = $(this).attr("data-type");
 
-        $.post('{{path('ajax_update_auth_role')}}', {'role': this.value, 'eveid': $eveid, 'name': $name, 'type': $type},
-            function(response)
-            {
+            $.post('{{path('ajax_update_auth_role')}}', {'role': this.value, 'eveid': $eveid, 'name': $name, 'type': $type},
+                function(response)
+                {
 
-            }
-            , "html");
-    });
+                }
+                , "html");
+        });
+    }
+
+    function bindEntitlementOverride()
+    {
+        $('.entitlementsSelect').on('change', function() {
+
+            $eveid = $(this).attr("data-id");
+            $name = $(this).attr("data-name");
+            $type = $(this).attr("data-type");
+
+            $values = $('#ms'+$eveid+" option:selected").map(function(a, item){return item.value;});
+
+            $valueArray = $.map($values, function(value, index) {
+                return [value];
+            });
+            $valueString = $valueArray.join(",");
+
+            $.post('{{path('ajax_update_auth_entitlements')}}', {'entitlements': $valueString, 'eveid': $eveid, 'name': $name, 'type': $type},
+                function(response)
+                {
+
+                }
+                , "html");
+        });
+    }
+    function multiselect()
+    {
+        $('.entitlementsSelect').multiselect({
+            numberDisplayed: 0,
+            buttonWidth: '100%'
+        });
+
+        $('.roleSelect').multiselect({
+            numberDisplayed: 1,
+            buttonWidth: '100%'
+        });
+    }
+
 
 </script>
 

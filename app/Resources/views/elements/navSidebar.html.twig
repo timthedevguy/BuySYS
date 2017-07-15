@@ -45,7 +45,6 @@
             $.post('{{path('ajax_transaction_badging')}}', function(response)
             {
                 var jsonResponse = JSON.parse(response);
-                console.log(jsonResponse);
 
                 updateQueueBadge($( "#purchaseQueueBadge" ), parseInt(jsonResponse.purchaseQueueBadge) >= 0 ? jsonResponse.purchaseQueueBadge : 0);
                 updateQueueBadge($( "#salesQueueBadge" ), parseInt(jsonResponse.salesQueueBadge) >= 0 ? jsonResponse.salesQueueBadge : 0);
@@ -56,7 +55,6 @@
 
         function updateQueueBadge(element, addedValue)
         {
-            console.log(addedValue);
             var oldVal = element.html();
             if (oldVal === "")
             {
@@ -205,8 +203,8 @@
 			<li class="{{(page_name == "My Recent Losses" ? 'active' : '')}}"><a href="{{ path('losses') }}"><i class="fa fa-free-code-camp "></i> <span>My Recent Losses</span></a></li>
         {% endif %}
 
-        {% if is_granted('ROLE_MEMBER') %}
-            <li class='header'>MEMBER</li>
+        {% if is_granted('ROLE_ENTITLEMENT_PAGES') %}
+            <li class='header'>PAGES</li>
 
             <li class="{{(page_name == "Pages" ? 'active' : '')}}"><a href="{{path('pages')}}" target="_new"><i class="fa fa-file-text-o"></i> <span>Pages</span></a></li>
         {% endif %}

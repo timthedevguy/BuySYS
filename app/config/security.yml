@@ -33,7 +33,7 @@ security:
         - {path: ^/sso, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/devlogin, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/suggestion, roles: ROLE_USER }
-        - {path: ^/pages, roles: ROLE_MEMBER }
+        - {path: ^/pages, roles: ROLE_ENTITLEMENT_PAGES }
         - {path: ^/alliance_market, roles: [ROLE_ENTITLEMENT_BUYBACK, ROLE_ENTITLEMENT_SALES] }
         - {path: ^/alliance_market/sellorders, roles: ROLE_ENTITLEMENT_BUYBACK }
         - {path: ^/alliance_market/buyorders, roles: ROLE_ENTITLEMENT_SALES }

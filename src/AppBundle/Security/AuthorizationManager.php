@@ -73,6 +73,7 @@ class AuthorizationManager
     private static $entitlementsArray = Array(
         'ROLE_ENTITLEMENT_BUYBACK',
         'ROLE_ENTITLEMENT_SALES',
+        'ROLE_ENTITLEMENT_PAGES',
         'ROLE_ENTITLEMENT_SRP'
     );
 
