@@ -406,9 +406,9 @@ class Market {
 
             foreach($typeMaterials as $typeMaterial)
             {
-                $refinedAmount = floor($typeMaterial->getQuantity() * ($bb_refine_rate/100));
+                $refinedAmount = $typeMaterial->getQuantity() * ($bb_refine_rate/100);
                 $mineralCost = $this->GetMarketPrices($typeMaterial->getMaterialTypeId())[$typeMaterial->getMaterialTypeId()];
-                $marketPrice += floor((($mineralCost * $refinedAmount)/$type->getPortionSize()));
+                $marketPrice += (($mineralCost * $refinedAmount)/$type->getPortionSize());
 
                 $mDetails = array();
                 $mDetails['typeid'] = $typeMaterial->getMaterialTypeId();
