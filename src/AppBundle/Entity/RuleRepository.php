@@ -9,46 +9,51 @@ class RuleRepository extends EntityRepository
      * Gets the next rule sort id in the list, this helps keep rules in numerical order
      * @return int
      */
-    public function getNextSort() {
+    public function getNextSort(string $ruleType)
+    {
+        $item = $this->findOneBy(array('ruleType' => $ruleType), array('sort' => 'DESC'));
 
-        $item = $this->findOneBy(array(), array('sort' => 'DESC'));
-
-        if($item == null) {
-
+        if ($item == null)
+        {
             return 1;
         }
 
         return ($item->getSort() + 1);
     }
 
-    public function findAllSortedBySort() {
-
-        return $this->findBy(array(), array('sort' => 'ASC'));
+    public function findAllSortedBySort(string $ruleType)
+    {
+        return $this->findBy(array('ruleType' => $ruleType), array('sort' => 'ASC'));
     }
 
-    public function findAllAfter($sort) {
-
+    public function findAllAfter($sort, $ruleType)
+    {
         $query = $this->createQueryBuilder('r')
             ->where('r.sort > :sort')
+            ->where('r.ruleType = :ruleType')
             ->setParameter('sort', $sort)
+            ->setParameter('ruleType', $ruleType)
             ->orderBy('r.sort', 'ASC')
             ->getQuery();
 
         return $query->getResult();
     }
 
-    public function findAllBefore($sort) {
-
+    public function findAllBefore($sort, $ruleType)
+    {
         $query = $this->createQueryBuilder('r')
             ->where('r.sort < :sort')
+            ->where('r.ruleType = :ruleType')
             ->setParameter('sort', $sort)
+            ->setParameter('ruleType', $ruleType)
             ->orderBy('r.sort', 'ASC')
             ->getQuery();
 
         return $query->getResult();
     }
 
-    public function findAllByTypeAndGroup($type, $group, $marketgroup) {
+    public function findAllByTypeAndGroup($type, $group, $marketgroup)
+    {
 
         $query = $this->createQueryBuilder('r');
         $query = $this->createQueryBuilder('r')

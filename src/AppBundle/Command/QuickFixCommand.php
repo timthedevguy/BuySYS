@@ -76,5 +76,14 @@ class QuickFixCommand extends ContainerAwareCommand
             $helper->setSetting('role_other2_tax', '0', $settingType);
             $helper->setSetting('role_other3_tax', '0', $settingType);
         }
+
+
+        //add rule types
+        $records = $em->getRepository("AppBundle:RuleEntity", 'default')->findAll();
+        foreach($records as $record)
+        {
+            $record->setRuleType('P');
+        }
+        $em->flush();
     }
 }

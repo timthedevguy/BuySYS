@@ -19,7 +19,13 @@ class RuleController extends Controller
     /**
      * @Route("/system/admin/settings/rules", name="admin_buyback_rules")
      */
-    public function indexAction(Request $request)
+    public function buybackAction(Request $request)
+    {
+        return $this->action($request, 'P');
+    }
+
+
+    public function action(Request $request, string $ruleType)
     {
         $results = null;
 
@@ -37,6 +43,7 @@ class RuleController extends Controller
         {
             $form_results = null;
             $rule = new RuleEntity();
+            $rule->setRuleType($ruleType);
 
             if($request->request->has('test_rule_form'))
             {
@@ -77,7 +84,7 @@ class RuleController extends Controller
                     $rule->setTargetName($form_results['role']);
                 }
 
-                $rule->setSort($this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->getNextSort());
+                $rule->setSort($this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->getNextSort($ruleType));
                 $rule->setAttribute($form_results['attribute']);
 
                 $isValid = false;
@@ -126,54 +133,47 @@ class RuleController extends Controller
             }
         }
 
-        $rules = $em->getRepository('AppBundle:RuleEntity', 'default')->findAllSortedBySort();
+        $rules = $em->getRepository('AppBundle:RuleEntity', 'default')->findAllSortedBySort($ruleType);
 
         // Create built in rules
         $builtIn = array();
-        $rule = new RuleEntity();
-        $rule->setSort('0');
-        $rule->setTargetName('Anything Refinable');
-        $rule->setTarget('Global Rule');
-        $rule->setAttribute('Is Refined');
-        $rule->setValue('No');
-
-        if($this->get("helper")->getSetting("value_minerals", "P") == 1)
-        {
-            $rule->setValue('Yes');
-        }
-
-        $builtIn[] = $rule;
-        $rule = new RuleEntity();
-        $rule->setSort('0');
-        $rule->setTargetName('Anything Salvageable');
-        $rule->setTarget('Global Rule');
-        $rule->setAttribute('Is Refined');
-        $rule->setValue('No');
-
-        if($this->get("helper")->getSetting("value_salvage", "P") == 1)
-        {
-            $rule->setValue('Yes');
-        }
-
-        $builtIn[] = $rule;
-        $rule = new RuleEntity();
-        $rule->setSort('0');
-        $rule->setTargetName('Any');
-        $rule->setTarget('Global Rule');
-        $rule->setAttribute('Can Buy');
-        $rule->setValue('Yes');
-
-        if($this->get('helper')->getSetting('default_buyaction_deny', 'P') == 1)
-        {
-            $rule->setValue('No');
-        }
-
+        $rule = (new RuleEntity())
+            ->setSort('0')
+            ->setTargetName('Anything Refinable')
+            ->setTarget('Global Rule')
+            ->setAttribute('Is Refined')
+            ->setValue($this->get("helper")->getSetting("value_minerals", $ruleType) == 1 ? 'Yes' : 'No');
         $builtIn[] = $rule;
 
-        return $this->render('rules/index.html.twig', array('page_name' => 'Settings', 'sub_text' => 'Buyback Rules',
-            'groupform' => $groupForm->createView(), 'typeform' => $typeForm->createView(), 'rules' => $rules,
-            'builtin' => $builtIn, 'testform' => $testForm->createView(), 'marketgroupform' => $marketGroupForm->createView(),
-            'results' => $results, 'roleform' => $roleForm->createView()));
+        $rule = (new RuleEntity())
+            ->setSort('0')
+            ->setTargetName('Anything Salvageable')
+            ->setTarget('Global Rule')
+            ->setAttribute('Is Refined')
+            ->setValue($this->get("helper")->getSetting("value_salvage", $ruleType) == 1 ? 'Yes' : 'No');
+        $builtIn[] = $rule;
+
+        $rule = (new RuleEntity())
+            ->setSort('0')
+            ->setTargetName('Any')
+            ->setTarget('Global Rule')
+            ->setAttribute('Can Buy')
+            ->setValue($this->get('helper')->getSetting('default_buyaction_deny', $ruleType) == 1 ? 'No' : 'Yes');
+        $builtIn[] = $rule;
+
+
+        return $this->render('rules/index.html.twig', array(
+            'page_name' => 'Item Rules',
+            'sub_text' => '',
+            'groupform' => $groupForm->createView(),
+            'typeform' => $typeForm->createView(),
+            'rules' => $rules,
+            'builtin' => $builtIn,
+            'testform' => $testForm->createView(),
+            'marketgroupform' => $marketGroupForm->createView(),
+            'results' => $results,
+            'roleform' => $roleForm->createView(),
+            'ruleType' => $ruleType));
     }
 
     /**
@@ -183,16 +183,16 @@ class RuleController extends Controller
     {
         $rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneById($id);
 
-        if($rule != null) {
-
+        if($rule != null)
+        {
             $em = $this->getDoctrine()->getManager();
 
-            $rules = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findAllAfter($rule->getSort());
+            $rules = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findAllAfter($rule->getSort(), $rule->getRuleType());
 
             $em->remove($rule);
 
-            foreach($rules as $rule) {
-
+            foreach($rules as $rule)
+            {
                 $rule->setSort($rule->getSort() - 1);
             }
 
@@ -213,9 +213,9 @@ class RuleController extends Controller
 
         $rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneById($id);
 
-        if($rule != null) {
-
-            $prevRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() - 1);
+        if($rule != null)
+        {
+            $prevRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() - 1, $rule->getRuleType());
 
             $prevRule->setSort($rule->getSort());
             $rule->setSort($rule->getSort() - 1);
@@ -237,9 +237,9 @@ class RuleController extends Controller
 
         $rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneById($id);
 
-        if($rule != null) {
-
-            $nextRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() + 1);
+        if($rule != null)
+        {
+            $nextRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() + 1, $rule->getRuleType());
 
             $nextRule->setSort($rule->getSort());
             $rule->setSort($rule->getSort() + 1);
