@@ -75,11 +75,17 @@ class DashboardController extends Controller
             $bb_source_stat = $this->get('helper')->getSetting("source_stat", "P");
             $bb_source_id =  $this->get('helper')->getSetting("source_id", "P");
 
-            $amarrData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002187");
+            /*$amarrData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002187");
             $jitaData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30000142");
             $dodixieData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002659");
             $rensData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002510");
-            $hekData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002053");
+            $hekData = $this->get('market')->getEveCentralDataForTypes(array($typeId), "30002053");*/
+
+            $amarrData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60008494"));
+            $jitaData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60003760"));
+            $dodixieData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60011866"));
+            $rensData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60004588"));
+            $hekData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60005686"));
 
             $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
             $market_group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')
@@ -91,14 +97,14 @@ class DashboardController extends Controller
 
             $priceDetails = array();
             $priceDetails['types'] = array();
-            $options = $this->get('market')->getMergedBuybackRuleForType($typeId);
+            $options = $this->get('market')->getMergedBuybackRuleForType($typeId, 'P');
 
 
             // Figure out Refining Details
-            $refineMaterials = $this->get('market')->getRefinedMaterialsForType($typeId,$options['refineskill']);
+            $refineMaterials = $this->get('market')->getRefinedMaterialsForType($typeId,$options['refineskill'], 'P');
             $materialNames = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')
                 ->findNamesForTypes(array_keys($refineMaterials));
-            $materialPrices = $this->get('market')->getBuybackPricesForTypes(array_keys($refineMaterials), true);
+            $materialPrices = $this->get('market')->getBuybackPricesForTypes(array_keys($refineMaterials),'P', true);
 
             $refineDetails = array();
             $refinedPrice = 0;

@@ -216,21 +216,21 @@
 				{% if is_granted('ROLE_BUY_ADMIN') %}
 				    <li class="{{(page_name == "Sell Order Queue" ? 'active' : '')}}"><a href="{{ path('admin_sell_order_transactions') }}">
                     <i class="fa fa-cubes"></i>
-                    <i class="fa fa-exchange"></i>
+                    <i class="fa fa-exchange fa-sm"></i>
                     <i class="fa fa-money"></i>
                     <span>Sell Order Queue</span> <span class="badge bg-green" id="purchaseQueueBadge"></span></a></li>
 				{% endif %}
                 {% if is_granted('ROLE_SELL_ADMIN') %}
                     <li class="{{(page_name == "Buy Order Queue" ? 'active' : '')}}"><a href="{{ path('admin_buy_order_transactions') }}">
                     <i class="fa fa-credit-card"></i>
-                    <i class="fa fa-exchange"></i>
+                    <i class="fa fa-exchange fa-sm"></i>
                     <i class="fa fa-cubes"></i>
                     <span>Buy Order Queue</span> <span class="badge bg-green" id="salesQueueBadge"></span></a></li>
                 {% endif %}
                 {% if is_granted('ROLE_SRP_ADMIN') %}
                     <li class="{{(page_name == "SRP Queue" ? 'active' : '')}}"><a href="{{ path('admin_srp_transactions') }}">
                     <i class="fa fa-grav"></i>
-                    <i class="fa fa-exchange"></i>
+                    <i class="fa fa-exchange fa-sm"></i>
                     <i class="fa fa-money"></i>
                     <span>SRP Queue</span> <span class="badge bg-green" id="SRPQueueBadge"></span></a></li>
                 {% endif %}
