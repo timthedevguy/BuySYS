@@ -142,13 +142,13 @@ class AuthorizationManager
 
                     if(!empty($corpRole)) //apply corp role over alliance if found
                     {
-                        $user->setRole($corpRole);
+                        $user->setRole($allianceRole);
                         $user->setEntitlements($allianceEntitlements);
                         $isAuthSet = true;
                     }
                     elseif(!empty($allianceRole))
                     {
-                        $user->setRole($allianceRole);
+                        $user->setRole($corpRole);
                         $user->setEntitlements($corpEntitlements);
                         $isAuthSet = true;
                     }
