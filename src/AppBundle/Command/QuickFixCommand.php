@@ -31,59 +31,6 @@ class QuickFixCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getContainer()->get('helper');
-        $em = $this->getContainer()->get('doctrine')->getEntityManager();
-
-        //update existing values
-        $records = $em->getRepository("AppBundle:SettingEntity", 'default')->findAll();
-
-        foreach($records as $record)
-        {
-            if(preg_match('/buyback/', $record->getName()))
-            {
-                $record->setName(str_replace('buyback_', '', $record->getName())); //removing old prefix
-                $record->setType('P'); //adding type
-            }
-            else
-            {
-                $record->setType('global');
-            }
-        }
-        $em->flush();
-
-
-        //add new values
-        $helper->setSetting('default_buyaction_deny', '0', 'P');
-
-        $previousSetting =$helper->getSetting('default_tax', 'P');
-        if ($previousSetting == null) {$previousSetting = '5';}
-        $helper->setSetting('role_member_tax',$previousSetting , 'P');
-        $helper->setSetting('role_ally_tax', '6', 'P');
-        $helper->setSetting('role_friend_tax', '8', 'P');
-        $helper->setSetting('role_other1_tax', '10', 'P');
-        $helper->setSetting('role_other2_tax', '0', 'P');
-        $helper->setSetting('role_other3_tax', '0', 'P');
-
-        foreach(['S', 'SRP'] as $settingType)
-        {
-            $helper->setSetting('default_buyaction_deny', '0', $settingType);
-            $helper->setSetting("source_id", "30000142", $settingType);
-            $helper->setSetting("source_type", "buy", $settingType);
-            $helper->setSetting("source_stat", "fivePercent", $settingType);
-            $helper->setSetting('role_member_tax', '5', $settingType);
-            $helper->setSetting('role_ally_tax', '6', $settingType);
-            $helper->setSetting('role_friend_tax', '8', $settingType);
-            $helper->setSetting('role_other1_tax', '10', $settingType);
-            $helper->setSetting('role_other2_tax', '0', $settingType);
-            $helper->setSetting('role_other3_tax', '0', $settingType);
-        }
-
-
-        //add rule types
-        $records = $em->getRepository("AppBundle:RuleEntity", 'default')->findAll();
-        foreach($records as $record)
-        {
-            $record->setRuleType('P');
-        }
-        $em->flush();
+        $helper->setSetting('moon_refine_rate', 70, 'P');
     }
 }

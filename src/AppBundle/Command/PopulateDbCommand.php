@@ -62,6 +62,7 @@ class PopulateDbCommand extends ContainerAwareCommand
         $helper->setSetting('value_salvage', '1', 'P');
         $helper->setSetting("ore_refine_rate", "70", 'P');
         $helper->setSetting("ice_refine_rate", "70", 'P');
+        $helper->setSetting("moon_refine_rate", "70", 'P');
         $helper->setSetting("salvage_refine_rate", "60", 'P');
 
         //SALES SETTINGS
