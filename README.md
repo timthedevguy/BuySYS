@@ -1,4 +1,4 @@
-As of 12/8/2017 @ 22:02 UTC I am starting to update the Installation procedure, please bear with me!!!!
+* Note the 'master' branch is no more, I fubarred it soooo bad.  New primary branch is 'release'.
 
 AmSYS
 =====
