@@ -16,7 +16,8 @@ imports:
 monolog:
     handlers:
         main:
-            type:         fingers_crossed
+            type:         rotating
+            max_files: 1
             action_level: error
             handler:      nested
         nested:
