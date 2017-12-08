@@ -1,3 +1,5 @@
+As of 12/8/2017 @ 22:02 UTC I am starting to update the Installation procedure, please bear with me!!!!
+
 AmSYS
 =====
 AmSYS is an Eve Alliance/Corporation Logistics system.  The system was designed to allow members to interact with 
