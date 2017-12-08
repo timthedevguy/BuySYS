@@ -48,7 +48,7 @@ class PopulateDbCommand extends ContainerAwareCommand
             $helper->setSetting('default_buyaction_deny', '0', $settingType);
             $helper->setSetting("source_id", "30000142", $settingType);
             $helper->setSetting("source_type", "buy", $settingType);
-            $helper->setSetting("source_stat", "fivePercent", $settingType);
+            $helper->setSetting("source_stat", "percentile", $settingType);
             $helper->setSetting('role_member_tax', '5', $settingType);
             $helper->setSetting('role_ally_tax', '6', $settingType);
             $helper->setSetting('role_friend_tax', '8', $settingType);

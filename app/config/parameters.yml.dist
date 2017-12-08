@@ -19,17 +19,17 @@ parameters:
         mailer_password: password
         mailer_encryption: ssl
         mailer_auth_mode: login
-        secret: 27cf9b3f2d86b1b6bc6aeaacad9941b5cc1f8a20
-        system_name_long: '<strong>COGG</strong>sys'
-        system_tab_name: 'COGG Buyback Program'
-        system_name_short: '<strong>OG</strong>sys'
-        corp_ticker: COGG
-        corp_name: 'Central Omni Galactic Group'
-        corp_url: 'https://omnigalactic.co.uk'
-        corp_copyright: 'Copyright 2017, Central Omni Galactic Group'
+        secret: 843hoaifdpiuhag8989[0qafholikd
+        system_name_long: '<strong>NOPE</strong>sys'
+        system_tab_name: 'NOPE Buyback Program'
+        system_name_short: '<strong>NOPE</strong>sys'
+        corp_ticker: NOPE
+        corp_name: 'No Ostrich People Eaters'
+        corp_url: 'https://nope.com'
+        corp_copyright: 'Copyright 2017, No Ostrich People Eaters'
         contract_location: "8P9-BM Empress Jamyl's Emporium"
-        contract_corp_name: 'Omni Galactic Xpress Logistics'
-        sso_client_id: 1f40cf73941944609c6a35f142b1e137
-        sso_secret_key: ZZsc451cRSZgp2OGcIxoTRRPY3eYQdhLFJFH78T5
+        contract_corp_name: 'NOPE Logistics'
+        sso_client_id: sso_client_id
+        sso_secret_key: sso_client_key
         sso_scopes: publicData esi-wallet.read_character_wallet.v1 esi-killmails.read_killmails.v1 esi-mail.send_mail.v1 esi-mail.read_mail.v1
         sso_scopes_todo: remoteClientUI esi-fleets.read_fleet.v1 esi-fleets.write_fleet.v1 esi-ui.open_window.v1
