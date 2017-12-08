@@ -16,3 +16,5 @@ src/AppBundle/Controller/TransactionsController.php
 *.sql
 
 *.bz2
+
+\.vs/
