@@ -16,7 +16,7 @@ imports:
 monolog:
     handlers:
         main:
-            type:         rotating
+            type:         rotating_file
             max_files: 1
             action_level: error
             handler:      nested
