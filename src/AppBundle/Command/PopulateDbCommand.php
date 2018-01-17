@@ -55,6 +55,7 @@ class PopulateDbCommand extends ContainerAwareCommand
             $helper->setSetting('role_other1_tax', '10', $settingType);
             $helper->setSetting('role_other2_tax', '0', $settingType);
             $helper->setSetting('role_other3_tax', '0', $settingType);
+            $helper->setSetting('role_guest_tax', '0',$settingType);
         }
 
         //BUYBACK SETTINGS
