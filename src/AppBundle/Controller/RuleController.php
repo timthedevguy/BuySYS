@@ -215,14 +215,16 @@ class RuleController extends Controller
 
         if($rule != null)
         {
-            $prevRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() - 1, $rule->getRuleType());
+            $prevRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() - 1, array('sort' => 'ASC'));
 
-            $prevRule->setSort($rule->getSort());
-            $rule->setSort($rule->getSort() - 1);
+            if($prevRule != null) {
+                $prevRule->setSort($rule->getSort());
+                $rule->setSort($rule->getSort() - 1);
 
-            $em->flush();
+                $em->flush();
 
-            $this->addFlash('success', "Moved rule");
+                $this->addFlash('success', "Moved rule");
+            }
         }
 
         return $this->redirectToRoute('admin_buyback_rules');
@@ -239,14 +241,16 @@ class RuleController extends Controller
 
         if($rule != null)
         {
-            $nextRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() + 1, $rule->getRuleType());
+            $nextRule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity', 'default')->findOneBySort($rule->getSort() + 1, array('sort' => 'ASC'));
 
-            $nextRule->setSort($rule->getSort());
-            $rule->setSort($rule->getSort() + 1);
+            if($nextRule != null) {
+                $nextRule->setSort($rule->getSort());
+                $rule->setSort($rule->getSort() + 1);
 
-            $em->flush();
+                $em->flush();
 
-            $this->addFlash('success', "Moved rule");
+                $this->addFlash('success', "Moved rule");
+            }
         }
 
         return $this->redirectToRoute('admin_buyback_rules');
