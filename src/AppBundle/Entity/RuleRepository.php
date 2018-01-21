@@ -30,7 +30,7 @@ class RuleRepository extends EntityRepository
     {
         $query = $this->createQueryBuilder('r')
             ->where('r.sort > :sort')
-            ->where('r.ruleType = :ruleType')
+            ->andWhere('r.ruleType = :ruleType')
             ->setParameter('sort', $sort)
             ->setParameter('ruleType', $ruleType)
             ->orderBy('r.sort', 'ASC')
@@ -43,7 +43,7 @@ class RuleRepository extends EntityRepository
     {
         $query = $this->createQueryBuilder('r')
             ->where('r.sort < :sort')
-            ->where('r.ruleType = :ruleType')
+            ->andWhere('r.ruleType = :ruleType')
             ->setParameter('sort', $sort)
             ->setParameter('ruleType', $ruleType)
             ->orderBy('r.sort', 'ASC')
