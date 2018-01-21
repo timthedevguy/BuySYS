@@ -128,7 +128,7 @@ class UpdateSDECommand extends ContainerAwareCommand
 				$import_command = 'mysql -u ' . $database_user . ' --password=' . $database_password . ' -h ' . $database_host . ' '
 					. $database . ' < ' . $table . '.sql';
 
-                $phelper->run($output, $import_command);
+                $phelper->run($output, $import_command, 'Importing files to DB failed, check your config and SQL Setup.');
 
                 $bar->advance();
             }
