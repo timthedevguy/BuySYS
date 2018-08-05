@@ -20,8 +20,8 @@ class ESI
 {
     const ESI_URL = 'https://esi.tech.ccp.is';
     const SEARCH = '/v1/search/';
-    const ALLIANCE_NAMES = '/v1/alliances/names/';
-    const CORPORATION_NAMES = '/v1/corporations/names/';
+    const ALLIANCE_NAMES = '/v2/universe/names/';
+    const CORPORATION_NAMES = '/v2/universe/names/';
 	const API_NAMESPACES = [
 		"AllianceAPI" => ["getAlliances", "getAlliancesAllianceId"],
 		"WalletApi" => ["getCharactersCharacterIdWallets"],
@@ -203,11 +203,8 @@ class ESI
                     $lookup[] = $allianceids[$j];
                 }
 
-                $lookupResults = $client->get(self::ALLIANCE_NAMES, [
-                    'query' => [
-                        'alliance_ids' => implode(',', $allianceids),
-                        'datasource' => $datasource
-                    ]
+                $lookupResults = $client->post(self::ALLIANCE_NAMES, [
+					'body' => json_encode($lookup)
                 ]);
 
                 $results = array_merge($results, \GuzzleHttp\json_decode($lookupResults->getBody()->getContents(), true));
@@ -250,11 +247,8 @@ class ESI
                     $lookup[] = $corporationids[$j];
                 }
 
-                $lookupResults = $client->get(self::CORPORATION_NAMES, [
-                    'query' => [
-                        'corporation_ids' => implode(',', $lookup),
-                        'datasource' => $datasource
-                    ]
+                $lookupResults = $client->post(self::CORPORATION_NAMES, [
+					'body' => json_encode($lookup)
                 ]);
 
                 $results = array_merge($results, \GuzzleHttp\json_decode($lookupResults->getBody()->getContents(), true));

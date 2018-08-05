@@ -17,9 +17,9 @@
                             <th>Name</th>
                         </tr>
                         {% for item in alliances %}
-                            <tr class="item-row fake-link" data-id="{{ item.alliance_id }}" data-type="A" data-name="{{ item.alliance_name }}">
+                            <tr class="item-row fake-link" data-id="{{ item.id }}" data-type="A" data-name="{{ item.name }}">
                                 <td>
-                                    <img src="https://image.eveonline.com/Alliance/{{ item.alliance_id }}_32.png" style="margin-right: 20px;"> {{ item.alliance_name }}
+                                    <img src="https://image.eveonline.com/Alliance/{{ item.id }}_32.png" style="margin-right: 20px;"> {{ item.name }}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -31,9 +31,9 @@
                             <th>Name</th>
                         </tr>
                         {% for item in corporations %}
-                            <tr class="item-row fake-link" data-id="{{ item.corporation_id }}" data-type="C" data-name="{{ item.corporation_name }}">
+                            <tr class="item-row fake-link" data-id="{{ item.id }}" data-type="C" data-name="{{ item.name }}">
                                 <td>
-                                    <img src="https://image.eveonline.com/Corporation/{{ item.corporation_id }}_32.png" style="margin-right: 20px;"> {{ item.corporation_name }}
+                                    <img src="https://image.eveonline.com/Corporation/{{ item.id }}_32.png" style="margin-right: 20px;"> {{ item.name }}
                                 </td>
                             </tr>
                         {% endfor %}
