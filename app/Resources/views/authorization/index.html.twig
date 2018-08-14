@@ -48,12 +48,8 @@
                                 <table id="manual-table" class="table table-striped images-table top-margin-20">
                                     <thead>
                                     <tr>
-                                        <th style="width:27%;">Name</th>
+                                        <th style="width:50%;">Name</th>
                                         <th style="width:23%;">Applied Role <a
-                                                    href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)"
-                                                    target="_blank"><span class="fa fa-info-circle text-info"
-                                                                          style="margin-left: 5px;"></span></a></th>
-                                        <th style="width:24%;">Applied Entitlements <a
                                                     href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)"
                                                     target="_blank"><span class="fa fa-info-circle text-info"
                                                                           style="margin-left: 5px;"></span></a></th>
@@ -91,23 +87,6 @@
                                                             <option value="{{ role }}" selected>{{ role }}</option>
                                                         {% else %}
                                                             <option value="{{ role }}">{{ role }}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </td>
-
-                                            <td>
-                                                <select data-id="{{ item.eveid }}" id="ms{{ item.eveid }}"
-                                                        data-name="{{ item.name }}" data-type="{{ item.type }}"
-                                                        multiple="multiple" name="manualEntitlementsSelect[]"
-                                                        class="form-control entitlementsSelect"
-                                                        style="height: auto; width:auto;">
-                                                    {% for entitlement in entitlements %}
-                                                        {% if entitlement in item.entitlements %}
-                                                            <option value="{{ entitlement }}"
-                                                                    selected>{{ entitlement }}</option>
-                                                        {% else %}
-                                                            <option value="{{ entitlement }}">{{ entitlement }}</option>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select>

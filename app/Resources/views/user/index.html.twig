@@ -22,16 +22,8 @@
                             <thead>
                             <tr>
                                 <th style="width: 15%">Character Name</th>
-                                <th style="width: 23%">Manual Role <br/>(Overrides Auto-Applied Role) <a
-                                            href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)"
-                                            target="_blank"><span class="fa fa-info-circle text-info"
-                                                                  style="margin-left: 5px;"></span></a></th>
+                                <th style="width: 23%">Override Role</th>
                                 <th style="width: 12%">Auto-Applied Role</th>
-                                <th style="width: 24%">Manual Entitlements <br/>(Overrides Auto-Applied Entitlements) <a
-                                            href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)"
-                                            target="_blank"><span class="fa fa-info-circle text-info"
-                                                                  style="margin-left: 5px;"></span></a></th>
-                                <th style="width: 14%">Auto-Applied Entitlements</th>
                                 <th style="width: 11%">Last Login</th>
                             </tr>
                             </thead>
@@ -55,22 +47,6 @@
                                         </select>
                                     </td>
                                     <td>{{ user.role }}</td>
-                                    <td>
-                                        <select data-id="{{ user.id }}" id="ms{{ user.id }}" multiple="multiple"
-                                                name="overrideEntitlements[]"
-                                                class="form-control entitlementsOverrideSelect"
-                                                style="height: auto; width:100%;">
-                                            {% for overrideEntitlement in entitlements %}
-                                                {% if overrideEntitlement in user.overrideEntitlements %}
-                                                    <option value="{{ overrideEntitlement }}"
-                                                            selected>{{ overrideEntitlement }}</option>
-                                                {% else %}
-                                                    <option value="{{ overrideEntitlement }}">{{ overrideEntitlement }}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </td>
-                                    <td>{{ user.entitlements }}</td>
                                     <td>{{ user.lastlogin|date }}</td>
                                 </tr>
                             {% endfor %}

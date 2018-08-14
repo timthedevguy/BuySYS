@@ -21,22 +21,21 @@ class Helper
      * Provides quick method of getting a specific setting from the settings
      * table.
      */
-    public function getSetting(string $name, string $type = 'global')
+    public function getSetting(string $name)
     {
         //check cache first
         $settingsCache = SettingsCacheSingleton::getInstance();
-        $settingValue = $settingsCache->getSetting($name, $type);
+        $settingValue = $settingsCache->getSetting($name);
 
         if($settingValue == null)
         {
             // if not in cache, check DB
-            $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
-                ->findOneBy(array('name' => $name, 'type' => $type));;
+            $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')->findOneByName($name);
 
             if($setting != null)
             {
                 //if it was in DB, add to cache and return
-                $settingsCache->setSetting($setting->getName(), $setting->getType(), $setting->getValue());
+                $settingsCache->setSetting($setting->getName(), $setting->getValue());
                 $settingValue =  $setting->getValue();
             }
         }
@@ -47,11 +46,10 @@ class Helper
     /*
      * Provides quick method of saving a specific setting to the settings table.
      */
-    public function setSetting(string $name, string $value, string $type = 'global')
+    public function setSetting(string $name, string $value)
     {
         // Grab our Setting
-        $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')
-            ->findOneBy(array('name' => $name, 'type' => $type));
+        $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')->findOneByName($name);
 
         // Get Entity Manager
         $em = $this->doctrine->getManager();
@@ -68,7 +66,6 @@ class Helper
             // No, create the setting
             $setting = new SettingEntity();
             $setting->setName($name);
-            $setting->setType($type);
             $setting->setValue($value);
             // Inform Entity Manager to manage this Entity
             $em->persist($setting);
@@ -77,7 +74,7 @@ class Helper
 
         //add to cache
         $settingsCache = SettingsCacheSingleton::getInstance();
-        $settingsCache->setSetting($name, $type, $value);
+        $settingsCache->setSetting($name, $value);
     }
 }
 

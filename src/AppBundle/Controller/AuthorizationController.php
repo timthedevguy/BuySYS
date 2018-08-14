@@ -8,8 +8,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\ContactEntity;
-use AppBundle\Model\ContactSummaryModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +41,7 @@ class AuthorizationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $manualItems = $em->getRepository('AppBundle:AuthorizationEntity')->findAllManualAuthorizations();
         $contactAuths = $em->getRepository('AppBundle:AuthorizationEntity')->findAllAutoAuthorizations();
-        $contactResult = $em->getRepository('AppBundle:ContactEntity')->getContactSummary();
+
 
         $helper = $this->get('helper');
         $apiKey = $helper->getSetting('ContactAPIKey', 'global');
@@ -54,37 +52,6 @@ class AuthorizationController extends Controller
         }
 
         $contactSummary = Array();
-
-        if(count($contactResult) > 0) {
-            //build default
-            foreach (self::$contactLevelArray as $id => $contactLevel) {
-                if ($id == 6) {
-                    $contactSummary[$contactLevel] = new ContactSummaryModel($contactLevel, 'LOTS!');
-                } else {
-                    $contactSummary[$contactLevel] = new ContactSummaryModel($contactLevel);
-                }
-            }
-
-            //override with actual results
-            foreach ($contactResult as $result) {
-                $contactLevel = $result['contactLevel'];
-
-                $contactSummary[$contactLevel] = new ContactSummaryModel(
-                    $contactLevel,
-                    $result['contactCount'],
-                    $result['lastUpdated']);
-            }
-
-            //set roles
-            foreach ($contactAuths as $auth)
-            {
-                $contactSummary[$auth->getName()]
-                    ->setSelectedRole($auth->getRole())
-                    ->setSelectedEntitlements($auth->getEntitlements());
-            }
-
-        }
-
 
         return $this->render('authorization/index.html.twig', array(
             'page_name' => 'Access Control',
@@ -120,7 +87,7 @@ class AuthorizationController extends Controller
             $corporationNames = ESI::CorporationNames($searchResults['corporation']);
         }
 
-        return $this->render('access_control/_corp_search_results.html.twig', array('corporations' => $corporationNames,
+        return $this->render('authorization/_corp_search_results.html.twig', array('corporations' => $corporationNames,
             'alliances' => $allianceNames, 'acount' => count($allianceNames), 'ccount' => count($corporationNames)));
     }
 

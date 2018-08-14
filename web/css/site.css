@@ -290,3 +290,38 @@ TD .label
 	margin-top: 10px;
 	margin:0px
 }
+
+#nav-search-form {
+	background-color: rgba(255,255,255,0.120);
+	-moz-border-radius: 19px;
+	-webkit-border-radius: 19px;
+	-khtml-border-radius: 19px;
+	-webkit-border-radius: 19px;
+	-moz-border-radius: 19px;
+	border-radius: 19px;
+	color:white;
+}
+
+#search-input::placeholder {
+    color: white;
+    opacity: 1; /* Firefox */
+}
+
+#search-input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: white;
+}
+
+#search-input::-ms-input-placeholder { /* Microsoft Edge */
+    color: white;
+}
+
+#search-input {
+	background-color: transparent;
+	border: none;
+	color: white;
+}
+
+#search-btn {
+	margin: 0px;
+	padding: 0px;
+}

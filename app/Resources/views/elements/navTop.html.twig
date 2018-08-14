@@ -54,6 +54,12 @@
                 <li class="{{ (route == 'api') ? 'active' : '' }}"><a href="{{ path('homepage') }}">Help</a></li>
             </ul>
         </div>
+        <form class="navbar-form navbar-left" role="search" id="nav-search-form">
+            <div class="form-group">
+                <input type="text" class="form-control" id="search-input" placeholder="Item Lookup...">
+            </div>
+            <button class="btn btn-outline" id="search-btn"><i class="fa fa-search fa-fw" aria-hidden="true"></i></button>
+        </form>
         <div class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
                 <li><a href="{{ path('logout') }}">Logout {{ app.user.username }}</a></li>
@@ -74,7 +80,29 @@
            e.preventDefault();
         });
 
+        $("#nav-search-form").submit(function(e)
+        {
+            doSearch();
+            e.stopPropagation();
+            e.preventDefault();
+        });
     });
+
+    function doSearch()
+    {
+        $( "#base_modal_content" ).html("<div class='modal-loading' style='font-size:52px;'><i class='fa fa-refresh fa-spin'></i></div>");
+
+        $('#base_modal').modal({backdrop: "static"});
+
+        $.post('{{path('ajax_lookup_price')}}', {id: $("#search-input").val()},
+            function(response)
+            {
+                $( "#base_modal_content" ).html( response );
+            }
+            , "html");
+
+        $("#search-input").val("");
+    }
 
 </script>
 

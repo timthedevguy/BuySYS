@@ -25,13 +25,13 @@ class SettingsCacheSingleton
 
     private $settingCache = Array();
 
-    public function getSetting(string $settingName, string $settingType)
+    public function getSetting(string $settingName)
     {
-        return $this->settingCache[$settingName][$settingType] ?? null;
+        return $this->settingCache[$settingName] ?? null;
     }
 
-    public function setSetting(string $settingName, string $settingType, string $value)
+    public function setSetting(string $settingName, string $value)
     {
-        $this->settingCache[$settingName][$settingType] = $value;
+        $this->settingCache[$settingName] = $value;
     }
 }

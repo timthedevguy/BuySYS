@@ -2,16 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\UserPreferencesEntity;
 use AppBundle\Model\EstimateModel;
 use AppBundle\Form\EstimateForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-
-use AppBundle\Model\MarketRequestModel;
-use AppBundle\Form\AllianceMarketForm;
-use AppBundle\Model\TransactionSummaryModel;
 
 class DashboardController extends Controller
 {
@@ -20,12 +15,7 @@ class DashboardController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $bb = new MarketRequestModel();
-        $form = $this->createForm(AllianceMarketForm::class, $bb);
-        $form->handleRequest($request);
-
         return $this->render('home/dashboard.html.twig', array(
-            'form' => $form->createView(),
             'pendingSales'=> 0,
             'pendingIncome' => 0,
             'actualSales' => 0,
@@ -111,6 +101,7 @@ class DashboardController extends Controller
             $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findAllLikeName($name);
 
             $template = $this->render('elements/searchResultsByType.html.twig', Array ( 'items' => $types ));
+
             return $template;
         }
     }

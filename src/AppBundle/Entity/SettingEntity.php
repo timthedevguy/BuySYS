@@ -26,10 +26,6 @@ class SettingEntity
      * @ORM\Column(type="string", length=255)
      */
     protected $value;
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    protected $type = 'P'; //set default for existing installs
 
 
     //GETTERS AND SETTERS
@@ -56,15 +52,5 @@ class SettingEntity
     public function getValue()
     {
         return $this->value;
-    }
-
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-    public function getType()
-    {
-        return $this->type;
     }
 }

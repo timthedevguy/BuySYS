@@ -11,7 +11,6 @@ namespace AppBundle\Security;
 
 use AppBundle\Controller\AuthorizationController;
 use AppBundle\Entity\AuthorizationEntity;
-use AppBundle\Entity\ContactEntity;
 use AppBundle\Entity\UserEntity;
 use AppBundle\Helper\Helper;
 use EveBundle\API\ESI;
@@ -37,10 +36,7 @@ class AuthorizationManager
     private static $rolesArray = Array(
         'ROLE_SYSTEM_ADMIN',
         'ROLE_TRANSACTION_ADMIN',
-        'ROLE_BUY_ADMIN',
-        'ROLE_SELL_ADMIN',
-        'ROLE_SRP_ADMIN',
-        'ROLE_EDITOR',
+        'ROLE_BUYBACK_ADMIN',
         'ROLE_MEMBER',
         'ROLE_ALLY',
         'ROLE_GUEST',
@@ -71,10 +67,7 @@ class AuthorizationManager
     );
 
     private static $entitlementsArray = Array(
-        'ROLE_ENTITLEMENT_BUYBACK',
-        'ROLE_ENTITLEMENT_SALES',
-        'ROLE_ENTITLEMENT_PAGES',
-        'ROLE_ENTITLEMENT_SRP'
+        'ROLE_ENTITLEMENT_BUYBACK'
     );
 
 
@@ -107,10 +100,10 @@ class AuthorizationManager
     public function updateAutoAppliedAuthorization(UserEntity $user)
     {
         $manualAuthCount = $this->em->getRepository('AppBundle:AuthorizationEntity')->getManualAuthCount();
-        $contactCount = $this->em->getRepository('AppBundle:ContactEntity')->getContactCount();
+
         $isAuthSet = false;
 
-        if ($manualAuthCount > 0 || $contactCount > 0)
+        if ($manualAuthCount > 0)
         {
             try {
                 // We have entries, get character info
@@ -154,61 +147,6 @@ class AuthorizationManager
                     }
                 }
 
-                if(!$isAuthSet)
-                {
-                    //nothing set by manual auth, check contacts
-                    if($contactCount > 0)
-                    {
-                        $contacts = $this->em->getRepository('AppBundle:ContactEntity')->getExistingContact($character->getId(), $character->getCorpId(), $character->getAllianceId());
-
-                        $pilotRole = null;
-                        $allianceRole = null;
-                        $corpRole = null;
-
-                        $pilotEntitlement = "";
-                        $allianceEntitlement = "";
-                        $corpEntitlement = "";
-
-                        foreach($contacts as $contact)
-                        {
-                            if($contact->getContactType() == 'A')
-                            {
-                                $allianceRole = $contact->getAuthorization()->getRole();
-                                $allianceEntitlement = $contact->getAuthorization()->getEntitlements();
-                            }
-                            elseif($contact->getContactType() == 'C')
-                            {
-                                $corpRole = $contact->getAuthorization()->getRole();
-                                $corpEntitlement = $contact->getAuthorization()->getEntitlements();
-                            }
-                            elseif($contact->getContactType() == 'P')
-                            {
-                                $pilotRole = $contact->getAuthorization()->getRole();
-                                $pilotEntitlement = $contact->getAuthorization()->getEntitlements();
-                            }
-                        }
-
-                        if(!empty($pilotRole)) //apply pilot role over corp if found
-                        {
-                            $user->setRole($pilotRole);
-                            $user->setEntitlements($pilotEntitlement);
-                            $isAuthSet = true;
-                        }
-                        elseif(!empty($corpRole)) //apply corp role over alliance if found
-                        {
-                            $user->setRole($corpRole);
-                            $user->setEntitlements($corpEntitlement);
-                            $isAuthSet = true;
-                        }
-                        elseif(!empty($allianceRole))
-                        {
-                            $user->setRole($allianceRole);
-                            $user->setEntitlements($allianceEntitlement);
-                            $isAuthSet = true;
-                        }
-                    }
-                }
-
             } catch (Exception $e) {
                 //not much we can do here if an error occurs while finding roles.  We'll just allow any previously applied authorization to remain (not updating roles)
                 $isAuthSet = true;
@@ -220,7 +158,6 @@ class AuthorizationManager
             //if no authorization occurred, assign default access
             $authEntity = $this->em->getRepository('AppBundle:AuthorizationEntity')->findOneBy(Array('eveid' => -999));
             $user->setRole($authEntity->getRole());
-            $user->setEntitlements($authEntity->getEntitlements());
         }
 
         return $user;
