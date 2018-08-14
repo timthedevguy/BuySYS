@@ -17,9 +17,7 @@ class UserController extends Controller
     {
         $users = $this->getDoctrine('default')->getRepository('AppBundle:UserEntity')->findAll();
 
-        return $this->render('access_control/users.html.twig', array(
-            'page_name' => 'Access Control',
-            'sub_text' => '',
+        return $this->render('user/index.html.twig', array(
             'users' => $users,
             'roles' => AuthorizationManager::getRoles(),
             'entitlements' => AuthorizationManager::getEntitlements()

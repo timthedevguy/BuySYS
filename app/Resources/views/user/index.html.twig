@@ -1,0 +1,167 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            Users
+            <small>Users and individual permissions</small>
+        </h1>
+    </section>
+
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-users"></i> Users</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <table class="table table-striped" id="users-table">
+                            <thead>
+                            <tr>
+                                <th style="width: 15%">Character Name</th>
+                                <th style="width: 23%">Manual Role <br/>(Overrides Auto-Applied Role) <a
+                                            href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)"
+                                            target="_blank"><span class="fa fa-info-circle text-info"
+                                                                  style="margin-left: 5px;"></span></a></th>
+                                <th style="width: 12%">Auto-Applied Role</th>
+                                <th style="width: 24%">Manual Entitlements <br/>(Overrides Auto-Applied Entitlements) <a
+                                            href="https://github.com/binarygod/AmSYS/wiki/6.-Authorization-(User-Roles-and-Entitlements)"
+                                            target="_blank"><span class="fa fa-info-circle text-info"
+                                                                  style="margin-left: 5px;"></span></a></th>
+                                <th style="width: 14%">Auto-Applied Entitlements</th>
+                                <th style="width: 11%">Last Login</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>
+                                        <select data-id="{{ user.id }}" name="overrideRole"
+                                                class="form-control overrideRoleSelect"
+                                                style="height: auto; width:auto;">
+                                            <option value="">None Selected</option>
+                                            {% for overrideRole in roles %}
+                                                {% if overrideRole == user.overrideRole %}
+                                                    <option value="{{ overrideRole }}"
+                                                            selected>{{ overrideRole }}</option>
+                                                {% else %}
+                                                    <option value="{{ overrideRole }}">{{ overrideRole }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>{{ user.role }}</td>
+                                    <td>
+                                        <select data-id="{{ user.id }}" id="ms{{ user.id }}" multiple="multiple"
+                                                name="overrideEntitlements[]"
+                                                class="form-control entitlementsOverrideSelect"
+                                                style="height: auto; width:100%;">
+                                            {% for overrideEntitlement in entitlements %}
+                                                {% if overrideEntitlement in user.overrideEntitlements %}
+                                                    <option value="{{ overrideEntitlement }}"
+                                                            selected>{{ overrideEntitlement }}</option>
+                                                {% else %}
+                                                    <option value="{{ overrideEntitlement }}">{{ overrideEntitlement }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>{{ user.entitlements }}</td>
+                                    <td>{{ user.lastlogin|date }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <!--<div class="box-footer">
+                        The footer of the box
+                    </div>--><!-- box-footer -->
+                </div><!-- /.box -->
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function (e) {
+
+            $('#users-table').DataTable({
+                "order": [[0, "desc"]],
+
+                "drawCallback": function (settings) {
+                    multiselect();
+                    bindRoleOverride();
+                    bindEntitlementOverride();
+                }
+            });
+
+        });
+
+        function bindRoleOverride() {
+            $('.overrideRoleSelect').on('change', function () {
+
+                $id = $(this).attr("data-id");
+
+                $.post('{{ path('ajax_update_user_override_role') }}', {'role': this.value, 'id': $id},
+                    function (response) {
+
+                    }
+                    , "html");
+            });
+        }
+
+        function bindEntitlementOverride() {
+            $('.entitlementsOverrideSelect').on('change', function () {
+
+                $id = $(this).attr("data-id");
+                $values = $('#ms' + $id + " option:selected").map(function (a, item) {
+                    return item.value;
+                });
+
+                $valueArray = $.map($values, function (value, index) {
+                    return [value];
+                });
+                $valueString = $valueArray.join(",");
+
+                $.post('{{ path('ajax_update_user_override_entitlement') }}', {'entitlements': $valueString, 'id': $id},
+                    function (response) {
+
+                    }
+                    , "html");
+            });
+        }
+
+        function multiselect() {
+
+            $('.entitlementsOverrideSelect').multiselect({
+                numberDisplayed: 0,
+                buttonWidth: '100%'
+            });
+
+            $('.overrideRoleSelect').multiselect({
+                numberDisplayed: 1,
+                buttonWidth: '100%'
+            });
+        }
+
+
+        function processTransaction($id) {
+            $.post('{{ path('ajax_process_transaction') }}', {id: $id},
+                function (response) {
+                    $("#transaction_modal_content").html(response);
+                    $('#transaction_modal').modal({backdrop: "static"});
+                }
+                , "html");
+        }
+
+    </script>
+
+{% endblock %}
+

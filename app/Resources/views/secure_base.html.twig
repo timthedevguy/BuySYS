@@ -6,31 +6,19 @@
         <title>{% block title %}{{ systemTabName }}{% endblock %}</title>
 
 
-        <!-- *************** the order of the CSS links is important! ***************** -->
-        <link rel="stylesheet" href="{{ asset('/css/skin-blue.min.css') }}" />
-
-        <!--choose theme-->
-        {% set preferences = app.session.get('userPreferences') %}
-
-        {% if preferences is defined and preferences.displayTheme is defined and preferences.displayTheme == "slate" %}
-            <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
-            <link rel="stylesheet" href="{{ asset('/css/bootstrap-slate-modified.css') }}" />
-            <link rel="stylesheet" href="{{ asset('/css/AdminLTE-override-theme.css') }}" />
-        {% else %}
-            <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
-            <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
-            <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
-        {% endif %}
-
+        <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/font-awesome.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/skin-blue.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/jquery-ui.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/blue.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap3-wysihtml5.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/dataTables.bootstrap.css') }}" />
-        <link href="{{ asset('/css/typeaheadbundle.css') }}" type="text/css" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ asset('/css/typeaheadbundle.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap-toggle.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/css/bootstrap-multiselect.min.css') }}" />
         {% block stylesheets %}{% endblock %}
+        <link rel="stylesheet" href="{{ asset('/css/site.css') }}" />
 
         <script src="{{ asset('/js/jQuery-2.1.4.min.js') }}"></script>
         <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
@@ -82,44 +70,25 @@
 
         </script>
     </head>
-    <body class="hold-transition skin-blue sidebar-mini fixed">
+    <body class="hold-transition skin-blue layout-top-nav">
         <div class="wrapper">
             <!-- Main Header -->
             <header class="main-header">
-                <!-- Logo -->
-                <a href="/" class="logo">
-                    <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini">{{ systemNameShort|raw }}</span>
-                    <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg">{{ systemNameLong|raw }}</span>
-                </a>
-
-                <!-- Header Navbar-->
-                {{ include('elements/navTop.html.twig') }}
+                {% include('elements/navTop.html.twig') %}
             </header>
-
-            <!-- Left side column. contains the logo and sidebar -->
-            {{ include('elements/navSidebar.html.twig') }}
 
             <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <h1>
-                    {{page_name}}
-                    <small>{{sub_text}}</small>
-                </h1>
-            </section>
+                <div class="container">
 
-            <!-- Main content -->
-            <section class="content">
+                    <!-- Main content -->
 
-                {{ include('elements/flash.html.twig') }}
+                    {{ include('elements/flash.html.twig') }}
+                    {% block body %}{% endblock %}
 
-                {% block body %}{% endblock %}
-
-            </section><!-- /.content -->
-          </div><!-- /.content-wrapper -->
+                </div>
+                <!-- /.container -->
+            </div>
 
           <div class="modal fade" id="base_modal">
             <div class="modal-dialog">
@@ -138,9 +107,6 @@
             <!-- Default to the left -->
             <strong>Copyright &copy; 2015 <a href="mailto:binary.god@gmail.com">Tim Davis</a>, <a href="mailto:aarondorn2@gmail.com">Aaron Heidorn</a>.</strong> All rights reserved.
           </footer>
-
-          <!-- Control Sidebar -->
-          {{ include('elements/navControlbar.html.twig') }}
         </div><!-- ./wrapper -->
         {{ include('elements/search.html.twig') }}
         <script type="text/javascript">

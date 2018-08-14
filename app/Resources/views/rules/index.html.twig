@@ -2,160 +2,175 @@
 
 {% block body %}
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title"><i class="fa fa-info" aria-hidden="true"></i> Information</h3>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <legend>Basic Understanding</legend>
-                            <p>Buyback rules are compounded from top to bottom to form the final rule.</p>
-                            <ul>
-                                <li>Rules are processed Top to Bottom</li>
-                                <li>Rules compound to form the final pricing options</li>
-                                <li>All items start with the default '0' rules, these are changed in Settings</li>
-                                <li>Setting a Market Price overrides the Cache and Live Market Data</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <legend>Understanding Can Buy </legend>
-                            <p>The Can Buy flag is always processed first.  If an item is set to Is Refined: Yes and
-                            Can Buy: No then the item will be rejected.</p>
-                        </div>
-                        <div class="col-md-4">
-                            <legend>Understanding Price</legend>
-                            <p>Setting the Price flag will override all other rules attempting to modify the base price
-                            of an item.  If Price is set then refined value is ignored.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <section class="content-header">
+        <h1>
+            Buyback Rules
+            <small>Rules to change Buyback behavior</small>
+        </h1>
+    </section>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Rule Tester</h3>
-                </div>
-                <div class="box-body no-padding">
-                    <div id="exclusions-form-wrap">
-                        {{ form_start(testform, { 'attr': {'class': 'form-horizontal', 'style': 'margin-top:20px;margin-left:20px;'} }) }}
-                        <div class="form-group">
-                            <div class="col-md-5">
-                                {{ form_label(testform.typeid) }}
-                                {{ form_widget(testform.typeid) }}
-                            </div>
-                            <div class="col-md-3">
-                                {{ form_label(testform.save) }}
-                                {{ form_widget(testform.save) }}
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title"><i class="fa fa-info" aria-hidden="true"></i> Information</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <legend>Basic Understanding</legend>
+                                <p>Buyback rules are compounded from top to bottom to form the final rule.</p>
+                                <ul>
+                                    <li>Rules are processed Top to Bottom</li>
+                                    <li>Rules compound to form the final pricing options</li>
+                                    <li>All items start with the default '0' rules, these are changed in Settings</li>
+                                    <li>Setting a Market Price overrides the Cache and Live Market Data</li>
+                                </ul>
                             </div>
                             <div class="col-md-4">
-                                {% if results != null %}
-                                    <h4>{{ results.name }} ({{ results.typeid }})</h4>
-                                    <table class="table table-stripped">
-                                        <tr>
-                                            <th>Attribute</th>
-                                            <th>Value</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Tax</th>
-                                            <td>{{ results.tax }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Is Refined?</th>
-                                            <td>{{ (results.isrefined == true) ? 'Yes' : 'No' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Can Buy?</th>
-                                            <td>{{ (results.canbuy == true) ? 'Yes' : 'No' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Price</th>
-                                            <td>{{ results.price }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Applied Rules</th>
-                                            <td>{{ results.rules }}</td>
-                                        </tr>
-                                    </table>
-                                {% endif %}
+                                <legend>Understanding Can Buy</legend>
+                                <p>The Can Buy flag is always processed first. If an item is set to Is Refined: Yes and
+                                    Can Buy: No then the item will be rejected.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <legend>Understanding Price</legend>
+                                <p>Setting the Price flag will override all other rules attempting to modify the base
+                                    price
+                                    of an item. If Price is set then refined value is ignored.</p>
                             </div>
                         </div>
-                        {{ form_end(testform) }}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Rules</h3>
-                </div>
-                <div class="box-body no-padding">
-                    <div id="exclusions-form-wrap">
-
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Rule Tester</h3>
                     </div>
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>Target Type</th>
-                            <th>Target</th>
-                            <th>Attribute</th>
-                            <th>Value</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item in builtin %}
-                            <tr>
-                                <td><i>{{ item.sort }}</i></td>
-                                <td><i>{{ item.target }}</i></td>
-                                <td><i>{{ item.targetname }}</i></td>
-                                <td><i>{{ item.attribute }}</i></td>
-                                <td><i>{{ item.value }}</i></td>
-                                <td></td>
-                            </tr>
-                        {% endfor %}
-                        {% for item in rules %}
-                            <tr>
-                                <td>{{ item.sort }}</td>
-                                {% if item.target == 'group' %}
-                                    <td>Group Rule</td>
-                                {% elseif item.target == 'role' %}
-                                    <td>Role Rule</td>
-                                {% else %}
-                                    <td>Item Rule</td>
-                                {% endif %}
-                                <td>{{ item.targetname }}</td>
-                                <td>{{ item.attribute }}</td>
-                                {% if item.attribute == "canbuy" or item.attribute == "isrefined" %}
-                                    <td>{{ (item.value == 0) ? "No" : "Yes" }}</td>
-                                {% else %}
-                                    <td>{{ item.value }}</td>
-                                {% endif %}
-                                <td>
-                                    <a href="{{ path('admin_buyback_rules_up', {'id': item.id}) }}" class="btn btn-success btn-xs"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
-                                    <a href="{{ path('admin_buyback_rules_down', {'id': item.id}) }}" class="btn btn-success btn-xs"><i class="fa fa-arrow-down" aria-hidden="true"></i></a>
-                                    <a href="{{ path('admin_buyback_rules_delete', {'id': item.id}) }}" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="box-body no-padding">
+                        <div id="exclusions-form-wrap">
+                            {{ form_start(testform, { 'attr': {'class': 'form-horizontal', 'style': 'margin-top:20px;margin-left:20px;'} }) }}
+                            <div class="form-group">
+                                <div class="col-md-5">
+                                    {{ form_label(testform.typeid) }}
+                                    {{ form_widget(testform.typeid) }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form_label(testform.save) }}
+                                    {{ form_widget(testform.save) }}
+                                </div>
+                                <div class="col-md-4">
+                                    {% if results != null %}
+                                        <h4>{{ results.name }} ({{ results.typeid }})</h4>
+                                        <table class="table table-stripped">
+                                            <tr>
+                                                <th>Attribute</th>
+                                                <th>Value</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Tax</th>
+                                                <td>{{ results.tax }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Is Refined?</th>
+                                                <td>{{ (results.isrefined == true) ? 'Yes' : 'No' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Can Buy?</th>
+                                                <td>{{ (results.canbuy == true) ? 'Yes' : 'No' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Price</th>
+                                                <td>{{ results.price }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Applied Rules</th>
+                                                <td>{{ results.rules }}</td>
+                                            </tr>
+                                        </table>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {{ form_end(testform) }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <!--<div class="box">
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Rules</h3>
+                    </div>
+                    <div class="box-body no-padding">
+                        <div id="exclusions-form-wrap">
+
+                        </div>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Target Type</th>
+                                <th>Target</th>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in builtin %}
+                                <tr>
+                                    <td><i>{{ item.sort }}</i></td>
+                                    <td><i>{{ item.target }}</i></td>
+                                    <td><i>{{ item.targetname }}</i></td>
+                                    <td><i>{{ item.attribute }}</i></td>
+                                    <td><i>{{ item.value }}</i></td>
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
+                            {% for item in rules %}
+                                <tr>
+                                    <td>{{ item.sort }}</td>
+                                    {% if item.target == 'group' %}
+                                        <td>Group Rule</td>
+                                    {% elseif item.target == 'role' %}
+                                        <td>Role Rule</td>
+                                    {% else %}
+                                        <td>Item Rule</td>
+                                    {% endif %}
+                                    <td>{{ item.targetname }}</td>
+                                    <td>{{ item.attribute }}</td>
+                                    {% if item.attribute == "canbuy" or item.attribute == "isrefined" %}
+                                        <td>{{ (item.value == 0) ? "No" : "Yes" }}</td>
+                                    {% else %}
+                                        <td>{{ item.value }}</td>
+                                    {% endif %}
+                                    <td>
+                                        <a href="{{ path('admin_buyback_rules_up', {'id': item.id}) }}"
+                                           class="btn btn-success btn-xs"><i class="fa fa-arrow-up"
+                                                                             aria-hidden="true"></i></a>
+                                        <a href="{{ path('admin_buyback_rules_down', {'id': item.id}) }}"
+                                           class="btn btn-success btn-xs"><i class="fa fa-arrow-down"
+                                                                             aria-hidden="true"></i></a>
+                                        <a href="{{ path('admin_buyback_rules_delete', {'id': item.id}) }}"
+                                           class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!--<div class="box">
                 <div class="box-header">
                     <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Role</h3>
                 </div>
@@ -165,44 +180,45 @@
                     {{ form_end(roleform) }}
                 </div>
             </div>-->
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Type</h3>
-                </div>
-                <div class="box-body">
-                    {{ form_start(typeform) }}
-                    {{ form_widget(typeform) }}
-                    {{ form_end(typeform) }}
-                </div>
-            </div>
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Group</h3>
-                </div>
-                <div class="box-body">
-                    {{ form_start(groupform) }}
-                    {{ form_widget(groupform) }}
-                    {{ form_end(groupform) }}
-                    <div style="text-align:center;">
-                        <span class="badge bg-yellow">Group is Yellow when using<br/>'Market Price Search...'</span>
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Type</h3>
+                    </div>
+                    <div class="box-body">
+                        {{ form_start(typeform) }}
+                        {{ form_widget(typeform) }}
+                        {{ form_end(typeform) }}
                     </div>
                 </div>
-            </div>
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Market Group</h3>
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Group</h3>
+                    </div>
+                    <div class="box-body">
+                        {{ form_start(groupform) }}
+                        {{ form_widget(groupform) }}
+                        {{ form_end(groupform) }}
+                        <div style="text-align:center;">
+                            <span class="badge bg-yellow">Group is Yellow when using<br/>'Market Price Search...'</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="box-body">
-                    {{ form_start(marketgroupform) }}
-                    {{ form_widget(marketgroupform) }}
-                    {{ form_end(marketgroupform) }}
-                    <div style="text-align:center;">
-                        <span class="badge bg-light-blue">Market Group is Blue when using<br/> 'Market Price Search...'</span>
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title"><i class="fa fa-filter" aria-hidden="true"></i> Add by Market Group</h3>
+                    </div>
+                    <div class="box-body">
+                        {{ form_start(marketgroupform) }}
+                        {{ form_widget(marketgroupform) }}
+                        {{ form_end(marketgroupform) }}
+                        <div style="text-align:center;">
+                            <span class="badge bg-light-blue">Market Group is Blue when using<br/> 'Market Price Search...'</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
 {% endblock %}
 

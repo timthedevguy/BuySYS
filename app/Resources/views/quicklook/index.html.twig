@@ -1,0 +1,96 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            {{ title }}
+            <small>Quicklook</small>
+        </h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-body">
+                        <table class="table table-striped images-table-small data-table">
+                            <thead>
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    Volume
+                                </th>
+                                <th>
+                                    Unit Price
+                                </th>
+                                <th class="color-col"></th>
+                                <th>
+                                    Price /m3
+                                </th>
+                                {% if hideCan == false %}
+                                    <th>
+                                        Units /Can
+                                    </th>
+                                    <th>
+                                        Price /Can
+                                    </th>
+                                {% endif %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ore in results %}
+                                <tr>
+                                    <td><img src="https://image.eveonline.com/Type/{{ ore.typeid }}_32.png"/><span
+                                                data-toggle="tooltip" data-placement="right"
+                                                title="Id: {{ ore.typeid }}">{{ ore.name }}</span></td>
+                                    <td>{{ ore.volume }}</td>
+                                    <td>{{ ore.iskper|number_format(0, '.', ',') }}</td>
+                                    <td class="color-col" k="{{ ore.color }}"></td>
+                                    <td><strong>{{ ore.iskperm|number_format(0, '.', ',') }}</strong></td>
+                                    {% if hideCan == false %}
+                                        <td>{{ ore.canunits|number_format(0, '.', ',') }}</td>
+                                        <td>{{ ore.canprice|number_format(0, '.', ',') }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <!--<div class="box-footer">
+                        The footer of the box
+                    </div>--><!-- box-footer -->
+                </div><!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script>
+        function blendColors(p) {
+            c0 = '#FF0000';
+            c1 = '#00CC00';
+            var f = parseInt(c0.slice(1), 16), t = parseInt(c1.slice(1), 16), R1 = f >> 16, G1 = f >> 8 & 0x00FF,
+                B1 = f & 0x0000FF, R2 = t >> 16, G2 = t >> 8 & 0x00FF, B2 = t & 0x0000FF;
+            return "#" + (0x1000000 + (Math.round((R2 - R1) * p) + R1) * 0x10000 + (Math.round((G2 - G1) * p) + G1) * 0x100 + (Math.round((B2 - B1) * p) + B1)).toString(16).slice(1);
+        }
+
+        $(document).ready(function () {
+
+            $(".color-col").each(function (index) {
+                $(this).css('background-color', blendColors($(this).attr('k')));
+            });
+
+            $('.data-table').DataTable({
+                "paging": false,
+                "order": [[4, "desc"]]
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

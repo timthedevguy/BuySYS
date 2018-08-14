@@ -79,7 +79,7 @@ class SystemAdminController extends Controller
             $settings[$setting->getName()] = $setting->getValue();
         }
 
-        return $this->render('admin/base_settings.html.twig', array(
+        return $this->render('settings.html.twig', array(
             'page_name' => $pageName,
             'sub_text' => $subText,
             'settings' => $settings,

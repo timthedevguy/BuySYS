@@ -2,200 +2,176 @@
 
 {% block body %}
 
-    {% if transactionType == 'P' %}
-        {% set headerText = ' Item Purchases (From Members)' %}
-        {% set firstIcon = 'fa-cubes' %}
-        {% set lastIcon = 'fa-money' %}
-        {% set firstMetric = 'PURCHASE COST' %}
-        {% set centerMetric = 'PURCHASE REQUESTS' %}
-        {% set lastMetric = 'PURCHASE PROFIT' %}
-    {% elseif transactionType == 'S' %}
-        {% set headerText = ' Item Sales (To Members)' %}
-        {% set firstIcon = 'fa-credit-card' %}
-        {% set lastIcon = 'fa-cubes' %}
-        {% set firstMetric = 'SALES COST' %}
-        {% set centerMetric = 'SALE REQUESTS' %}
-        {% set lastMetric = 'SALES PROFIT' %}
-    {% elseif transactionType == 'SRP' %}
-        {% set headerText = ' SRP Payouts (To Members)' %}
-        {% set firstIcon = 'fa-grav' %}
-        {% set lastIcon = 'fa-money' %}
-        {% set firstMetric = 'SRP EXPENSE' %}
-        {% set centerMetric = 'SRP REQUESTS' %}
-        {% set lastMetric = 'PROFIT' %}
-    {% endif %}
+    <section class="content-header">
+        <h1>
+            Contract Queue
+            <small>View all Buyback transactions</small>
+        </h1>
+    </section>
 
-<div class="row">
-    <div class="col-lg-4 col-md-6">
-        <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="fa fa-credit-card"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Pending {{ firstMetric }}</span>
-                <span class="info-box-number" id="netPending">{{last500Summary.totalNetPending|number_format(0, '.', ',')}}</span>
-                <span class="text-muted"></span>
-            </div><!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="fa fa-cart-arrow-down"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Pending {{ centerMetric }}</span>
-                <span class="info-box-number" id="transactionPending">{{last500Summary.totalTransactionPending|number_format(0, '.', ',')}}</span>
-                <span class="text-muted"></span>
-            </div><!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Pending {{ lastMetric }}</span>
-                <span class="info-box-number" id="profitPending">{{last500Summary.totalProfitPending|number_format(0, '.', ',')}}</span>
-                <span class="text-muted"></span>
-            </div><!-- /.info-box-content -->
-        </div>
-    </div>
-</div>
+    <section class="content">
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="box">
-            <div class="box-header with-border">
-                <h3 class="box-title">
-                    <i class="fa {{ firstIcon }}"></i>
-                    <i class="fa fa-exchange"></i>
-                    <i class="fa {{ lastIcon }}"></i>
-                    <span style="margin-left: 7px;">{{ corpTicker }}{{ headerText }}</span>
-                </h3>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <table class="table table-striped data-table" id="transactions-table">
-                    <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Order ID</th>
-                        <th>User</th>
-                        <th>Gross</th>
-                        <th>Net</th>
-                        <th>Profit</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for transaction in last500Transactions %}
-                        {% if transaction.status == 'Pending' %}
-                            <tr class="success" id="row-{{transaction.orderid}}">
-                        {% elseif transaction.status == 'Cancelled' %}
-                            <tr class="danger" id="row-{{transaction.orderid}}">
-                        {% else %}
-                            <tr class="bg-gray" id="row-{{transaction.orderid}}">
-                        {% endif %}
-                            <td>{{transaction.created|date("m/d/Y H:i")}}</td>
-                            <td><a class="fake_link">{{transaction.orderid}}</a></td>
-                            {% if transaction.user == null %}
-                                <td>Guest</td>
-                            {% else %}
-                                <td>{{transaction.user.username}}</td>
-                            {% endif %}
-                            <td>{{transaction.gross|number_format(0, '.', ',')}}</td>
-                            <td>{{transaction.net|number_format(0, '.', ',')}}</td>
-                            <td>{{(transaction.gross - transaction.net)|number_format(0, '.', ',')}}</td>
-                            <td>
+        {% if transactionType == 'P' %}
+            {% set headerText = ' Item Purchases (From Members)' %}
+            {% set firstIcon = 'fa-cubes' %}
+            {% set lastIcon = 'fa-money' %}
+            {% set firstMetric = 'PURCHASE COST' %}
+            {% set centerMetric = 'PURCHASE REQUESTS' %}
+            {% set lastMetric = 'PURCHASE PROFIT' %}
+        {% elseif transactionType == 'S' %}
+            {% set headerText = ' Item Sales (To Members)' %}
+            {% set firstIcon = 'fa-credit-card' %}
+            {% set lastIcon = 'fa-cubes' %}
+            {% set firstMetric = 'SALES COST' %}
+            {% set centerMetric = 'SALE REQUESTS' %}
+            {% set lastMetric = 'SALES PROFIT' %}
+        {% elseif transactionType == 'SRP' %}
+            {% set headerText = ' SRP Payouts (To Members)' %}
+            {% set firstIcon = 'fa-grav' %}
+            {% set lastIcon = 'fa-money' %}
+            {% set firstMetric = 'SRP EXPENSE' %}
+            {% set centerMetric = 'SRP REQUESTS' %}
+            {% set lastMetric = 'PROFIT' %}
+        {% endif %}
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-credit-card"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pending {{ firstMetric }}</span>
+                        <span class="info-box-number"
+                              id="netPending">{{ last500Summary.totalNetPending|number_format(0, '.', ',') }}</span>
+                        <span class="text-muted"></span>
+                    </div><!-- /.info-box-content -->
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-cart-arrow-down"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pending {{ centerMetric }}</span>
+                        <span class="info-box-number"
+                              id="transactionPending">{{ last500Summary.totalTransactionPending|number_format(0, '.', ',') }}</span>
+                        <span class="text-muted"></span>
+                    </div><!-- /.info-box-content -->
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pending {{ lastMetric }}</span>
+                        <span class="info-box-number"
+                              id="profitPending">{{ last500Summary.totalProfitPending|number_format(0, '.', ',') }}</span>
+                        <span class="text-muted"></span>
+                    </div><!-- /.info-box-content -->
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <i class="fa {{ firstIcon }}"></i>
+                            <i class="fa fa-exchange"></i>
+                            <i class="fa {{ lastIcon }}"></i>
+                            <span style="margin-left: 7px;">{{ corpTicker }}{{ headerText }}</span>
+                        </h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <table class="table table-striped data-table" id="transactions-table">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Order ID</th>
+                                <th>User</th>
+                                <th>Gross</th>
+                                <th>Net</th>
+                                <th>Profit</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for transaction in last500Transactions %}
                                 {% if transaction.status == 'Pending' %}
-                                    <span class="label label-success pull-right">{{transaction.status}}</span>
+                                <tr class="success" id="row-{{ transaction.orderid }}">
                                 {% elseif transaction.status == 'Cancelled' %}
-                                    <span class="label label-danger pull-right">{{transaction.status}}</span>
+                                <tr class="danger" id="row-{{ transaction.orderid }}">
                                 {% else %}
-                                    <span class="label label-grey pull-right">Complete</span>
+                                    <tr class="bg-gray" id="row-{{ transaction.orderid }}">
                                 {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div><!-- /.box-body -->
-            <!--<div class="box-footer">
-                The footer of the box
-            </div>--><!-- box-footer -->
-        </div><!-- /.box -->
-    </div>
-</div>
+                                <td>{{ transaction.created|date("m/d/Y H:i") }}</td>
+                                <td><a class="fake_link">{{ transaction.orderid }}</a></td>
+                                {% if transaction.user == null %}
+                                    <td>Guest</td>
+                                {% else %}
+                                    <td>{{ transaction.user.username }}</td>
+                                {% endif %}
+                                <td>{{ transaction.gross|number_format(0, '.', ',') }}</td>
+                                <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
+                                <td>{{ (transaction.gross - transaction.net)|number_format(0, '.', ',') }}</td>
+                                <td>
+                                    {% if transaction.status == 'Pending' %}
+                                        <span class="label label-success pull-right">{{ transaction.status }}</span>
+                                    {% elseif transaction.status == 'Cancelled' %}
+                                        <span class="label label-danger pull-right">{{ transaction.status }}</span>
+                                    {% else %}
+                                        <span class="label label-grey pull-right">Complete</span>
+                                    {% endif %}
+                                </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <!--<div class="box-footer">
+                        The footer of the box
+                    </div>--><!-- box-footer -->
+                </div><!-- /.box -->
+            </div>
+        </div>
+    </section>
 
-
-<div class="row">
-    <div class="col-lg-4 col-md-6">
-        <div class="info-box">
-            <span class="info-box-icon bg-gray"><i class="fa fa-credit-card"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Total {{ firstMetric }}</span>
-                <span class="info-box-number" id="totalExpense">{{totalSummary.totalNetAccepted|number_format(0, '.', ',')}}</span>
-                <span class="text-muted"></span>
-            </div><!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="info-box">
-            <span class="info-box-icon bg-gray"><i class="fa fa-cart-plus"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Total Accepted {{ centerMetric }}</span>
-                <span class="info-box-number" id="totalAccepted">{{totalSummary.totalTransactionsAccepted|number_format(0, '.', ',')}}</span>
-                <span class="text-muted"></span>
-            </div><!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="info-box">
-            <span class="info-box-icon bg-gray"><i class="fa fa-money"></i></span>
-            <div class="info-box-content">
-                <span class="info-box-text">Total {{ lastMetric }}</span>
-                <span class="info-box-number" id="totalProfit">{{(totalSummary.totalGrossAccepted - totalSummary.totalNetAccepted)|number_format(0, '.', ',')}}</span>
-                <span class="text-muted"></span>
-            </div><!-- /.info-box-content -->
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="transaction_modal">
-  <div class="modal-dialog">
-    <div class="modal-content" id="transaction_modal_content">
-        <div class="modal-loading">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    <div class="modal fade" id="transaction_modal">
+        <div class="modal-dialog">
+            <div class="modal-content" id="transaction_modal_content">
+                <div class="modal-loading">
+                    <i class="fa fa-refresh fa-spin"></i>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 {% endblock %}
 
 {% block javascripts %}
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    $(document).ready(function (e) {
+        $(document).ready(function (e) {
 
-        $(".fake_link").click(function(e)
-        {
-            processTransaction($(this).html());
+            $(".fake_link").click(function (e) {
+                processTransaction($(this).html());
+            });
+
+            $('#transactions-table').DataTable({
+                "order": [[0, "desc"]]
+            });
+
         });
 
-        $('#transactions-table').DataTable({
-            "order": [[ 0, "desc" ]]
-        });
+        function processTransaction($id) {
+            $.post('{{ path('ajax_process_transaction') }}', {id: $id},
+                function (response) {
+                    $("#transaction_modal_content").html(response);
+                    $('#transaction_modal').modal({backdrop: "static"});
+                }
+                , "html");
+        }
 
-    });
-
-    function processTransaction($id)
-    {
-        $.post('{{ path('ajax_process_transaction') }}', {id: $id},
-            function(response)
-            {
-                $( "#transaction_modal_content" ).html( response );
-                $('#transaction_modal').modal({backdrop: "static"});
-            }
-        , "html");
-    }
-
-</script>
+    </script>
 
 {% endblock %}

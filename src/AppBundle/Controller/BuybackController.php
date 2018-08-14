@@ -20,10 +20,19 @@ use AppBundle\Entity\LineItemEntity;
 use AppBundle\Entity\TransactionEntity;
 use AppBundle\Helper\MarketHelper;
 
-class AllianceMarketController extends Controller
+class BuybackController extends Controller
 {
 
-    /**
+	/**
+	 * @Route("/estimate", name="estimate")
+	 */
+	public function estimateAction(Request $request)
+	{
+		return $this->render('', array());
+	}
+
+	
+	/**
      * @Route("/alliance_market/sellorders", name="buyback")
      */
     public function buybackAction(Request $request)

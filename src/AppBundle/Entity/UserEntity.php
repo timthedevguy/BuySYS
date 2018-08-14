@@ -26,8 +26,6 @@ class UserEntity implements AdvancedUserInterface, \Serializable
         $this->transactions = new ArrayCollection();
     }
 
-
-
     //FIELDS
     /**
     * @ORM\Column(name="id", type="integer", nullable=false)

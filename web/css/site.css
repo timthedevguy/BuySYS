@@ -260,3 +260,33 @@ TD .label
 	font-size: 11px;
 }
 
+.info-box.small {
+	min-height: 55px;
+}
+
+.info-box.small .info-box-icon {
+	height: 55px;
+	width: 55px;
+	font-size: 29px;
+	line-height: 55px;
+}
+
+.info-box.small .info-box-content {
+	margin-left: 55px;
+}
+
+.dropdown-submenu {
+	position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+	top: 0;
+	left: 100%;
+	margin-top: -1px;
+}
+
+.caret.menu-caret {
+	float: left;
+	margin-top: 10px;
+	margin:0px
+}

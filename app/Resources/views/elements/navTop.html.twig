@@ -1,116 +1,80 @@
+{% set route = app.request.attributes.get('_route') %}
 <nav class="navbar navbar-static-top" role="navigation">
-  <!-- Sidebar toggle button-->
-  <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-    <span class="sr-only">Toggle navigation</span>
-  </a>
-  <!-- Navbar Right Menu -->
-  <div class="navbar-custom-menu">
-    <ul class="nav navbar-nav">
-      <!-- Messages: style can be found in dropdown.less-->
-      <!-- Notifications Menu -->
-      <li><a href="{{ path('guest_suggestion') }}"><i class="fa fa-envelope" aria-hidden="true"></i> Feedback</a></li>
-      <li class="dropdown notifications-menu" id="notifications_menu">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="{{ path('homepage') }}" class="navbar-brand"><i class="fa fa-shopping-basket" aria-hidden="true"></i> <b>Buy</b>SYS</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="{{ (route == 'alts-index') ? 'active' : '' }}"><a href="{{ path('homepage') }}">History</a></li>
 
-      </li>
-      <!-- Tasks Menu -->
-      <!-- User Account Menu -->
-      <li class="dropdown user user-menu">
-        <!-- Menu Toggle Button -->
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <!-- The user image in the navbar-->
-          <img src="https://image.eveonline.com/Character/{{app.user.characterid}}_128.jpg" class="user-image" alt="User Image">
-          <!-- hidden-xs hides the username on small devices so only the image appears. -->
-          <span class="hidden-xs">{{ app.user.username }}</span>
-        </a>
-        <ul class="dropdown-menu">
-          <!-- The user image in the menu -->
-        <li class="user-header">
-            <img src="https://image.eveonline.com/Character/{{app.user.characterid}}_128.jpg" class="img-circle" alt="User Image">
-            <p>
-                {{app.user.username}}
-            </p>
-        </li>
-          <!-- Menu Body -->
-          <!--<li class="user-body">
-            <div class="col-xs-4 text-center">
-              <a href="#">Followers</a>
-            </div>
-            <div class="col-xs-4 text-center">
-              <a href="#">Sales</a>
-            </div>
-            <div class="col-xs-4 text-center">
-              <a href="#">Friends</a>
-            </div>
-        </li>-->
-          <!-- Menu Footer-->
-            <li class="user-footer">
-                <div style="text-align: center;">
-                    <a href="{{ path('logout') }}" class="btn btn-default btn-flat" style="width: 120px;">Logout</a>
-                </div>
-            </li>
-            <hr style="margin-top:10px; margin-bottom:0px;"/>
-            <li class="user-footer">
+                <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Ore Tables</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li class="dropdown-submenu"><a href="#" class="submenu" tabindex="-1">Ore&nbsp;&nbsp;<i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ path('quicklook', {'ore_type': 'all'}) }}">All Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'high'}) }}">High Sec Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'other'}) }}">Other High Sec Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'low'}) }}">Low Sec Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'null'}) }}">Null Sec Ore</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'ice'}) }}">Ice</a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'gas'}) }}">Gas</a></li>
+                        <li><a href="{{ path('quicklook', {'ore_type': 'minerals'}) }}">Minerals</a></li>
+                        <li class="dropdown-submenu"><a href="#" class="submenu" tabindex="-1">Planetary Interaction&nbsp;&nbsp;<i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ path('quicklook', {'ore_type': 'pAll'}) }}">All Commodities</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'p0'}) }}">P0 Commodities</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'p1'}) }}">P1 Commodities</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'p2'}) }}">P2 Commodities</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'p3'}) }}">P3 Commodities</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'p4'}) }}">P4 Commodities</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
 
-                <form class="form-horizontal" action="{{ path('update_preferences') }}" method="post">
-
-
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label" >Theme</label>
-                        <div class="col-lg-9">
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" name="themeRadios" id="themeRadioDefault" value="default">
-                                    Default
-                                </label>
-                            </div>
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" name="themeRadios" id="themeRadioSlate" value="slate">
-                                    Slate
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br />
-                    <div class="pull-left">
-                        <button class="btn btn-default btn-flat" type="submit">Submit Preferences</button>
-                    </div>
-                </form>
-            </li>
-        </ul>
-      </li>
-      <!-- Control Sidebar Toggle Button -->
-      <li>
-            <a href="#" data-toggle="control-sidebar"><i class="fa fa-info-circle"></i></a>
-      </li>
-    </ul>
-  </div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{ path('admin_sell_order_transactions') }}">Contract Queue</a></li>
+                            <li class="{{ (route == 'admin_buyback_rules') ? 'active' : '' }}"><a href="{{ path('admin_users') }}">Users</a></li>
+                            <li class="divider"></li>
+                            <li class="{{ (route == 'settings') ? 'active' : '' }}"><a href="{{ path('admin_settings_buyback') }}">System Settings</a></li>
+                            <li class="{{ (route == 'settings') ? 'active' : '' }}"><a href="{{ path('admin_authorization') }}">Permissions</a></li>
+                            <li class="{{ (route == 'nightly-log') ? 'active' : '' }}"><a href="{{ path('admin_tools') }}">Admin Tools</a> </li>
+                            <li class="{{ (route == 'admin_buyback_rules') ? 'active' : '' }}"><a href="{{ path('admin_buyback_rules') }}">Buyback Rules</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                <li class="{{ (route == 'api') ? 'active' : '' }}"><a href="{{ path('homepage') }}">Help</a></li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse pull-right">
+            <ul class="nav navbar-nav">
+                <li><a href="{{ path('logout') }}">Logout {{ app.user.username }}</a></li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
 {% block javascripts %}
 
 <script type="text/javascript">
 
-    $(document).ready(function (e) {
+    $(document).ready(function() {
 
-        $.get('{{path('ajax_latest_news')}}', {},
-            function(response)
-            {
-                $( "#notifications_menu" ).html( response );
-                //$('#buyback_quick_modal').modal({backdrop: "static"});
-            }
-        , "html");
+        $('.dropdown-submenu a.submenu').click(function(e) {
+           $(this).next('ul').toggle();
+           e.stopPropagation();
+           e.preventDefault();
+        });
 
-        {% set preferences = app.session.get('userPreferences') %}
-		{% if preferences is defined and preferences.displayTheme is defined %}
-			var selectedTheme = '{{ preferences.displayTheme }}';
-			if(selectedTheme && selectedTheme.length > 1)
-				$('input[name=themeRadios][value=' + selectedTheme + ']').prop('checked',true)
-		{% endif %}
     });
-
-
 
 </script>
 

@@ -86,7 +86,7 @@ class AuthorizationController extends Controller
         }
 
 
-        return $this->render('access_control/authorization.html.twig', array(
+        return $this->render('authorization/index.html.twig', array(
             'page_name' => 'Access Control',
             'sub_text' => '',
             'items' => $manualItems,
