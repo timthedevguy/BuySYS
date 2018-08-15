@@ -28,97 +28,59 @@
 <div class="modal-body" >
     <div class="buyback-results-container">
         <div>
-            {% if requiresValidation %}
-                <div class="col-md-12" style="text-align: center">
-            {% else %}
-                <div class="col-md-12" style="text-align: center">
-            {% endif %}
-                    {{ instructions|raw }}
-                </div>
+            <div class="col-md-6">
+                <p>This transaction type requires that a Contract be accepted from a player.  If no contract is present then DO NOT PAY THEM!</p>
+                <p>The Contract details are to the right, verify they match before accepting.  The contents of the contract are listed below</p>
+                <p><strong>Note:</strong> To assist in ensuring the contract contents are correct you can click on the items below to flag them as present.</p>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Order Id:</th>
+                        <td>{{ transaction.orderid }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>{{ transaction.status }}</td>
+                    </tr>
+                    <tr>
+                        <th>Type:</th>
+                        <td>Accept Contract</td>
+                    </tr>
+                    <tr>
+                        <th>From:</th>
+                        {% if transaction.user == null %} <!-- no more guests. This is here for legacy apps-->
+                            <td>Guest</td>
+                        {% else %}
+                            <td>{{ transaction.user.username }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Amount:</th>
+                        <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
+                    </tr>
+                </table>
+            </div>
+            <br />
 
-                <hr />
-            {% if requiresValidation %}
-                <div class="col-md-6">
-                    {% form_theme form 'forms/my_bootstrap_layout_no_label.html.twig' %}
-                    {{ form_start(form) }}
-                        {{ form_row(form.items, {'attr': {'placeholder': 'Paste items from game here', 'style': 'height:135px; '}}) }}
-                        <input type="hidden" id="orderId" value="{{ transaction.orderid }}" />
-                        <div id="validate_submits" class="right_justify_submits">
-                            <input type="button" id="validate_clear" class="btn btn-danger" onclick="$('#buy_back_form_items').val('');" value="Clear">
-                            <input type="button" id="validate_quick_submit" class="btn btn-success" onclick="validateContract(); return false;" value="Validate">
-                        </div>
-                    {{ form_end(form) }}
-                </div>
-            {% endif %}
-
-                <div class="col-md-6">
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Order Id:</th>
-                            <td>{{ transaction.orderid }}</td>
+            <div>
+                <table class="table table-striped images-table">
+                    <tr>
+                        <th style="width:100px;">Quantity</th>
+                        <th>Item</th>
+                        <th>Unit Price</th>
+                        <th>Net Price</th>
+                    </tr>
+                    {% for item in transaction.lineitems %}
+                        <tr class="mark_off">
+                            <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                            <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                            <td>{{ item.netprice|number_format(0,'.',',') }}</td>
                         </tr>
-                        <tr>
-                            <th>Status:</th>
-                            <td>{{ transaction.status }}</td>
-                        </tr>
-                        <tr>
-                            <th>Type:</th>
-                            <td>Accept Contract</td>
-                        </tr>
-                        <tr>
-                            <th>From:</th>
-                            {% if transaction.user == null %} <!-- no more guests. This is here for legacy apps-->
-                                <td>Guest</td>
-                            {% else %}
-                                <td>{{ transaction.user.username }}</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <th>Amount:</th>
-                            <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
-                        </tr>
-                    </table>
-                </div>
-                <br />
-
-            {% if requiresValidation %}
-                <div class="container col-md-12">
-                    <ul class="nav nav-tabs">
-                        <li class="active">
-                            <a href="#auto_verify_results" data-toggle="tab">Auto Verify</a>
-                        </li>
-                        <li>
-                            <a href="#manual_verify_results" data-toggle="tab">Manual Verify</a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="auto_verify_results">
-                            <p>Please paste the contract contents in the box above</p>
-                        </div>
-                        <div class="tab-pane" id="manual_verify_results">
-                            <div>
-                                <table class="table table-striped images-table">
-                                    <tr>
-                                        <th style="width:100px;">Quantity</th>
-                                        <th>Item</th>
-                                        <th>Unit Price</th>
-                                        <th>Net Price</th>
-                                    </tr>
-                                    {% for item in transaction.lineitems %}
-                                        <tr class="mark_off">
-                                            <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
-                                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
-                                            <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
-                                            <td>{{ item.netprice|number_format(0,'.',',') }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
         </div>
     </div>
 </div>

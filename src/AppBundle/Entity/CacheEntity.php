@@ -29,73 +29,126 @@ class CacheEntity
      */
     protected $adjusted;
     /**
-     * @ORM\Column(type="string", length=50)
-     */
-    protected $settingType;
-    /**
      * @ORM\Column(type="datetime")
      */
     protected $lastPull;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $data;
 
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * @return mixed
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
 
-    public function setTypeId($typeID)
-    {
-        $this->typeID = $typeID;
-        return $this;
-    }
-    public function getTypeId()
-    {
-        return $this->typeID;
-    }
+	/**
+	 * @param mixed $id
+	 * @return CacheEntity
+	 */
+	public function setId($id)
+	{
+		$this->id = $id;
 
-    public function setMarket($market)
-    {
-        $this->market = $market;
-        return $this;
-    }
-    public function getMarket()
-    {
-        return $this->market;
-    }
+		return $this;
+	}
 
-    public function setAdjusted($adjusted)
-    {
-        $this->adjusted = $adjusted;
-        return $this;
-    }
-    public function getAdjusted()
-    {
-        return $this->adjusted;
-    }
+	/**
+	 * @return mixed
+	 */
+	public function getTypeID()
+	{
+		return $this->typeID;
+	}
 
-    public function getSettingType()
-    {
-        return $this->settingType;
-    }
-    public function setSettingType($settingType)
-    {
-        $this->settingType = $settingType;
-        return $this;
-    }
+	/**
+	 * @param mixed $typeID
+	 * @return CacheEntity
+	 */
+	public function setTypeID($typeID)
+	{
+		$this->typeID = $typeID;
 
-    public function setLastPull($lastPull)
-    {
-        $this->lastPull = $lastPull;
-        return $this;
-    }
-    public function getLastPull()
-    {
-        return $this->lastPull;
-    }
+		return $this;
+	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getMarket()
+	{
+		return $this->market;
+	}
+
+	/**
+	 * @param mixed $market
+	 * @return CacheEntity
+	 */
+	public function setMarket($market)
+	{
+		$this->market = $market;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getAdjusted()
+	{
+		return $this->adjusted;
+	}
+
+	/**
+	 * @param mixed $adjusted
+	 * @return CacheEntity
+	 */
+	public function setAdjusted($adjusted)
+	{
+		$this->adjusted = $adjusted;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getLastPull()
+	{
+		return $this->lastPull;
+	}
+
+	/**
+	 * @param mixed $lastPull
+	 * @return CacheEntity
+	 */
+	public function setLastPull($lastPull)
+	{
+		$this->lastPull = $lastPull;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getData()
+	{
+		return unserialize($this->data);
+	}
+
+	/**
+	 * @param mixed $data
+	 * @return CacheEntity
+	 */
+	public function setData($data)
+	{
+		$this->data = serialize($data);
+
+		return $this;
+	}
 }

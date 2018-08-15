@@ -1,10 +1,12 @@
 <?php
+
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 //use Symfony\Component\Console\Input\ArrayInput;
 //use Symfony\Component\Console\Output\NullOutput;
 //use Symfony\Component\Validator\Constraints\Time;
@@ -12,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 //use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+use AppBundle\Entity\EstimateEntity;
 use AppBundle\Form\AllianceMarketForm;
 use AppBundle\Model\MarketRequestModel;
 use AppBundle\Model\TransactionSummaryModel;
@@ -20,268 +23,407 @@ use AppBundle\Entity\LineItemEntity;
 use AppBundle\Entity\TransactionEntity;
 use AppBundle\Helper\MarketHelper;
 
-class BuybackController extends Controller
-{
+class BuybackController extends Controller {
 
 	/**
 	 * @Route("/estimate", name="estimate")
 	 */
 	public function estimateAction(Request $request)
 	{
-		return $this->render('', array());
+		$rawItems = $request->request->get('items');
+		$items = $this->get('parser')->GetLineItemsFromPasteData($rawItems);
+		$hasInvalid = false;
+
+		// Check to make sure it parsed correctly
+		if ($items == null || count($items) <= 0)
+		{
+			$this->addFlash('error', 'No Valid Items');
+		}
+
+		$typeIds = array();
+
+		// Grab our TypeID's to pull pricing for
+		foreach ($items as $item)
+		{
+			$typeIds[] = $item['typeid'];
+		}
+
+		// Populate Pricing information
+		$typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds);
+		$offer = 0;
+
+		// Populate our Line Items from Pricing information
+		for ($i = 0; $i < count($items); $i++)
+		{
+			// Check if price is -1, means Can Buy is False
+			if ($typePrices[$items[$i]['typeid']]['adjusted'] == -1 | $items[$i]['typeid'] == 0)
+			{
+				// Set to all 0 and mark as invalid
+				$items[$i]['unitPrice'] = 0;
+				$items[$i]['netPrice'] = 0;
+				$items[$i]['grossPrice'] = 0;
+				$items[$i]['isValid'] = false;
+
+				$hasInvalid = true;
+			} else
+			{
+				// Set prices
+				$items[$i]['unitPrice'] = $typePrices[$item['typeid']]['taxed'];
+				$items[$i]['netPrice'] = $item['quantity'] * $typePrices[$item['typeid']]['taxed'];
+				$items[$i]['grossPrice'] = $item['quantity'] * $typePrices[$item['typeid']]['adjusted'];
+
+				$offer += $items[$i]['netPrice'];
+			}
+		}
+
+		$em = $this->getDoctrine()->getManager('default');
+
+		$data = array();
+		$data['items'] = $items;
+		$data['details'] = $typePrices;
+
+		$this->getDoctrine()->getRepository('AppBundle:EstimateEntity', 'default')->deleteByUser($this->getUser()->getId());
+
+		$estimate = new EstimateEntity();
+		$estimate->setUserId($this->getUser()->getId());
+		$estimate->setData($data);
+		$em->persist($estimate);
+		$em->flush();
+
+		return $this->render('buyback/estimate.html.twig', array(
+			'data'       => $data,
+			'offer'      => $offer,
+			'eId'        => $estimate->getId(),
+			'hasInvalid' => $hasInvalid
+		));
 	}
 
-	
 	/**
-     * @Route("/alliance_market/sellorders", name="buyback")
-     */
-    public function buybackAction(Request $request)
-    {
-        return $this->action($request, 'P', 'Sell Orders', 'Sell your stuff!');
-    }
+	 * @Route("/estimate/accept/{id}", name="estimate-accept")
+	 */
+	public function estimateAcceptAction(Request $request, $id)
+	{
+		$estimate = $this->getDoctrine()->getRepository('AppBundle:EstimateEntity', 'default')->find($id);
 
-    /**
-     * @Route("/alliance_market/buyorders", name="sales")
-     */
-    public function salesAction(Request $request)
-    {
-        return $this->action($request, 'S', 'Buy Orders', 'Place a buy order!');
-    }
+		if ($estimate)
+		{
+			if ($estimate->getUserId() == $this->getUser()->getId())
+			{
+				$data = $estimate->getData();
 
-    private function action(Request &$request, string $transactionType, string $pageName = 'Market Orders', string $subText = 'Create an Order!')
-    {
-        $form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
-        $form->handleRequest($request);
+				$transaction = new TransactionEntity();
+				$transaction->setUser($this->getUser());
+				$transaction->setType('P');
+				$transaction->setIsComplete(false);
+				$transaction->setOrderId($transaction->getType() . uniqid());
+				$transaction->setStatus('Pending');
+				$transaction->setCreated(new \DateTime("now"));
+				$transaction->setNet(0);
+				$transaction->setGross(0);
 
-        $eveCentralOK = $this->get("helper")->getSetting("eveCentralOK", "global");
-        $oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array($transactionType));
-        $news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
+				$this->getDoctrine()->getManager('default')->persist($transaction);
 
-        $transactionSummary = new TransactionSummaryModel($oTransaction);
+				foreach ($data['items'] as $entry)
+				{
+					if($entry['isValid'] == true)
+					{
+						$item = new LineItemEntity();
+						$item->setTypeId($entry['typeid']);
+						$item->setIsValid($entry['isValid']);
+						$item->setGrossPrice($entry['grossPrice']);
+						$item->setMarketPrice($entry['unitPrice']);
+						$item->setName($entry['name']);
+						$item->setNetPrice($entry['netPrice']);
+						$item->setQuantity($entry['quantity']);
 
-        return $this->render('alliance_market/index.html.twig', array(
-            'transactionType' => $transactionType, 'page_name' => $pageName, 'sub_text' => $subText, 'form' => $form->createView(),
-            'oTransaction' => $oTransaction, 'transactionSummary'=> $transactionSummary, 'news' => $news, 'eveCentralOK' => $eveCentralOK ));
-    }
+						$this->getDoctrine()->getManager('default')->persist($item);
 
+						$transaction->addLineitem($item);
+					}
+				}
 
-    /**
-     * @Route("/alliance_market/estimate", name="ajax_alliance_market_estimate")
-     */
-    public function ajax_EstimateAction(Request $request)
-    {
-        // Setup model and form
-        $marketRequest = new MarketRequestModel();
-        $form = $this->createForm(AllianceMarketForm::class, $marketRequest);
-        $form->handleRequest($request);
-        $rawRequestItems = $marketRequest->getItems();
-        $transactionType = $request->request->get('transactionType');
+				$this->getDoctrine()->getManager('default')->flush();
 
-        $transactionType = $request->request->get('transactionType');
+				return $this->render('buyback/accept.html.twig', array(
+					'orderId' => $transaction->getOrderId(),
+					'amount'  => $transaction->getNet()
+				));
 
-        if(empty($rawRequestItems))
-        {
-            return $this->render('alliance_market/novalid.html.twig');
-        }
-        else
-        {
-            // Parse form input
-            $items = $this->get('parser')->GetLineItemsFromPasteData($rawRequestItems);
+			} else
+			{
+				return $this->render('elements/error.html.twig', array(
+					'title'   => 'Invalid User!',
+					'message' => 'You do not match the user who submitted this estimate.  BEGONE!!!'
+				));
+			}
+		} else
+		{
+			// Estimate doesn't exist
+			return $this->render('elements/error.html.twig', array(
+				'title'   => "Estimate doesn't exist!",
+				'message' => 'The estimate you are attempting to accept no longer exists.  Estimates only exist until the next estimate is appraised.'
+			));
+		}
 
-            // Check to make sure it parsed correctly
-            if($items == null || count($items) <= 0)
-            {
-                return $this->render('alliance_market/novalid.html.twig');
-            }
-
-            $typeIds = array();
-
-            // Grab our TypeID's to pull pricing for
-            foreach($items as $item)
-            {
-                $typeIds[] = $item->getTypeId();
-            }
-
-            $typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds, $transactionType);
-
-            foreach($items as $item)
-            {
-                // Check if price is -1, means Can Buy is False
-                if($typePrices[$item->getTypeId()]['adjusted'] == -1)
-                {
-                    // Set to all 0 and mark as invalid
-                    $item->setMarketPrice(0);
-                    $item->setGrossPrice(0);
-                    $item->setNetPrice(0);
-                    $item->setTax(0);
-                    $item->setIsValid(false);
-                }
-                else
-                {
-                    // Set prices
-                    $item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
-                    $item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
-                    $item->setNetPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['adjusted']);
-                    $item->setTax(0);
-                }
-            }
-
-            //insert into DB and return quote
-
-            //get DB manager
-            $em = $this->getDoctrine()->getManager('default');
-
-            //build transaction
-            $transaction = new TransactionEntity();
-                $transaction->setUser($this->getUser());
-
-                $transaction->setType($transactionType);
-
-                $transaction->setIsComplete(false);
-                $transaction->setOrderId($transaction->getType() . uniqid());
-                $transaction->setGross(0);
-                $transaction->setNet(0);
-                $transaction->setCreated(new \DateTime("now"));
-                $transaction->setStatus("Estimate");
-
-            $em->persist($transaction);
-
-            $hasInvalid = false;
-            foreach($items as $lineItem)
-            {
-                if($lineItem->getIsValid())
-                {
-                    $em->persist($lineItem);
-                    $transaction->addLineitem($lineItem);
-                }
-                else
-                {
-                    $hasInvalid = true;
-                }
-            }
-
-            $em->flush();
-        }
+		return $this->render('buyback/accept.html.twig', array());
+	}
 
 
-        return $this->render('alliance_market/estimate.html.twig', Array ( 'items' => $items, 'total' => $transaction->getNet(),
-            'hasInvalid' => $hasInvalid, 'orderId' => $transaction->getOrderId(), 'transactionType' => $transactionType ));
-    }
+	/**
+	 * @Route("/alliance_market/sellorders", name="buyback")
+	 */
+	public function buybackAction(Request $request)
+	{
+		return $this->action($request, 'P', 'Sell Orders', 'Sell your stuff!');
+	}
 
-    /**
-     * @Route("/alliance_market/accept", name="ajax_alliance_market_accept")
-     */
-    public function ajax_AcceptAction(Request $request)
-    {
-        // Get our list of Items
-        $order_id = $request->request->get('orderId');
-        $transactionType = $request->request->get('transactionType');
+	private function action(Request &$request, string $transactionType, string $pageName = 'Market Orders', string $subText = 'Create an Order!')
+	{
+		$form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
+		$form->handleRequest($request);
 
-        // Pull data from DB
-        $em = $this->getDoctrine()->getManager('default');
-        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+		$eveCentralOK = $this->get("helper")->getSetting("eveCentralOK", "global");
+		$oTransaction = $this->getDoctrine()->getRepository('AppBundle:TransactionEntity', 'default')->findAllByUserAndTypes($this->getUser(), array($transactionType));
+		$news = $this->getDoctrine('default')->getRepository('AppBundle:NewsEntity')->findAllOrderedByDate();
 
-        //update status
-        $transaction->setStatus("Pending");
+		$transactionSummary = new TransactionSummaryModel($oTransaction);
 
-        $em->flush();
+		return $this->render('alliance_market/index.html.twig', array(
+			'transactionType' => $transactionType, 'page_name' => $pageName, 'sub_text' => $subText, 'form' => $form->createView(),
+			'oTransaction'    => $oTransaction, 'transactionSummary' => $transactionSummary, 'news' => $news, 'eveCentralOK' => $eveCentralOK));
+	}
 
-        return $this->render('alliance_market/accepted.html.twig', Array('auth_code' => $order_id, 'total_value' => $transaction->getNet(),
-            'transaction' => $transaction, 'transactionType' => $transactionType));
-    }
+	/**
+	 * @Route("/alliance_market/buyorders", name="sales")
+	 */
+	public function salesAction(Request $request)
+	{
+		return $this->action($request, 'S', 'Buy Orders', 'Place a buy order!');
+	}
 
-    /**
-     * @Route("/alliance_market/decline", name="ajax_alliance_market_decline")
-     */
-    public function ajax_DeclineAction(Request $request)
-    {
-        // Get our list of Items
-        $order_id = $request->request->get('orderId');
+	/**
+	 * @Route("/alliance_market/estimate", name="ajax_alliance_market_estimate")
+	 */
+	public function ajax_EstimateAction(Request $request)
+	{
+		// Setup model and form
+		$marketRequest = new MarketRequestModel();
+		$form = $this->createForm(AllianceMarketForm::class, $marketRequest);
+		$form->handleRequest($request);
+		$rawRequestItems = $marketRequest->getItems();
+		$transactionType = $request->request->get('transactionType');
 
-        // Pull data from DB
-        $em = $this->getDoctrine()->getManager('default');
-        $transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
+		$transactionType = $request->request->get('transactionType');
 
-        //delete transaction
-        $em->remove($transaction);
-        $em->flush();
+		if (empty($rawRequestItems))
+		{
+			return $this->render('alliance_market/novalid.html.twig');
+		} else
+		{
+			// Parse form input
+			$items = $this->get('parser')->GetLineItemsFromPasteData($rawRequestItems);
 
-        return new Response();
-    }
+			// Check to make sure it parsed correctly
+			if ($items == null || count($items) <= 0)
+			{
+				return $this->render('alliance_market/novalid.html.twig');
+			}
+
+			$typeIds = array();
+
+			// Grab our TypeID's to pull pricing for
+			foreach ($items as $item)
+			{
+				$typeIds[] = $item->getTypeId();
+			}
+
+			$typePrices = $this->get('market')->getBuybackPricesForTypes($typeIds, $transactionType);
+
+			foreach ($items as $item)
+			{
+				// Check if price is -1, means Can Buy is False
+				if ($typePrices[$item->getTypeId()]['adjusted'] == -1)
+				{
+					// Set to all 0 and mark as invalid
+					$item->setMarketPrice(0);
+					$item->setGrossPrice(0);
+					$item->setNetPrice(0);
+					$item->setTax(0);
+					$item->setIsValid(false);
+				} else
+				{
+					// Set prices
+					$item->setMarketPrice($typePrices[$item->getTypeId()]['adjusted']);
+					$item->setGrossPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['market']);
+					$item->setNetPrice($item->getQuantity() * $typePrices[$item->getTypeId()]['adjusted']);
+					$item->setTax(0);
+				}
+			}
+
+			//insert into DB and return quote
+
+			//get DB manager
+			$em = $this->getDoctrine()->getManager('default');
+
+			//build transaction
+			$transaction = new TransactionEntity();
+			$transaction->setUser($this->getUser());
+
+			$transaction->setType($transactionType);
+
+			$transaction->setIsComplete(false);
+			$transaction->setOrderId($transaction->getType() . uniqid());
+			$transaction->setGross(0);
+			$transaction->setNet(0);
+			$transaction->setCreated(new \DateTime("now"));
+			$transaction->setStatus("Estimate");
+
+			$em->persist($transaction);
+
+			$hasInvalid = false;
+			foreach ($items as $lineItem)
+			{
+				if ($lineItem->getIsValid())
+				{
+					$em->persist($lineItem);
+					$transaction->addLineitem($lineItem);
+				} else
+				{
+					$hasInvalid = true;
+				}
+			}
+
+			$em->flush();
+		}
 
 
-    /**
-     * @Route("/ajax_type_list", name="ajax_type_list")
-     */
-    public function ajax_TypeListAction(Request $request)
-    {
-        $query = $request->request->get("query");
-        $limit = $request->request->get("limit");
+		return $this->render('alliance_market/estimate.html.twig', Array('items'      => $items, 'total' => $transaction->getNet(),
+																		 'hasInvalid' => $hasInvalid, 'orderId' => $transaction->getOrderId(), 'transactionType' => $transactionType));
+	}
 
-        $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity','evedata')->findAllLikeName($query);
+	/**
+	 * @Route("/alliance_market/accept", name="ajax_alliance_market_accept")
+	 */
+	public function ajax_AcceptAction(Request $request)
+	{
+		// Get our list of Items
+		$order_id = $request->request->get('orderId');
+		$transactionType = $request->request->get('transactionType');
 
-        $results = array();
+		// Pull data from DB
+		$em = $this->getDoctrine()->getManager('default');
+		$transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
-        if(count($types) < $limit) { $limit = count($types); }
+		//update status
+		$transaction->setStatus("Pending");
 
-        for($count = 0;$count < $limit;$count++)
-        {
-            $result = array();
-            $result['id'] = $types[$count]->getTypeId();
-            $result['value'] = $types[$count]->getTypeName();
-            $results[] = $result;
-        }
+		$em->flush();
 
-        return new JsonResponse($results);
-    }
+		return $this->render('alliance_market/accepted.html.twig', Array('auth_code'   => $order_id, 'total_value' => $transaction->getNet(),
+																		 'transaction' => $transaction, 'transactionType' => $transactionType));
+	}
 
-    /**
-     * @Route("/ajax_market_list", name="ajax_market_list")
-     */
-    public function ajax_MarketListAction(Request $request)
-    {
-        $query = $request->request->get("query");
-        $limit = $request->request->get("limit");
+	/**
+	 * @Route("/alliance_market/decline", name="ajax_alliance_market_decline")
+	 */
+	public function ajax_DeclineAction(Request $request)
+	{
+		// Get our list of Items
+		$order_id = $request->request->get('orderId');
 
-        $groups = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')->findAllLikeName($query);
+		// Pull data from DB
+		$em = $this->getDoctrine()->getManager('default');
+		$transaction = $em->getRepository('AppBundle:TransactionEntity')->findOneByOrderId($order_id);
 
-        $results = array();
-        for($count = 0;$count < count($groups);$count++)
-        {
-            $result = array();
-            $result['id'] = $groups[$count]->getMarketGroupId();
-            $result['value'] = $groups[$count]->getMarketGroupName();
+		//delete transaction
+		$em->remove($transaction);
+		$em->flush();
 
-            $results[] = $result;
+		return new Response();
+	}
 
-            if($count >= $limit) {break;}
-        }
 
-        return new JsonResponse($results);
-    }
+	/**
+	 * @Route("/ajax_type_list", name="ajax_type_list")
+	 */
+	public function ajax_TypeListAction(Request $request)
+	{
+		$query = $request->request->get("query");
+		$limit = $request->request->get("limit");
 
-    /**
-     * @Route("/ajax_group_list", name="ajax_group_list")
-     */
-    public function ajax_GroupListAction(Request $request)
-    {
-        $query = $request->request->get("query");
-        $limit = $request->request->get("limit");
+		$types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findAllLikeName($query);
 
-        $groups = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity','evedata')->findAllLikeName($query);
+		$results = array();
 
-        $results = array();
-        for($count = 0;$count < count($groups);$count++)
-        {
-            $result = array();
-            $result['id'] = $groups[$count]->getGroupId();
-            $result['value'] = $groups[$count]->getGroupName();
+		if (count($types) < $limit)
+		{
+			$limit = count($types);
+		}
 
-            $results[] = $result;
+		for ($count = 0; $count < $limit; $count++)
+		{
+			$result = array();
+			$result['id'] = $types[$count]->getTypeId();
+			$result['value'] = $types[$count]->getTypeName();
+			$results[] = $result;
+		}
 
-            if($count >= $limit) {break;}
-        }
+		return new JsonResponse($results);
+	}
 
-        return new JsonResponse($results);
-    }
+	/**
+	 * @Route("/ajax_market_list", name="ajax_market_list")
+	 */
+	public function ajax_MarketListAction(Request $request)
+	{
+		$query = $request->request->get("query");
+		$limit = $request->request->get("limit");
+
+		$groups = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->findAllLikeName($query);
+
+		$results = array();
+		for ($count = 0; $count < count($groups); $count++)
+		{
+			$result = array();
+			$result['id'] = $groups[$count]->getMarketGroupId();
+			$result['value'] = $groups[$count]->getMarketGroupName();
+
+			$results[] = $result;
+
+			if ($count >= $limit)
+			{
+				break;
+			}
+		}
+
+		return new JsonResponse($results);
+	}
+
+	/**
+	 * @Route("/ajax_group_list", name="ajax_group_list")
+	 */
+	public function ajax_GroupListAction(Request $request)
+	{
+		$query = $request->request->get("query");
+		$limit = $request->request->get("limit");
+
+		$groups = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')->findAllLikeName($query);
+
+		$results = array();
+		for ($count = 0; $count < count($groups); $count++)
+		{
+			$result = array();
+			$result['id'] = $groups[$count]->getGroupId();
+			$result['value'] = $groups[$count]->getGroupName();
+
+			$results[] = $result;
+
+			if ($count >= $limit)
+			{
+				break;
+			}
+		}
+
+		return new JsonResponse($results);
+	}
 }

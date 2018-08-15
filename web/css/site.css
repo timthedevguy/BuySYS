@@ -325,3 +325,49 @@ TD .label
 	margin: 0px;
 	padding: 0px;
 }
+
+.step {
+	background-repeat: no-repeat;
+	background-position: right;
+	position: relative;
+}
+
+.step.one {
+	background-image: url('/images/step1.png');
+	min-height: 358px;
+	min-width: 398px;
+}
+.step.two {
+	background-image: url('/images/step2.png');
+	min-height: 358px;
+	min-width: 398px;
+}
+
+.step P {
+	position: absolute;
+}
+
+.private-name
+{
+	right: 194px;
+	color: white;
+	bottom: 111px;
+	width: 114px;
+	overflow: hidden;
+}
+.amount-box
+{
+	right: 138px;
+	bottom: 208px;
+	width: 104px;
+	color: white;
+	overflow: hidden;
+}
+.desc-box
+{
+	right: 29px;
+	width: 211px;
+	bottom: 144px;
+	color: white;
+	overflow: hidden;
+}

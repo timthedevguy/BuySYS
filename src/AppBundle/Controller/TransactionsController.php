@@ -2,6 +2,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\LineItemEntity;
 use AppBundle\Model\TransactionSummaryModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -148,8 +149,24 @@ class TransactionsController extends Controller
             $requestItems = $this->get('parser')->GetLineItemsFromPasteData($pasteData);
         }
 
+        $results = array();
+
+        foreach($requestItems as $line) {
+
+        	if($line['isValid'] == true)
+			{
+				$item = new LineItemEntity();
+				$item->setTypeId($line['typeid']);
+				$item->setName($line['name']);
+				$item->setIsValid(true);
+				$item->setQuantity($line['quantity']);
+
+				$results[] = $item;
+			}
+		}
+
         // Compare
-        $lineItemComparison = $this->get('lineItemComparator')->CompareLineItems($transactionItems, $requestItems);
+        $lineItemComparison = $this->get('lineItemComparator')->CompareLineItems($transactionItems, $results);
 
         // Build response
         return $this->render('transaction/auto_verify.html.twig', Array ( 'lineItemComparison' => $lineItemComparison));

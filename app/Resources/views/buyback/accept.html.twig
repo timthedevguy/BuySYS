@@ -1,0 +1,63 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            Estimate Accepted
+            <small>Instructions</small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-success">
+                    <div class="box-header">
+                        <h3 class="box-title">Contract Instructions</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h2>Step 1</h2>
+                                <ol>
+                                    <li>Move items to one of these locations: <strong>{{ contractLocation }}</strong></li>
+                                    <li>Select items in Hanger and right click --> Create Contract</li>
+                                    <li>Select 'Item Exchange' contract to 'Private' and input <strong>{{ contractCorp }}</strong></li>
+                                    <li>Click Next</li>
+                                    <li>Verify all items are in contract</li>
+                                    <li>Click Next</li>
+                                </ol>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="step one">
+                                    <p class="private-name">{{ contractCorp }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 25px;">
+                            <div class="col-md-6">
+                                <h2>Step 2</h2>
+                                <ol>
+                                    <li>Enter in 'I will receive': <strong>{{ amount|number_format(2,'.',',') }}</strong></li>
+                                    <li>In 'Description' enter Order Id: <strong>{{ orderId }}</strong></li>
+                                    <li>Set 'Expiration' for <strong>1 week</strong></li>
+                                    <li>Submit Contract and await payment</li>
+                                </ol>
+                                <a href="{{ path('homepage') }}" class="btn btn-success btn-flat">Go Home</a>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="step two">
+                                    <p class="amount-box">{{ amount|number_format(2,'.',',') }}</p>
+                                    <p class="desc-box">{{ orderId }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}

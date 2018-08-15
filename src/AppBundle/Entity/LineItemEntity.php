@@ -87,23 +87,6 @@ class LineItemEntity
     }
 
     /**
-     * @ORM\Column(type="decimal")
-     */
-    protected $tax;
-
-    public function setTax($tax)
-    {
-        $this->tax = $tax;
-
-        return $this;
-    }
-
-    public function getTax()
-    {
-        return $this->tax;
-    }
-
-    /**
      * @ORM\Column(type="decimal", precision=19, scale=2)
      */
     protected $grossPrice;

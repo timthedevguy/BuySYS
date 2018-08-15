@@ -65,7 +65,6 @@ class DashboardController extends Controller
             $priceDetails['types'] = array();
             $options = $this->get('market')->getMergedBuybackRuleForType($typeId, 'P');
 
-
             // Figure out Refining Details
             $refineMaterials = $this->get('market')->getRefinedMaterialsForType($typeId,$options['refineskill'], 'P');
             $materialNames = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')

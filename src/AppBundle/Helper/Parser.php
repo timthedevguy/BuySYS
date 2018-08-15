@@ -27,20 +27,17 @@ class Parser extends Helper
         {
             $line = trim($line);
             $lineItem = $oParser->parseLine($line, $types);
-            if(!$lineItem || method_exists($lineItem, 'getTypeId') === false || $lineItem->getTypeId() == 0) //parser failed - try hueristic
-            {
-                //$lineItem = ParserUtils::getParserForItem($lineItem)->parseLine($line, $types);
-            }
+
             $results[] = $lineItem;
         }
 		
-		$fixedResults = [];
+		/*$fixedResults = [];
 		foreach($results as $result)
 			if($result && method_exists($result, 'getTypeId'))
-				$fixedResults []= $result;
+				$fixedResults []= $result;*/
 		
         // Return results
-        return $fixedResults;
+        return $results;
     }
 }
 
@@ -112,7 +109,7 @@ abstract class TabbedParser implements IParser
         $item = explode("\t", $line);
 
         // Create result entry
-        $lineItem = new LineItemEntity();
+        $lineItem = array(); //new LineItemEntity();
 
 
         // Make sure array is greater than indexes
@@ -124,26 +121,31 @@ abstract class TabbedParser implements IParser
             // Set typeId, typeName, and isValid
             if($type != null) //type found in DB
             {
-                $lineItem->setTypeId($type->getTypeId());
-                $lineItem->setName($type->getTypeName());
-
-                //$lineItem->setVolume($type->getVolume());
+                //$lineItem->setTypeId($type->getTypeId());
+                //$lineItem->setName($type->getTypeName());
+				$lineItem['typeid'] = $type->getTypeId();
+				$lineItem['name'] = $type->getTypeName();
+				$lineItem['isValid'] = true;
             }
             else //type not found in DB - set defaults
             {
-                $lineItem->setTypeId(0);
-                $lineItem->setName($item[$nameIndex]);
-                $lineItem->setIsValid(false);
-                //$lineItem->setVolume(0);
+                //$lineItem->setTypeId(0);
+                //$lineItem->setName($item[$nameIndex]);
+                //$lineItem->setIsValid(false);
+				$lineItem['typeid'] = 0;
+				$lineItem['name'] = $item[$nameIndex];
+				$lineItem['isValid'] = false;
             }
 
             if($item[$quantityIndex] == "") //no quantity specified - default to 1
             {
-                $lineItem->setQuantity(1);
+                //$lineItem->setQuantity(1);
+				$lineItem['quantity'] = 1;
             }
             else
             {
-                $lineItem->setQuantity(ParserUtils::getRawNumber($item[$quantityIndex]));
+                //$lineItem->setQuantity(ParserUtils::getRawNumber($item[$quantityIndex]));
+				$lineItem['quantity'] = ParserUtils::getRawNumber($item[$quantityIndex]);
             }
         }
 

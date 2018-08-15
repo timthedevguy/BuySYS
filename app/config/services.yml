@@ -40,7 +40,7 @@ services:
 
     lineItemComparator:
         class: AppBundle\Helper\LineItemComparator
-        arguments: ['@market']
+        arguments: ['@market', '@parser']
 
     auth_manager:
             class: AppBundle\Security\AuthorizationManager

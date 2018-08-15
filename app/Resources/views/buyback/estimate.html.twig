@@ -1,0 +1,68 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            Estimate
+            <small>Accept or Deny the offer</small>
+        </h1>
+    </section>
+
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-9">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Items</h3>
+                    </div>
+                    <div class="box-body">
+                        {% if hasInvalid %}
+                            <div class="alert alert-danger">
+                                This estimate has invalid items.  These items should not be included in the contract.  The invalid items are listed in red.
+                            </div>
+                        {% endif %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:20%;">Quantity</th>
+                                    <th>Item</th>
+                                    <th style="width:20%;text-align:right;">Unit Price</th>
+                                    <th style="width:20%;text-align:right;">Net Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in data.items %}
+                                <tr class="{{ (item.isValid == false) ? "danger" : "" }}">
+                                    <td>{{ item.quantity|number_format(0,'.',',') }}</td>
+                                    <td><img src="https://image.eveonline.com/Type/{{item.typeid}}_32.png" style="max-width:16px;"/> {{ item.name }}</td>
+                                    <td style="width:20%;text-align:right;">{{ item.unitPrice|number_format(2,'.',',') }}</td>
+                                    <td style="width:20%;text-align:right;">{{ item.netPrice|number_format(2,'.',',') }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Offer</h3>
+                    </div>
+                    <div class="box-body">
+                        <p class="offer text-success" style="font-weight: 700;font-size: 22px;text-align:center;">{{ offer|number_format(2,'.',',') }} <small>ISK</small></p>
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <a href="{{ path('estimate-accept', {'id': eId}) }}" class="form-control btn-block btn-success">Accept Offer</a>
+                        <a href="{{ path('homepage') }}" class="form-control btn-block btn-danger">Reject Offer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
