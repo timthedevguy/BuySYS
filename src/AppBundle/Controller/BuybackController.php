@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\RuleEntity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,9 +69,9 @@ class BuybackController extends Controller {
 			} else
 			{
 				// Set prices
-				$items[$i]['unitPrice'] = $typePrices[$item['typeid']]['taxed'];
-				$items[$i]['netPrice'] = $item['quantity'] * $typePrices[$item['typeid']]['taxed'];
-				$items[$i]['grossPrice'] = $item['quantity'] * $typePrices[$item['typeid']]['adjusted'];
+				$items[$i]['unitPrice'] = $typePrices[$items[$i]['typeid']]['taxed'];
+				$items[$i]['netPrice'] = $item['quantity'] * $typePrices[$items[$i]['typeid']]['taxed'];
+				$items[$i]['grossPrice'] = $item['quantity'] * $typePrices[$items[$i]['typeid']]['adjusted'];
 
 				$offer += $items[$i]['netPrice'];
 			}
@@ -81,7 +82,7 @@ class BuybackController extends Controller {
 		$data = array();
 		$data['items'] = $items;
 		$data['details'] = $typePrices;
-
+		dump($data);
 		$this->getDoctrine()->getRepository('AppBundle:EstimateEntity', 'default')->deleteByUser($this->getUser()->getId());
 
 		$estimate = new EstimateEntity();
@@ -99,7 +100,7 @@ class BuybackController extends Controller {
 	}
 
 	/**
-	 * @Route("/estimate/accept/{id}", name="estimate-accept")
+	 * @Route("/estimate/{id}/accept", name="estimate-accept")
 	 */
 	public function estimateAcceptAction(Request $request, $id)
 	{
@@ -125,7 +126,7 @@ class BuybackController extends Controller {
 
 				foreach ($data['items'] as $entry)
 				{
-					if($entry['isValid'] == true)
+					if ($entry['isValid'] == true)
 					{
 						$item = new LineItemEntity();
 						$item->setTypeId($entry['typeid']);
@@ -166,6 +167,103 @@ class BuybackController extends Controller {
 		}
 
 		return $this->render('buyback/accept.html.twig', array());
+	}
+
+	/**
+	 * @Route("/estimate/{id}/details/{itemid}", name="estimate-item-details", defaults={"itemid" = null})
+	 */
+	public function estimateItemDetailsAction(Request $request, $id, $itemid)
+	{
+		$estimate = $this->getDoctrine()->getRepository('AppBundle:EstimateEntity', 'default')->find($id);
+
+		if ($estimate)
+		{
+			$data = $estimate->getData();
+			$item = $data['items'][$itemid];
+			$details = $data['details'][$item['typeid']];
+
+			$ruleIds = explode(',', $details['data']['options']['rules']);
+			$readableRules = array();
+			dump($ruleIds);
+			foreach ($ruleIds as $ruleId)
+			{
+				if ($ruleId == 0)
+				{
+					if ($this->get('helper')->getSetting('value_minerals') == 1)
+					{
+						$readableRules[] = "All items will be Refined by Default";
+					} else
+					{
+						$readableRules[] = "No Ore will be reprocessed";
+					}
+
+					if ($this->get('helper')->getSetting('value_salvage') == 1)
+					{
+						$readableRules[] = "All items will be Salvaged by Default";
+					} else
+					{
+						$readableRules[] = "No Salvage will be reprocessed";
+					}
+
+					if ($this->get('helper')->getSetting('default_buyaction_deny') == 0)
+					{
+						$readableRules[] = "All items will be bought by Default";
+					} else
+					{
+						$readableRules[] = "All items will be rejected by Default";
+					}
+				} else {
+
+					/** @var RuleEntity $rule */
+					$rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity')->findOneBySort($ruleId);
+					$ruleText = '';
+
+					if($rule->getTarget() == 'type') {
+						$ruleText = "Item '".$rule->getTargetName()."' ";
+					} else if($rule->getTarget() == 'group') {
+						$ruleText = "Items in group '".$rule->getTargetName()."' ";
+					} else if($rule->getTarget() == 'marketgroup') {
+						$ruleText = "Items in market group '".$rule->getTargetName()."' ";
+					}
+
+					if($rule->getAttribute() == 'tax') {
+						$ruleText = $ruleText . ' has a Tax adjustment of ' . $rule->getValue();
+					} else if($rule->getAttribute() == 'price') {
+						$ruleText = $ruleText . ' has an admin set price of ' . $rule->getValue();
+					} else if($rule->getAttribute() == 'canbuy') {
+						if($rule->getValue() == 1) {
+							$ruleText = $ruleText . ' can be bought';
+						} else {
+							$ruleText = $ruleText . ' cannot be bought';
+						}
+					} else if($rule->getAttribute() == 'isrefined') {
+						if($rule->getValue() == 1) {
+							$ruleText = $ruleText . ' will be reprocessed';
+						} else {
+							$ruleText = $ruleText . ' will not be reprocessed';
+						}
+					}
+
+					$readableRules[] = $ruleText;
+				}
+			}
+
+			return $this->render('buyback/_details.html.twig', array(
+				'item'    => $item,
+				'details' => $details,
+				'rules'   => $readableRules
+			));
+
+		} else
+		{
+			// Estimate doesn't exist
+			return $this->render('elements/error.html.twig', array(
+				'title'   => "Estimate doesn't exist!",
+				'message' => 'The estimate you are attempting to accept no longer exists.  Estimates only exist until the next estimate is appraised.'
+			));
+		}
+
+
 	}
 
 

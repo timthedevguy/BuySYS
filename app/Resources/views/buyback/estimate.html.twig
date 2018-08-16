@@ -34,7 +34,7 @@
                             </thead>
                             <tbody>
                             {% for item in data.items %}
-                                <tr class="{{ (item.isValid == false) ? "danger" : "" }}">
+                                <tr class="{{ (item.isValid == false) ? "danger" : "item-row" }}" data-id="{{ loop.index0 }}">
                                     <td>{{ item.quantity|number_format(0,'.',',') }}</td>
                                     <td><img src="https://image.eveonline.com/Type/{{item.typeid}}_32.png" style="max-width:16px;"/> {{ item.name }}</td>
                                     <td style="width:20%;text-align:right;">{{ item.unitPrice|number_format(2,'.',',') }}</td>
@@ -64,5 +64,38 @@
             </div>
         </div>
     </section>
+
+    <div class="modal fade" id="estimate-modal">
+        <div class="modal-dialog">
+            <div class="modal-content" id="estimate-modal-content">
+                <div class="modal-loading">
+                    <i class="fa fa-refresh fa-spin"></i>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            $('.item-row').click(function(e) {
+
+                $.get('{{ path('estimate-item-details', {'id': eId}) }}/' + $(this).attr('data-id'),
+                    function (response) {
+                        $("#estimate-modal-content").html(response);
+                        $('#estimate-modal').modal({backdrop: "static"});
+                    }
+                    , "html");
+
+            });
+
+        });
+
+    </script>
 
 {% endblock %}

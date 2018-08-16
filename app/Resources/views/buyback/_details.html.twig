@@ -1,0 +1,104 @@
+<div class="modal-header">
+    <h4 class="modal-title">Details for {{ item.quantity }} x <img src="https://image.eveonline.com/Type/{{ item.typeid }}_32.png" data-toggle="tooltip" title="TypeId: {{ item.typeid }}"/> {{ item.name }}</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rule in rules %}
+                        <tr>
+                            <td>{{ rule }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Value</th>
+                        <th>Option</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Tax</th>
+                        <td>{{ details.data.options.tax }}</td>
+                        <th>Price</th>
+                        <td>{{ details.data.options.price }}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Refined</th>
+                        <td>{{ (details.data.options.isrefined) ? "Yes" : "No" }}</td>
+                        <th>Portion Size</th>
+                        <td>{{ details.data.options.portionSize }}</td>
+                    </tr>
+                    <tr>
+                        <th>Can Buy?</th>
+                        <td>{{ (details.data.options.canbuy) ? "Yes" : "No" }}</td>
+                        <th>Is Salvage?</th>
+                        <td>{{ (details.data.options.issalvage) ? "Yes" : "No" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Refine Skill</th>
+                        <td>{{ details.data.options.refineskill }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if details.data.options.isrefined == 1 %}
+        <div class="row">
+            <div class="col-md-12">
+                <strong>Refine Details</strong>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Base</th>
+                            <th>Refined</th>
+                            <th>Market</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    {% set total = 0 %}
+                    <tbody>
+                        {% for mat in details.data.materials %}
+                            <tr>
+                                <td>{{ mat.name }}</td>
+                                <td>{{ mat.base }}</td>
+                                <td>{{ mat.adjusted }}</td>
+                                <td>{{ mat.price|number_format(2,'.',',') }}</td>
+                                {% set value = mat.price * mat.adjusted %}
+                                {% set total = total + value %}
+                                <td>{{ value|number_format(2,'.',',') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align:right;"><strong>Value per Portion Size:</strong></td>
+                            <td><strong>{{ total|number_format(2,'.',',') }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
+</div>
+
+{% block javascripts %}
+
+{% endblock %}
