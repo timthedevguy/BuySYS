@@ -14,7 +14,7 @@ class TestCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:test')
+            ->setName('buysys:test')
             ->setDescription('Testing Command')
         ;
     }

@@ -15,7 +15,7 @@ class ClearCacheCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:cache:clear')
+            ->setName('buysys:cache:clear')
             ->setDescription('Complete remove all cache entries')
         ;
     }

@@ -16,7 +16,7 @@ class QuickFixCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:quickfix:fix')
+            ->setName('buysys:quickfix:fix')
             ->setDescription('Temporary command for fixing stuff related to an update')
         ;
     }

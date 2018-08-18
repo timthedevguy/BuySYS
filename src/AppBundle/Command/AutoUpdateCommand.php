@@ -17,7 +17,7 @@ class AutoUpdateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:cache:update')
+            ->setName('buysys:cache:update')
             ->setDescription('Update Market Price of a configured set of items.')
         ;
     }

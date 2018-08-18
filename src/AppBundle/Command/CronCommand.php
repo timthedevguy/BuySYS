@@ -16,7 +16,7 @@ class CronCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:cron:run')
+            ->setName('buysys:cron:run')
             ->setDescription('Executes a task that is configured to run on a schedule')
             ->addArgument('taskName', InputArgument::REQUIRED, 'The name of the task to execute')
         ;

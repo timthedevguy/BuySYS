@@ -21,7 +21,7 @@ class UpdateSDECommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('amsys:sde:update')
+            ->setName('buysys:sde:update')
             ->setDescription('Update evedata with latest SDE dump')
         ;
     }
