@@ -1,5 +1,5 @@
 <?php
-namespace AppBundle\Entity\SDE;
+namespace AppBundle\Repository\SDE;
 
 use Doctrine\ORM\EntityRepository;
 

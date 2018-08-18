@@ -13,55 +13,74 @@ class TypeMaterialsEntity
     /**
     * @ORM\Column(name="typeID", type="integer", nullable=false)
     * @ORM\Id
-    * @ORM\GeneratedValue(strategy="NONE")
     */
     protected $typeID;
 
-    public function setTypeId($typeID)
-    {
-        $this->typeID = $typeID;
-
-        return $this;
-    }
-
-    public function getTypeId()
-    {
-        return $this->typeID;
-    }
-
     /**
-    * @ORM\Column(name="materialTypeID", type="integer", nullable=false)
-    * @ORM\Id
-    * @ORM\GeneratedValue(strategy="NONE")
-    */
+     * @ORM\Column(type="integer", name="materialTypeID")
+	 * @ORM\Id
+     */
     protected $materialTypeID;
-
-    public function setMaterialTypeId($materialTypeID)
-    {
-        $this->materialTypeID = $materialTypeID;
-
-        return $this;
-    }
-
-    public function getMaterialTypeId()
-    {
-        return $this->materialTypeID;
-    }
 
     /**
      * @ORM\Column(type="integer")
      */
     protected $quantity;
 
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
+	/**
+	 * @return mixed
+	 */
+	public function getTypeID()
+	{
+		return $this->typeID;
+	}
 
-        return $this;
-    }
+	/**
+	 * @param mixed $typeID
+	 * @return TypeMaterialsEntity
+	 */
+	public function setTypeID($typeID)
+	{
+		$this->typeID = $typeID;
 
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getMaterialTypeID()
+	{
+		return $this->materialTypeID;
+	}
+
+	/**
+	 * @param mixed $materialTypeID
+	 * @return TypeMaterialsEntity
+	 */
+	public function setMaterialTypeID($materialTypeID)
+	{
+		$this->materialTypeID = $materialTypeID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getQuantity()
+	{
+		return $this->quantity;
+	}
+
+	/**
+	 * @param mixed $quantity
+	 * @return TypeMaterialsEntity
+	 */
+	public function setQuantity($quantity)
+	{
+		$this->quantity = $quantity;
+
+		return $this;
+	}
 }

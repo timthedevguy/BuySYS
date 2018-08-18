@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Model\MarketRequestModel;
-use AppBundle\Form\AllianceMarketForm;
 use AppBundle\Entity\TranactionEntity;
 
 class TransactionsController extends Controller
@@ -104,14 +103,13 @@ class TransactionsController extends Controller
     public function ajax_ProcessAction(Request $request)
     {
         // Set up text area form for comparing transaction
-        $form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
-        $form->handleRequest($request);
+        /*$form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
+        $form->handleRequest($request);*/
 
         $transaction = $this->getTransactionById($request->request->get('id'));
 
         return $this->render('transaction/validate.html.twig', Array (
             'transaction' => $transaction,
-            'form' => $form->createView(),
             'transactionType' => $transaction->getType()
         ));
     }

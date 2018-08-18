@@ -11,74 +11,100 @@ use Symfony\Component\Validator\Constraints as Assert;
 class DgmTypeAttributesEntity
 {
     /**
-    * @ORM\Column(name="typeID", type="integer", nullable=false)
+    * @ORM\Column(name="typeID", type="integer", name="typeID", nullable=false)
     * @ORM\Id
-    * @ORM\GeneratedValue(strategy="NONE")
     */
     protected $typeID;
 
-    public function setTypeId($typeID)
-    {
-        $this->typeID = $typeID;
-
-        return $this;
-    }
-
-    public function getTypeId()
-    {
-        return $this->typeID;
-    }
-
     /**
-    * @ORM\Column(name="attributeID", type="integer", nullable=false)
-    * @ORM\Id
-    * @ORM\GeneratedValue(strategy="NONE")
-    */
+	 * @ORM\Column(type="integer", name="attributeID")
+	 * @ORM\Id
+     */
     protected $attributeID;
 
-    public function setAttributeId($attributeID)
-    {
-        $this->attributeID = $attributeID;
-
-        return $this;
-    }
-
-    public function getAttributeId()
-    {
-        return $this->attributeID;
-    }
-
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="valueInt", nullable=true)
      */
     protected $valueInt;
 
-    public function setValueInt($valueInt)
-    {
-        $this->valueInt = $valueInt;
-
-        return $this;
-    }
-
-    public function getValueInt()
-    {
-        return $this->valueInt;
-    }
-
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", name="valueFloat", nullable=true)
      */
     protected $valueFloat;
 
-    public function setValueFloat($valueFloat)
-    {
-        $this->valueFloat = $valueFloat;
+	/**
+	 * @return mixed
+	 */
+	public function getTypeID()
+	{
+		return $this->typeID;
+	}
 
-        return $this;
-    }
+	/**
+	 * @param mixed $typeID
+	 * @return DgmTypeAttributesEntity
+	 */
+	public function setTypeID($typeID)
+	{
+		$this->typeID = $typeID;
 
-    public function getValueFloat()
-    {
-        return $this->valueFloat;
-    }
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getAttributeID()
+	{
+		return $this->attributeID;
+	}
+
+	/**
+	 * @param mixed $attributeID
+	 * @return DgmTypeAttributesEntity
+	 */
+	public function setAttributeID($attributeID)
+	{
+		$this->attributeID = $attributeID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getValueInt()
+	{
+		return $this->valueInt;
+	}
+
+	/**
+	 * @param mixed $valueInt
+	 * @return DgmTypeAttributesEntity
+	 */
+	public function setValueInt($valueInt)
+	{
+		$this->valueInt = $valueInt;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getValueFloat()
+	{
+		return $this->valueFloat;
+	}
+
+	/**
+	 * @param mixed $valueFloat
+	 * @return DgmTypeAttributesEntity
+	 */
+	public function setValueFloat($valueFloat)
+	{
+		$this->valueFloat = $valueFloat;
+
+		return $this;
+	}
 }

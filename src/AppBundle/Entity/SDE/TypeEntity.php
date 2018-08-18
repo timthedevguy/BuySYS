@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="AppBundle\Entity\SDE\TypeRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\SDE\TypeRepository")
  * @ORM\Table(name="invTypes")
  */
 class TypeEntity
@@ -13,240 +13,362 @@ class TypeEntity
     /**
     * @ORM\Column(name="typeID", type="integer", nullable=false)
     * @ORM\Id
-    * @ORM\GeneratedValue(strategy="AUTO")
+	* @ORM\GeneratedValue(strategy="NONE")
     */
     protected $typeID;
 
-    public function setTypeId($typeID)
-    {
-        $this->typeID = $typeID;
-
-        return $this;
-    }
-
-    public function getTypeId()
-    {
-        return $this->typeID;
-    }
-
     /**
-     * @ORM\Column(type="integer", name="groupID")
+     * @ORM\Column(type="integer", name="groupID", nullable=true)
      */
     protected $groupID;
 
-    public function setGroupId($groupID)
-    {
-        $this->groupID = $groupID;
-
-        return $this;
-    }
-
-    public function getGroupId()
-    {
-        return $this->groupID;
-    }
-
     /**
-     * @ORM\Column(type="string", length=100, name="typeName")
+     * @ORM\Column(type="string", length=100, name="typeName", nullable=true)
      */
     protected $typeName;
 
-    public function setTypeName($typeName)
-    {
-        $this->typeName = $typeName;
-
-        return $this;
-    }
-
-    public function getTypeName()
-    {
-        return $this->typeName;
-    }
-
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     protected $description;
 
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     protected $mass;
 
-    public function setMass($mass)
-    {
-        $this->mass = $mass;
-
-        return $this;
-    }
-
-    public function getMass()
-    {
-        return $this->mass;
-    }
-
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     protected $volume;
 
-    public function setVolume($volume)
-    {
-        $this->volume = $volume;
-
-        return $this;
-    }
-
-    public function getVolume()
-    {
-        return $this->volume;
-    }
-
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     protected $capacity;
 
-    public function setCapacity($capacity)
-    {
-        $this->capacity = $capacity;
-
-        return $this;
-    }
-
-    public function getCapacity()
-    {
-        return $this->capacity;
-    }
-
     /**
-     * @ORM\Column(type="integer", name="portionSize")
+     * @ORM\Column(type="integer", name="portionSize", nullable=true)
      */
     protected $portionSize;
 
-    public function setPortionSize($portionSize)
-    {
-        $this->portionSize = $portionSize;
-
-        return $this;
-    }
-
-    public function getPortionSize()
-    {
-        return $this->portionSize;
-    }
-
     /**
-     * @ORM\Column(type="smallint", name="raceID")
+     * @ORM\Column(type="integer", name="raceID", nullable=true)
      */
     protected $raceID;
 
-    public function setRaceId($raceID)
-    {
-        $this->raceID = $raceID;
-
-        return $this;
-    }
-
-    public function getRaceId()
-    {
-        return $this->raceID;
-    }
-
     /**
-     * @ORM\Column(type="decimal", name="basePrice")
+     * @ORM\Column(type="decimal", precision=19, scale=4, name="basePrice", nullable=true)
      */
     protected $basePrice;
 
-    public function setBasePrice($basePrice)
-    {
-        $this->basePrice = $basePrice;
-
-        return $this;
-    }
-
-    public function getBasePrice()
-    {
-        return $this->basePrice;
-    }
-
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     protected $published;
 
-    public function setPublished($published)
-    {
-        $this->published = $published;
-
-        return $this;
-    }
-
-    public function getPublished()
-    {
-        return $this->published;
-    }
-
     /**
-     * @ORM\Column(type="bigint", name="marketGroupID")
+     * @ORM\Column(type="integer", name="marketGroupID", nullable=true)
      */
     protected $marketGroupID;
 
-    public function setMarketGroupId($marketGroupID)
-    {
-        $this->marketGroupID = $marketGroupID;
-
-        return $this;
-    }
-
-    public function getMarketGroupId()
-    {
-        return $this->marketGroupID;
-    }
-
     /**
-     * @ORM\Column(type="bigint", name="iconID")
+     * @ORM\Column(type="integer", name="iconID", nullable=true)
      */
     protected $iconID;
 
-    public function setIconId($iconID)
-    {
-        $this->iconID = $iconID;
-
-        return $this;
-    }
-
-    public function getIconId()
-    {
-        return $this->iconID;
-    }
-
     /**
-     * @ORM\Column(type="bigint", name="soundID")
+     * @ORM\Column(type="integer", name="soundID", nullable=true)
      */
     protected $soundID;
 
-    public function setSoundId($soundID)
-    {
-        $this->soundID = $soundID;
+    /**
+     * @ORM\Column(type="integer", name="graphicID", nullable=true)
+     */
+    protected $graphicID;
 
-        return $this;
-    }
+	/**
+	 * @return mixed
+	 */
+	public function getTypeID()
+	{
+		return $this->typeID;
+	}
 
-    public function getSoundId()
-    {
-        return $this->soundID;
-    }
+	/**
+	 * @param mixed $typeID
+	 * @return TypeEntity
+	 */
+	public function setTypeID($typeID)
+	{
+		$this->typeID = $typeID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getGroupID()
+	{
+		return $this->groupID;
+	}
+
+	/**
+	 * @param mixed $groupID
+	 * @return TypeEntity
+	 */
+	public function setGroupID($groupID)
+	{
+		$this->groupID = $groupID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getTypeName()
+	{
+		return $this->typeName;
+	}
+
+	/**
+	 * @param mixed $typeName
+	 * @return TypeEntity
+	 */
+	public function setTypeName($typeName)
+	{
+		$this->typeName = $typeName;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDescription()
+	{
+		return $this->description;
+	}
+
+	/**
+	 * @param mixed $description
+	 * @return TypeEntity
+	 */
+	public function setDescription($description)
+	{
+		$this->description = $description;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getMass()
+	{
+		return $this->mass;
+	}
+
+	/**
+	 * @param mixed $mass
+	 * @return TypeEntity
+	 */
+	public function setMass($mass)
+	{
+		$this->mass = $mass;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getVolume()
+	{
+		return $this->volume;
+	}
+
+	/**
+	 * @param mixed $volume
+	 * @return TypeEntity
+	 */
+	public function setVolume($volume)
+	{
+		$this->volume = $volume;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCapacity()
+	{
+		return $this->capacity;
+	}
+
+	/**
+	 * @param mixed $capacity
+	 * @return TypeEntity
+	 */
+	public function setCapacity($capacity)
+	{
+		$this->capacity = $capacity;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPortionSize()
+	{
+		return $this->portionSize;
+	}
+
+	/**
+	 * @param mixed $portionSize
+	 * @return TypeEntity
+	 */
+	public function setPortionSize($portionSize)
+	{
+		$this->portionSize = $portionSize;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getRaceID()
+	{
+		return $this->raceID;
+	}
+
+	/**
+	 * @param mixed $raceID
+	 * @return TypeEntity
+	 */
+	public function setRaceID($raceID)
+	{
+		$this->raceID = $raceID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getBasePrice()
+	{
+		return $this->basePrice;
+	}
+
+	/**
+	 * @param mixed $basePrice
+	 * @return TypeEntity
+	 */
+	public function setBasePrice($basePrice)
+	{
+		$this->basePrice = $basePrice;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPublished()
+	{
+		return $this->published;
+	}
+
+	/**
+	 * @param mixed $published
+	 * @return TypeEntity
+	 */
+	public function setPublished($published)
+	{
+		$this->published = $published;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getMarketGroupID()
+	{
+		return $this->marketGroupID;
+	}
+
+	/**
+	 * @param mixed $marketGroupID
+	 * @return TypeEntity
+	 */
+	public function setMarketGroupID($marketGroupID)
+	{
+		$this->marketGroupID = $marketGroupID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getIconID()
+	{
+		return $this->iconID;
+	}
+
+	/**
+	 * @param mixed $iconID
+	 * @return TypeEntity
+	 */
+	public function setIconID($iconID)
+	{
+		$this->iconID = $iconID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getSoundID()
+	{
+		return $this->soundID;
+	}
+
+	/**
+	 * @param mixed $soundID
+	 * @return TypeEntity
+	 */
+	public function setSoundID($soundID)
+	{
+		$this->soundID = $soundID;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getGraphicID()
+	{
+		return $this->graphicID;
+	}
+
+	/**
+	 * @param mixed $graphicID
+	 * @return TypeEntity
+	 */
+	public function setGraphicID($graphicID)
+	{
+		$this->graphicID = $graphicID;
+
+		return $this;
+	}
 }

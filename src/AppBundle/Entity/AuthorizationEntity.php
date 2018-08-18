@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="AuthorizationRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AuthorizationRepository")
  * @ORM\Table(name="authorization")
  */
 class AuthorizationEntity
