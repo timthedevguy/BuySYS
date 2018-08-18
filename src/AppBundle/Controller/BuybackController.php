@@ -69,9 +69,9 @@ class BuybackController extends Controller {
 			} else
 			{
 				// Set prices
-				$items[$i]['unitPrice'] = $typePrices[$items[$i]['typeid']]['taxed'];
-				$items[$i]['netPrice'] = $item['quantity'] * $typePrices[$items[$i]['typeid']]['taxed'];
-				$items[$i]['grossPrice'] = $item['quantity'] * $typePrices[$items[$i]['typeid']]['adjusted'];
+				$items[$i]['unitPrice'] = $typePrices[$items[$i]['typeid']]['taxed'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize'];
+				$items[$i]['netPrice'] = $items[$i]['quantity'] * ($typePrices[$items[$i]['typeid']]['taxed'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize']);
+				$items[$i]['grossPrice'] = $items[$i]['quantity'] * ($typePrices[$items[$i]['typeid']]['adjusted'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize']);
 
 				$offer += $items[$i]['netPrice'];
 			}

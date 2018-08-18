@@ -3,6 +3,9 @@
 </div>
 <div class="modal-body">
     <div class="row">
+        <div class="col-md-12">
+            <h4><i class="fa fa-filter" aria-hidden="true"></i> Rules <small>Rules effect Buyback behavior</small></h4>
+        </div>
         <div class="col-md-6">
             <table class="table table-striped">
                 <thead>
@@ -56,41 +59,84 @@
             </table>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h4><i class="fa fa-calculator" aria-hidden="true"></i> Calculations <small>Per unit pricing (see Portion Size)</small></h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width:16%;">Raw Market Value</th>
+                        <th style="width:16%;">Unit Price</th>
+                        <th style="width:16%;">Quantity</th>
+                        <th style="width:16%;">SubTotal</th>
+                        <th style="width:16%;">Tax</th>
+                        <th style="width:16%;">Offer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ details.market|number_format(2,'.',',')}}</td>
+                        {% set uPrice = details.adjusted / details.data.options.portionSize %}
+                        <td>{{ uPrice|number_format(2,'.',',') }}</td>
+                        <td>{{ item.quantity|number_format(0,'.',',') }}</td>
+                        <td>{{ item.grossPrice|number_format(2,'.',',') }}</td>
+                        <td>{{ details.data.options.tax }}%</td>
+                        <td>{{ item.netPrice|number_format(2,'.',',') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     {% if details.data.options.isrefined == 1 %}
         <div class="row">
             <div class="col-md-12">
-                <strong>Refine Details</strong>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Material</th>
-                            <th>Base</th>
-                            <th>Refined</th>
-                            <th>Market</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    {% set total = 0 %}
-                    <tbody>
-                        {% for mat in details.data.materials %}
-                            <tr>
-                                <td>{{ mat.name }}</td>
-                                <td>{{ mat.base }}</td>
-                                <td>{{ mat.adjusted }}</td>
-                                <td>{{ mat.price|number_format(2,'.',',') }}</td>
-                                {% set value = mat.price * mat.adjusted %}
-                                {% set total = total + value %}
-                                <td>{{ value|number_format(2,'.',',') }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" style="text-align:right;"><strong>Value per Portion Size:</strong></td>
-                            <td><strong>{{ total|number_format(2,'.',',') }}</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <h4><i class="fa fa-diamond" aria-hidden="true"></i> Refine Details <small>Refined using Corporation Refine skills</small></h4>
+                <div class="box-group" id="accordion">
+                    <div class="panel box box-solid">
+                        <div class="box-header with-border">
+                            <h4 class="box-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" class="collapsed">
+                                    Click to Expand
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                            <div class="box-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Base</th>
+                                        <th>Refined</th>
+                                        <th>Market</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    </thead>
+                                    {% set total = 0 %}
+                                    <tbody>
+                                    {% for mat in details.data.materials %}
+                                        <tr>
+                                            <td><img src="https://image.eveonline.com/Type/{{mat.typeid}}_32.png" style="max-width:16px;margin-right:10px;"/>{{ mat.name }}</td>
+                                            <td>{{ mat.base|number_format(0,'.',',') }}</td>
+                                            <td>{{ mat.adjusted|number_format(2,'.',',') }}</td>
+                                            <td>{{ mat.price|number_format(2,'.',',') }}</td>
+                                            {% set value = mat.price * mat.adjusted %}
+                                            {% set total = total + value %}
+                                            <td>{{ value|number_format(2,'.',',') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align:right;"><strong>Value per Portion Size:</strong></td>
+                                        <td><strong>{{ total|number_format(2,'.',',') }}</strong></td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     {% endif %}

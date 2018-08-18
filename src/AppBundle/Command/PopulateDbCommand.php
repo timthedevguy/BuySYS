@@ -39,37 +39,28 @@ class PopulateDbCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('helper');
 
         //GLOBAL SETTINGS
-        $helper->setSetting('eveCentralOK', '1', 'global');
-        $helper->setSetting("system_maintenance", "0", 'global');
+        $helper->setSetting('eveCentralOK', '1');
+        $helper->setSetting("system_maintenance", "0");
 
-        //COMMON SETTINGS
-        foreach(array('P', 'S', 'SRP') as $settingType)
-        {
-            $helper->setSetting('default_buyaction_deny', '0', $settingType);
-            $helper->setSetting("source_id", "60003760", $settingType);
-            $helper->setSetting("source_type", "buy", $settingType);
-            $helper->setSetting("source_stat", "percentile", $settingType);
-            $helper->setSetting('role_member_tax', '5', $settingType);
-            $helper->setSetting('role_ally_tax', '6', $settingType);
-            $helper->setSetting('role_friend_tax', '8', $settingType);
-            $helper->setSetting('role_other1_tax', '10', $settingType);
-            $helper->setSetting('role_other2_tax', '0', $settingType);
-            $helper->setSetting('role_other3_tax', '0', $settingType);
-            $helper->setSetting('role_guest_tax', '0',$settingType);
-        }
+		$helper->setSetting('default_buyaction_deny', '0');
+		$helper->setSetting("source_id", "60003760");
+		$helper->setSetting("source_type", "buy");
+		$helper->setSetting("source_stat", "percentile");
+		$helper->setSetting('role_member_tax', '5');
+		$helper->setSetting('role_ally_tax', '6');
+		$helper->setSetting('role_friend_tax', '8');
+		$helper->setSetting('role_other1_tax', '10');
+		$helper->setSetting('role_other2_tax', '0');
+		$helper->setSetting('role_other3_tax', '0');
+		$helper->setSetting('role_guest_tax', '0');
 
         //BUYBACK SETTINGS
-        $helper->setSetting('value_minerals', '1', 'P');
-        $helper->setSetting('value_salvage', '1', 'P');
-        $helper->setSetting("ore_refine_rate", "70", 'P');
-        $helper->setSetting("ice_refine_rate", "70", 'P');
-        $helper->setSetting("moon_refine_rate", "70", 'P');
-        $helper->setSetting("salvage_refine_rate", "60", 'P');
-
-        //SALES SETTINGS
-
-        //SRP SETTINGS
-
+        $helper->setSetting('value_minerals', '1');
+        $helper->setSetting('value_salvage', '1');
+        $helper->setSetting("ore_refine_rate", "70");
+        $helper->setSetting("ice_refine_rate", "70");
+        $helper->setSetting("moon_refine_rate", "70");
+        $helper->setSetting("salvage_refine_rate", "60");
     }
 
     private function populateRolesDefaults()
