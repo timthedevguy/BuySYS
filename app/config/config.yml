@@ -97,10 +97,6 @@ doctrine:
                 #connection: default
                 #mappings:
                 #    AppBundle:  ~
-            evedata:
-                connection: evedata
-                mappings:
-                    EveBundle: ~
 
 # Swiftmailer Configuration
 swiftmailer:

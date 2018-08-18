@@ -1,5 +1,5 @@
 <?php
-namespace EveBundle\Entity;
+namespace AppBundle\Entity\SDE;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;

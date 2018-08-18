@@ -1,11 +1,11 @@
 <?php
-namespace EveBundle\Entity;
+namespace AppBundle\Entity\SDE;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="EveBundle\Entity\GroupsRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\SDE\GroupsRepository")
  * @ORM\Table(name="invGroups")
  */
 class GroupsEntity

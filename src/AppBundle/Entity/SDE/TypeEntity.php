@@ -1,11 +1,11 @@
 <?php
-namespace EveBundle\Entity;
+namespace AppBundle\Entity\SDE;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="EveBundle\Entity\TypeRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\SDE\TypeRepository")
  * @ORM\Table(name="invTypes")
  */
 class TypeEntity
@@ -30,7 +30,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="groupID")
      */
     protected $groupID;
 
@@ -47,7 +47,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100, name="typeName")
      */
     protected $typeName;
 
@@ -132,7 +132,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="portionSize")
      */
     protected $portionSize;
 
@@ -149,7 +149,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", name="raceID")
      */
     protected $raceID;
 
@@ -166,7 +166,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal", name="basePrice")
      */
     protected $basePrice;
 
@@ -200,7 +200,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="bigint", name="marketGroupID")
      */
     protected $marketGroupID;
 
@@ -217,7 +217,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="bigint", name="iconID")
      */
     protected $iconID;
 
@@ -234,7 +234,7 @@ class TypeEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="bigint", name="soundID")
      */
     protected $soundID;
 

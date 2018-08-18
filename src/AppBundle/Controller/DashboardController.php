@@ -53,10 +53,10 @@ class DashboardController extends Controller
             $rensData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60004588"));
             $hekData = array_merge($this->get('market')->getFuzzworksDataForTypes(array($typeId), "60005686"));
 
-            $type = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
-            $market_group = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity','evedata')
+            $type = $this->getDoctrine()->getRepository('AppBundle:SDE\TypeEntity')->findOneByTypeID($typeId);
+            $market_group = $this->getDoctrine()->getRepository('AppBundle:SDE\MarketGroupsEntity')
                 ->findOneByMarketGroupID($type->getMarketGroupId())->getMarketGroupName();
-            $group = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')
+            $group = $this->getDoctrine()->getRepository('AppBundle:SDE\GroupsEntity')
                 ->findOneByGroupID($type->getGroupID())->getGroupName();
 
 
@@ -67,7 +67,7 @@ class DashboardController extends Controller
 
             // Figure out Refining Details
             $refineMaterials = $this->get('market')->getRefinedMaterialsForType($typeId,$options['refineskill'], 'P');
-            $materialNames = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')
+            $materialNames = $this->getDoctrine()->getRepository('AppBundle:SDE\TypeEntity')
                 ->findNamesForTypes(array_keys($refineMaterials));
             $materialPrices = $this->get('market')->getBuybackPricesForTypes(array_keys($refineMaterials),'P', true);
 
@@ -97,7 +97,7 @@ class DashboardController extends Controller
             $name = $request->request->get('id');
 
             // Get all matching types
-            $types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findAllLikeName($name);
+            $types = $this->getDoctrine()->getRepository('AppBundle:SDE\TypeEntity')->findAllLikeName($name);
 
             $template = $this->render('elements/searchResultsByType.html.twig', Array ( 'items' => $types ));
 

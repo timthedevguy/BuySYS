@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 use AppBundle\Model\OreReviewModel;
-use EveBundle\Entity\TypeEntity;
+use AppBundle\Entity\SDE\TypeEntity;
 
 class QuicklookController extends Controller {
 
@@ -132,7 +132,7 @@ class QuicklookController extends Controller {
 		foreach ($typeIds as $typeId)
 		{
 
-			$eveType = $this->getDoctrine('evedata')->getRepository('EveBundle:TypeEntity', 'evedata')->findOneByTypeID($typeId);
+			$eveType = $this->getDoctrine()->getRepository('AppBundle:SDE\TypeEntity')->findOneByTypeID($typeId);
 			$oreModel = new OreReviewModel();
 			$oreModel->setTypeId($typeId);
 			$oreModel->setName($eveType->getTypeName());

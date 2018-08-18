@@ -6,7 +6,7 @@
  * Time: 2:25 PM
  */
 
-namespace EveBundle\Model;
+namespace AppBundle\Model;
 
 
 class Contact

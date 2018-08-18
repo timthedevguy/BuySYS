@@ -57,7 +57,7 @@ class RuleController extends Controller
                     $form_results = $request->request->get('add_type_rule_form');
                     $rule->setTarget('type');
                     $rule->setTargetId($form_results['typeid']);
-                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')
+                    $rule->setTargetName($this->getDoctrine()->getRepository('AppBundle:SDE\TypeEntity')
                         ->findOneByTypeID($form_results['typeid'])->getTypeName());
                 }
                 elseif ($request->request->has('add_group_rule_form'))
@@ -65,7 +65,7 @@ class RuleController extends Controller
                     $form_results = $request->request->get('add_group_rule_form');
                     $rule->setTarget('group');
                     $rule->setTargetId($form_results['groupid']);
-                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')
+                    $rule->setTargetName($this->getDoctrine()->getRepository('AppBundle:SDE\GroupsEntity')
                         ->findOneByGroupID($form_results['groupid'])->getGroupName());
                 }
                 elseif ($request->request->has('add_market_group_rule_form'))
@@ -73,7 +73,7 @@ class RuleController extends Controller
                     $form_results = $request->request->get('add_market_group_rule_form');
                     $rule->setTarget('marketgroup');
                     $rule->setTargetId($form_results['marketgroupid']);
-                    $rule->setTargetName($this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')
+                    $rule->setTargetName($this->getDoctrine()->getRepository('AppBundle:SDE\MarketGroupsEntity')
                         ->findOneByMarketGroupID($form_results['marketgroupid'])->getMarketGroupName());
                 }
                 elseif ($request->request->has('add_role_rule_form'))

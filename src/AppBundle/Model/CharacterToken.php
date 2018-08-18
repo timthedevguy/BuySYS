@@ -6,7 +6,7 @@
  * Time: 1:37 PM
  */
 
-namespace EveBundle\Model;
+namespace AppBundle\Model;
 
 
 class CharacterToken extends SSOToken

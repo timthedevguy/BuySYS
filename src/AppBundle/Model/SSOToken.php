@@ -6,7 +6,7 @@
  * Time: 1:28 PM
  */
 
-namespace EveBundle\Model;
+namespace AppBundle\Model;
 
 
 class SSOToken

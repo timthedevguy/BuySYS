@@ -15,7 +15,7 @@ class AddGroupRuleForm extends AbstractType
     {
         $builder
             ->add('groupid', TypeaheadType::class, array('label' => false,
-                'class' => 'EveBundle\Entity\GroupsEntity', 'render' => 'groupName',
+                'class' => 'AppBundle\Entity\SDE\GroupsEntity', 'render' => 'groupName',
                 'route' => 'ajax_group_list', 'attr' => array('placeholder' => 'Group Name...')))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(

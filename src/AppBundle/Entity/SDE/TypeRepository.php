@@ -1,5 +1,5 @@
 <?php
-namespace EveBundle\Entity;
+namespace AppBundle\Entity\SDE;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -9,7 +9,7 @@ class TypeRepository extends EntityRepository {
     {
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM EveBundle:TypeEntity c WHERE c.typeName LIKE :name'
+                'SELECT c FROM AppBundle:TypeEntity c WHERE c.typeName LIKE :name'
             )->setParameter('name', '%'.$name.'%')->getResult();
     }
 
@@ -17,7 +17,7 @@ class TypeRepository extends EntityRepository {
     {
         $results =  $this->getEntityManager()
             ->createQuery(
-                'SELECT c.typeID,c.typeName FROM EveBundle:TypeEntity c WHERE c.typeID IN (:typeids)'
+                'SELECT c.typeID,c.typeName FROM AppBundle:TypeEntity c WHERE c.typeID IN (:typeids)'
             )->setParameter('typeids', $typeIds)->getResult();
 
         $properResults = array();

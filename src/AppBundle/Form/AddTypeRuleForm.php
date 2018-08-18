@@ -15,7 +15,7 @@ class AddTypeRuleForm extends AbstractType
     {
         $builder
             ->add('typeid', TypeaheadType::class, array('label' => false,
-                'class' => 'EveBundle\Entity\TypeEntity', 'render' => 'typeName',
+                'class' => 'AppBundle\Entity\SDE\TypeEntity', 'render' => 'typeName',
                 'route' => 'ajax_type_list', 'attr' => array('placeholder' => 'Item Name...')))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(

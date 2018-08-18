@@ -13,8 +13,8 @@ use AppBundle\Controller\AuthorizationController;
 use AppBundle\Entity\AuthorizationEntity;
 use AppBundle\Entity\UserEntity;
 use AppBundle\Helper\Helper;
-use EveBundle\API\ESI;
-use EveBundle\API\XML;
+use AppBundle\Utilities\ESI;
+use AppBundle\Utilities\XML;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\ORM\EntityManager;
 
@@ -27,10 +27,10 @@ class AuthorizationManager
     private $ESI;
     private $xmlApi;
 
-    public function __construct(EntityManager $em, ESI $ESI, XML $xmlApi) {
+    public function __construct(EntityManager $em, ESI $ESI) {
         $this->em = $em;
         $this->ESI = $ESI;
-        $this->xmlApi = $xmlApi;
+        //$this->xmlApi = $xmlApi;
     }
 
     private static $rolesArray = Array(

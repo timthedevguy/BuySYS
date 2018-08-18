@@ -6,7 +6,7 @@
  * Date: 5/19/17
  * Time: 12:51 PM
  */
-namespace EveBundle\Model;
+namespace AppBundle\Model;
 
 class Character
 {

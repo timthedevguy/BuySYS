@@ -5,18 +5,15 @@ parameters:
 
 services:
     esi:
-        class: EveBundle\API\ESI
+        class: AppBundle\Utilities\ESI
         
     eve_esi:
         class: AppBundle\ESI\ESI
         arguments: ["@session"]
 
     eve_sso:
-        class: EveBundle\API\SSO
+        class: AppBundle\Utilities\SSO
         arguments: ['%sso_client_id%', '%sso_secret_key%']
-
-    eve_xml_api:
-        class: EveBundle\API\XML
 
     helper:
         class: AppBundle\Helper\Helper
@@ -44,7 +41,7 @@ services:
 
     auth_manager:
             class: AppBundle\Security\AuthorizationManager
-            arguments: ['@doctrine.orm.entity_manager', '@esi', '@eve_xml_api']
+            arguments: ['@doctrine.orm.entity_manager', '@esi']
 
     eve_sso_authenticator:
             class: AppBundle\Security\EveSSOAuthenticator

@@ -13,7 +13,7 @@ class Parser extends Helper
     {
         //define Vars
         $results = array();
-        $types = $this->doctrine->getRepository('EveBundle:TypeEntity', 'evedata');
+        $types = $this->doctrine->getRepository('AppBundle:SDE\TypeEntity');
 
         // Get raw input as array (split on line breaks)
         $rawInputArray = preg_split("/\r\n|\n|\r/", $raw);

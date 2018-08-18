@@ -85,7 +85,7 @@ class RuleRepository extends EntityRepository
 
     public function findAllForTypeIds(array $typeids)
     {
-        $types = $this->getEntityManager('evedata')
+        $types = $this->getEntityManager()
             ->createQuery(
                 'SELECT 
                         invTypes.typeID, 

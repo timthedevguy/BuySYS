@@ -6,10 +6,10 @@
  * Date: 5/19/17
  * Time: 12:50 PM
  */
-namespace EveBundle\API;
+namespace AppBundle\Utilities;
 
 use GuzzleHttp\Client;
-use EveBundle\Model\Character;
+use AppBundle\Model\Character;
 
 class ESI
 {

@@ -31,7 +31,7 @@ class ESI
 	
 	protected $session;
 
-    public function __construct(\EveBundle\API\SSO $eveSSO, Session $session)
+    public function __construct(\AppBundle\Utilities\SSO $eveSSO, Session $session)
     {
         $this->session = $session;
 		
@@ -92,7 +92,7 @@ class ESI
 						break;
 						
 					case "user_agent":
-						$apiParamProvided = "AmSYS";
+						$apiParamProvided = "BuySYS";
 						break;
 						
 					case "datasource":

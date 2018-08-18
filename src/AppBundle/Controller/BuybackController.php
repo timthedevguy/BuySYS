@@ -449,7 +449,7 @@ class BuybackController extends Controller {
 		$query = $request->request->get("query");
 		$limit = $request->request->get("limit");
 
-		$types = $this->getDoctrine()->getRepository('EveBundle:TypeEntity', 'evedata')->findAllLikeName($query);
+		$types = $this->getDoctrine()->getRepository('AppBundle:SDE\TypeEntity')->findAllLikeName($query);
 
 		$results = array();
 
@@ -477,7 +477,7 @@ class BuybackController extends Controller {
 		$query = $request->request->get("query");
 		$limit = $request->request->get("limit");
 
-		$groups = $this->getDoctrine()->getRepository('EveBundle:MarketGroupsEntity', 'evedata')->findAllLikeName($query);
+		$groups = $this->getDoctrine()->getRepository('AppBundle:SDE\MarketGroupsEntity')->findAllLikeName($query);
 
 		$results = array();
 		for ($count = 0; $count < count($groups); $count++)
@@ -505,7 +505,7 @@ class BuybackController extends Controller {
 		$query = $request->request->get("query");
 		$limit = $request->request->get("limit");
 
-		$groups = $this->getDoctrine()->getRepository('EveBundle:GroupsEntity', 'evedata')->findAllLikeName($query);
+		$groups = $this->getDoctrine()->getRepository('AppBundle:SDE\GroupsEntity')->findAllLikeName($query);
 
 		$results = array();
 		for ($count = 0; $count < count($groups); $count++)

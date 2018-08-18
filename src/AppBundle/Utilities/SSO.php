@@ -6,12 +6,12 @@
  * Time: 1:53 PM
  */
 
-namespace EveBundle\API;
+namespace AppBundle\Utilities;
 
 use GuzzleHttp\Client;
 
-use EveBundle\Model\CharacterToken;
-use EveBundle\Model\SSOToken;
+use AppBundle\Model\CharacterToken;
+use AppBundle\Model\SSOToken;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
 

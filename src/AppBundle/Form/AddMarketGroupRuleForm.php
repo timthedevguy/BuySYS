@@ -15,7 +15,7 @@ class AddMarketGroupRuleForm extends AbstractType
     {
         $builder
             ->add('marketgroupid', TypeaheadType::class, array('label' => false,
-                'class' => 'EveBundle\Entity\MarketGroupsEntity', 'render' => 'marketGroupName',
+                'class' => 'AppBundle\Entity\SDE\MarketGroupsEntity', 'render' => 'marketGroupName',
                 'route' => 'ajax_market_list', 'attr' => array('placeholder' => 'Market Group Name...')))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(

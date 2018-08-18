@@ -1,15 +1,15 @@
 <?php
-namespace EveBundle\Entity;
+namespace AppBundle\Entity\SDE;
 
 use Doctrine\ORM\EntityRepository;
 
-class GroupsRepository extends EntityRepository {
+class MarketGroupsRepository extends EntityRepository {
 
     public function findAllLikeName($name) {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM EveBundle:GroupsEntity c WHERE c.groupName LIKE :name'
+                'SELECT c FROM AppBundle:MarketGroupsEntity c WHERE c.hasTypes = 1 AND c.marketGroupName LIKE :name'
             )->setParameter('name', '%'.$name.'%')->getResult();
     }
 }

@@ -115,10 +115,10 @@ class UpdateSDECommand extends ContainerAwareCommand
             $output->writeln('');
             $output->writeln('<info>Importing sql files to database...</info>');
 
-            $database = $this->getContainer()->getParameter('database_name2');
-            $database_user = $this->getContainer()->getParameter('database_user2');
-            $database_password = $this->getContainer()->getParameter('database_password2');
-            $database_host = $this->getContainer()->getParameter('database_host2');
+            $database = $this->getContainer()->getParameter('database_name');
+            $database_user = $this->getContainer()->getParameter('database_user');
+            $database_password = $this->getContainer()->getParameter('database_password');
+            $database_host = $this->getContainer()->getParameter('database_host');
 
             $bar = new ProgressBar($output, count($tables));
             $bar->start();
