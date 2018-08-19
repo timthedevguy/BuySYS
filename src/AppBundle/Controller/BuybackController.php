@@ -184,7 +184,7 @@ class BuybackController extends Controller {
 
 			$ruleIds = explode(',', $details['data']['options']['rules']);
 			$readableRules = array();
-			dump($ruleIds);
+
 			foreach ($ruleIds as $ruleId)
 			{
 				if ($ruleId == 0)
