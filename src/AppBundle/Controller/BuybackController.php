@@ -82,7 +82,7 @@ class BuybackController extends Controller {
 		$data = array();
 		$data['items'] = $items;
 		$data['details'] = $typePrices;
-		dump($data);
+
 		$this->getDoctrine()->getRepository('AppBundle:EstimateEntity', 'default')->deleteByUser($this->getUser()->getId());
 
 		$estimate = new EstimateEntity();
