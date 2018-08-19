@@ -13,7 +13,7 @@ a fixed price.
 
 #### Current Installation
 
-1. See https://github.com/binarygod/AmSYS/wiki/1.-Installation
+1. See https://github.com/binarygod/BuySYS/wiki/1.-Installation
 
 #### How to help
 If you feel inclined, you can donate in the form of ISK or Patches.  My in game name is 'Fecal Matters'
