@@ -7,11 +7,6 @@ parameters:
         database_name: amsys_db
         database_user: amsys_user
         database_password: password
-        database_host2: database
-        database_port2: 3306
-        database_name2: eve_db
-        database_user2: amsys_user
-        database_password2: password
         mailer_transport: smtp
         mailer_host: smtp.server
         mailer_port: 465

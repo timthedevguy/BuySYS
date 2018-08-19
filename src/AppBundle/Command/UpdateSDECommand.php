@@ -73,7 +73,7 @@ class UpdateSDECommand extends ContainerAwareCommand
 
                 $file_handle = fopen($table.'.sql.bz2','w');
 
-                $result = $guzzle->request('GET', $url, ['sink' => $file_handle]);
+                $result = $guzzle->request('GET', $url, array('sink' => $file_handle));
 
                 fclose($file_handle);
 
