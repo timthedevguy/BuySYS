@@ -9,7 +9,7 @@ class MarketGroupsRepository extends EntityRepository {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM AppBundle:MarketGroupsEntity c WHERE c.hasTypes = 1 AND c.marketGroupName LIKE :name'
+                'SELECT c FROM AppBundle:SDE\MarketGroupsEntity c WHERE c.hasTypes = 1 AND c.marketGroupName LIKE :name'
             )->setParameter('name', '%'.$name.'%')->getResult();
     }
 }

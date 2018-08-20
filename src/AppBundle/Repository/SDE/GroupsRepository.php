@@ -9,7 +9,7 @@ class GroupsRepository extends EntityRepository {
 
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM AppBundle:GroupsEntity c WHERE c.groupName LIKE :name'
+                'SELECT c FROM AppBundle:SDE\GroupsEntity c WHERE c.groupName LIKE :name'
             )->setParameter('name', '%'.$name.'%')->getResult();
     }
 }
