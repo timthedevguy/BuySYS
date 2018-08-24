@@ -18,3 +18,5 @@ src/AppBundle/Controller/TransactionsController.php
 *.bz2
 
 \.vs/
+
+web/favicon\.ico
