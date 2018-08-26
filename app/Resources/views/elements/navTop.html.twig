@@ -22,6 +22,15 @@
                                 <li><a href="{{ path('quicklook', {'ore_type': 'null'}) }}">Null Sec Ore</a></li>
                             </ul>
                         </li>
+                        <li class="dropdown-submenu"><a href="#" class="submenu" tabindex="-1">Compressed Ore&nbsp;&nbsp;<i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ path('quicklook', {'ore_type': 'compressed_all'}) }}">All Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'compressed_high'}) }}">High Sec Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'compressed_other'}) }}">Other High Sec Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'compressed_low'}) }}">Low Sec Ore</a></li>
+                                <li><a href="{{ path('quicklook', {'ore_type': 'compressed_null'}) }}">Null Sec Ore</a></li>
+                            </ul>
+                        </li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'ice'}) }}">Ice</a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'gas'}) }}">Gas</a></li>
                         <li><a href="{{ path('quicklook', {'ore_type': 'minerals'}) }}">Minerals</a></li>

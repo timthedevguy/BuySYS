@@ -12,10 +12,16 @@ use AppBundle\Entity\SDE\TypeEntity;
 
 class QuicklookController extends Controller {
 
-	private $ore_high = array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453');
-	private $ore_other = array('18', '17455', '17456', '1227', '17867', '17868');
-	private $ore_low = array('1226', '17448', '17449', '1231', '17444', '17445', '21', '17440', '17441');
-	private $ore_null = array('22', '17425', '17426', '1223', '17428', '17429', '1225', '17432', '17433', '1232', '17436', '17437', '1229', '17865', '17866', '11396', '17869', '17870', '19', '17466', '17467');
+	private $ore_high = array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453', '46689', '46686', '46687', '46683');
+	private $compressed_ore_high = array('28430', '28431', '28432', '46705', '28424', '28425', '28426', '46702', '28427', '28428', '28429', '46703', '28409', '28410', '28411');
+	private $ore_other = array('18', '17455', '17456', '1227', '17867', '17868', '46685', '46684');
+	private $compressed_ore_other = array('28421', '28422', '28423', '46701', '28415', '28416', '28417', '46700');
+	private $ore_low = array('1226', '17448', '17449', '1231', '17444', '17445', '21', '17440', '17441', '46682', '46681', '46680');
+	private $compressed_ore_low = array('28406', '28407', '28408', '46698', '28403', '28404', '28405', '46697', '28400', '28401', '28402', '46696');
+	private $ore_null = array('22', '17425', '17426', '1223', '17428', '17429', '1225', '17432', '17433',
+		'1232', '17436', '17437', '1229', '17865', '17866', '11396', '17869', '17870', '19', '17466', '17467', '46679', '46688', '46678', '46677', '46676', '46675');
+	private $compressed_ore_null = array('28412', '28413', '28414', '28397', '28398', '28399', '46695', '28418', '28419', '28420',
+		'46704', '28367', '28385', '28387', '46691', '28391', '28392', '28393', '46693', '28388', '28389', '28390', '46692', '28394', '28395', '28396', '46694');
 	private $ice = array('16264', '17975', '16265', '17976', '16262', '17978', '16263', '17977', '16267', '16268', '16266', '16269');
 	private $gas = array('25268', '28694', '25279', '28695', '25275', '28696', '30375', '30376', '30377', '30370', '30378', '30371', '30372', '30373', '30374', '25273', '28697', '25277', '28698', '25276', '28699', '25278', '28700', '25274', '28701');
 	private $minerals = array('34', '35', '36', '37', '38', '39', '40', '11399', '16272', '16274', '17889', '16273', '17888', '17887', '16275');
@@ -42,9 +48,19 @@ class QuicklookController extends Controller {
 				$subText = "High Sec Ores";
 				break;
 
+			case "compressed_high":
+				$results = $this->getQuickReview($this->compressed_ore_high);
+				$subText = "Compressed High Sec Ores";
+				break;
+
 			case "other":
 				$results = $this->getQuickReview($this->ore_other);
 				$subText = "Other High Sec Ores";
+				break;
+
+			case "compressed_other":
+				$results = $this->getQuickReview($this->compressed_ore_other);
+				$subText = "Other Compressed High Sec Ores";
 				break;
 
 			case "low":
@@ -52,14 +68,29 @@ class QuicklookController extends Controller {
 				$subText = "Low Sec Ores";
 				break;
 
+			case "compressed_low":
+				$results = $this->getQuickReview($this->compressed_ore_low);
+				$subText = "Compressed Low Sec Ores";
+				break;
+
 			case "null":
 				$results = $this->getQuickReview($this->ore_null);
 				$subText = "Null Sec Ores";
 				break;
 
+			case "compressed_null":
+				$results = $this->getQuickReview($this->compressed_ore_null);
+				$subText = "Compressed Null Sec Ores";
+				break;
+
 			case "all":
 				$results = $this->getQuickReview(array_merge($this->ore_high, $this->ore_other, $this->ore_low, $this->ore_null));
-				$subText = "Null Sec Ores";
+				$subText = "All Ores";
+				break;
+
+			case "compressed_all":
+				$results = $this->getQuickReview(array_merge($this->compressed_ore_high, $this->compressed_ore_other, $this->compressed_ore_low, $this->compressed_ore_null));
+				$subText = "All Compressed Ores";
 				break;
 
 			case "ice":
