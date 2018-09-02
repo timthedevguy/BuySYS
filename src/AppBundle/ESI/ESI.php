@@ -2,9 +2,10 @@
 namespace AppBundle\ESI;
 
 use GuzzleHttp\Client;
-use Symfony\Component\HttpFoundation\Session\Session;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use nullx27\ESI\Api;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /*
  * Magic function accepts anything called and maps it to API_NAMESPACES, which I hardcoded for convenience.
@@ -31,8 +32,8 @@ class ESI
 	
 	protected $session;
 
-    public function __construct(\AppBundle\Utilities\SSO $eveSSO, Session $session)
-    {
+    public function __construct(\AppBundle\Utilities\SSO $eveSSO, SessionInterface $session)
+	{
         $this->session = $session;
 		
 		if(strtotime($session->get("esi_access_expire")) <= time()+10) {

@@ -4,49 +4,69 @@ parameters:
 #    parameter_name: value
 
 services:
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    # makes classes in src/AppBundle available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    AppBundle\:
+        resource: '../../src/AppBundle/*'
+        # you can exclude directories or files
+        # but if a service is unused, it's removed anyway
+        exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
+
+    # controllers are imported separately to make sure they're public
+    # and have a tag that allows actions to type-hint services
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    # add more services, or override services that need manual wiring
+    # AppBundle\Service\ExampleService:
+    #     arguments:
+    #         $someArgument: 'some_value'
     esi:
         class: AppBundle\Utilities\ESI
+        public: true
         
     eve_esi:
         class: AppBundle\ESI\ESI
-        arguments: ["@session"]
+        public: true
 
     eve_sso:
         class: AppBundle\Utilities\SSO
-        arguments: ['%sso_client_id%', '%sso_secret_key%']
+        public: true
 
     helper:
         class: AppBundle\Helper\Helper
-        arguments: [@doctrine]
+        public: true
 
     market:
         class: AppBundle\Helper\Market
-        arguments: ['@doctrine','@security.authorization_checker']
+        public: true
 
     parser:
         class: AppBundle\Helper\Parser
-        arguments: ['@doctrine']
+        public: true
 
     authentication_handler:
         class: AppBundle\Helper\AuthenticationHandler
-        calls:
-            - [ setContainer, [ @service_container ] ]
+        public: true
     cache:
         class: AppBundle\Helper\Cache
-        arguments: ['@doctrine', '@market']
-
-    lineItemComparator:
-        class: AppBundle\Helper\LineItemComparator
-        arguments: ['@market', '@parser']
-
+        public: true
     auth_manager:
             class: AppBundle\Security\AuthorizationManager
-            arguments: ['@doctrine.orm.entity_manager', '@esi']
+            public: true
 
     eve_sso_authenticator:
             class: AppBundle\Security\EveSSOAuthenticator
-            arguments: ['@doctrine.orm.entity_manager', '@router', '@auth_manager', '@eve_sso']
-
-    cron_tasks:
-        class: AppBundle\Helper\CronTasks
-        arguments: ['@doctrine', '@auth_manager']
+            public: true

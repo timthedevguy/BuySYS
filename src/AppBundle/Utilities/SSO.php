@@ -14,6 +14,7 @@ use AppBundle\Model\CharacterToken;
 use AppBundle\Model\SSOToken;
 
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 class SSO
@@ -22,14 +23,19 @@ class SSO
     private static $SSO_LOGIN_URI = 'https://login.eveonline.com';
     private static $defaultTimeout = 10.0;
 
+    private $container;
     private $ssoClientId;
     private $ssoSecretKey;
     private $basicAuthHeader;
 
-    public function __construct($ssoClientId, $ssoSecretKey) {
-        $this->ssoClientId = $ssoClientId;
-        $this->ssoSecretKey = $ssoSecretKey;
-        $this->basicAuthHeader = 'Basic ' . base64_encode($ssoClientId . ':' . $ssoSecretKey);
+    public function __construct(ContainerInterface $container) {
+
+    	$this->container = $container;
+
+        $this->ssoClientId = $this->container->getParameter('sso_client_id');
+        $this->ssoSecretKey = $this->container->getParameter('sso_secret_key');
+
+        $this->basicAuthHeader = 'Basic ' . base64_encode($this->ssoClientId . ':' . $this->ssoSecretKey);
     }
 
 

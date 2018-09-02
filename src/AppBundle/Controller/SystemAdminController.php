@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 use AppBundle\Form\ExclusionForm;
 
 use Doctrine\DBAL\Types\TextType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
