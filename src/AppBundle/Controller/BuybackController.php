@@ -68,10 +68,20 @@ class BuybackController extends Controller {
 				$hasInvalid = true;
 			} else
 			{
-				// Set prices
-				$items[$i]['unitPrice'] = $typePrices[$items[$i]['typeid']]['taxed'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize'];
-				$items[$i]['netPrice'] = $items[$i]['quantity'] * ($typePrices[$items[$i]['typeid']]['taxed'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize']);
-				$items[$i]['grossPrice'] = $items[$i]['quantity'] * ($typePrices[$items[$i]['typeid']]['adjusted'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize']);
+				if ($typePrices[$items[$i]['typeid']]['data']['options']['isrefined'] == true)
+				{
+					// Set prices
+					$items[$i]['unitPrice'] = $typePrices[$items[$i]['typeid']]['taxed'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize'];
+					$items[$i]['netPrice'] = $items[$i]['quantity'] * ($typePrices[$items[$i]['typeid']]['taxed'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize']);
+					$items[$i]['grossPrice'] = $items[$i]['quantity'] * ($typePrices[$items[$i]['typeid']]['adjusted'] / $typePrices[$items[$i]['typeid']]['data']['options']['portionSize']);
+				} else
+				{
+					// Set prices
+					$items[$i]['unitPrice'] = $typePrices[$items[$i]['typeid']]['taxed'];
+					$items[$i]['netPrice'] = $items[$i]['quantity'] * $typePrices[$items[$i]['typeid']]['taxed'];
+					$items[$i]['grossPrice'] = $items[$i]['quantity'] * $typePrices[$items[$i]['typeid']]['adjusted'];
+				}
+
 
 				$offer += $items[$i]['netPrice'];
 			}
@@ -212,34 +222,46 @@ class BuybackController extends Controller {
 					{
 						$readableRules[] = "All items will be rejected by Default";
 					}
-				} else {
+				} else
+				{
 
 					/** @var RuleEntity $rule */
 					$rule = $this->getDoctrine()->getRepository('AppBundle:RuleEntity')->findOneBySort($ruleId);
 					$ruleText = '';
 
-					if($rule->getTarget() == 'type') {
-						$ruleText = "Item '".$rule->getTargetName()."' ";
-					} else if($rule->getTarget() == 'group') {
-						$ruleText = "Items in group '".$rule->getTargetName()."' ";
-					} else if($rule->getTarget() == 'marketgroup') {
-						$ruleText = "Items in market group '".$rule->getTargetName()."' ";
+					if ($rule->getTarget() == 'type')
+					{
+						$ruleText = "Item '" . $rule->getTargetName() . "' ";
+					} else if ($rule->getTarget() == 'group')
+					{
+						$ruleText = "Items in group '" . $rule->getTargetName() . "' ";
+					} else if ($rule->getTarget() == 'marketgroup')
+					{
+						$ruleText = "Items in market group '" . $rule->getTargetName() . "' ";
 					}
 
-					if($rule->getAttribute() == 'tax') {
+					if ($rule->getAttribute() == 'tax')
+					{
 						$ruleText = $ruleText . ' has a Tax adjustment of ' . $rule->getValue();
-					} else if($rule->getAttribute() == 'price') {
+					} else if ($rule->getAttribute() == 'price')
+					{
 						$ruleText = $ruleText . ' has an admin set price of ' . $rule->getValue();
-					} else if($rule->getAttribute() == 'canbuy') {
-						if($rule->getValue() == 1) {
+					} else if ($rule->getAttribute() == 'canbuy')
+					{
+						if ($rule->getValue() == 1)
+						{
 							$ruleText = $ruleText . ' can be bought';
-						} else {
+						} else
+						{
 							$ruleText = $ruleText . ' cannot be bought';
 						}
-					} else if($rule->getAttribute() == 'isrefined') {
-						if($rule->getValue() == 1) {
+					} else if ($rule->getAttribute() == 'isrefined')
+					{
+						if ($rule->getValue() == 1)
+						{
 							$ruleText = $ruleText . ' will be reprocessed';
-						} else {
+						} else
+						{
 							$ruleText = $ruleText . ' will not be reprocessed';
 						}
 					}

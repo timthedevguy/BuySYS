@@ -76,7 +76,11 @@
                 <tbody>
                     <tr>
                         <td>{{ details.market|number_format(2,'.',',')}}</td>
-                        {% set uPrice = details.adjusted / details.data.options.portionSize %}
+                        {% if details.data.options.isrefined == true %}
+                            {% set uPrice = details.adjusted / details.data.options.portionSize %}
+                        {% else %}
+                            {% set uPrice = details.adjusted %}
+                        {% endif %}
                         <td>{{ uPrice|number_format(2,'.',',') }}</td>
                         <td>{{ item.quantity|number_format(0,'.',',') }}</td>
                         <td>{{ item.grossPrice|number_format(2,'.',',') }}</td>
