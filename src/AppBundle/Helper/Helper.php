@@ -3,6 +3,8 @@ namespace AppBundle\Helper;
 
 use AppBundle\Entity\SettingEntity;
 use AppBundle\Utilities\SettingsCacheSingleton;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /* Helper
  *
@@ -10,11 +12,11 @@ use AppBundle\Utilities\SettingsCacheSingleton;
  */
 class Helper
 {
-    protected $doctrine;
+    protected $em;
 
-    public function __construct($doctrine)
+    public function __construct(EntityManagerInterface $em)
     {
-        $this->doctrine = $doctrine;
+        $this->em = $em;
     }
 
     /*
@@ -30,7 +32,7 @@ class Helper
         if($settingValue == null)
         {
             // if not in cache, check DB
-            $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')->findOneByName($name);
+            $setting = $this->em->getRepository('AppBundle:SettingEntity', 'default')->findOneByName($name);
 
             if($setting != null)
             {
@@ -49,17 +51,14 @@ class Helper
     public function setSetting(string $name, string $value)
     {
         // Grab our Setting
-        $setting = $this->doctrine->getRepository('AppBundle:SettingEntity', 'default')->findOneByName($name);
-
-        // Get Entity Manager
-        $em = $this->doctrine->getManager();
+        $setting = $this->em->getRepository('AppBundle:SettingEntity', 'default')->findOneByName($name);
 
         // Did the setting exist?
         if($setting != null)
         {
             // Yes, set new Value and save
             $setting->setValue($value);
-            $em->flush();
+            $this->em->flush();
         }
         else
         {
@@ -68,8 +67,8 @@ class Helper
             $setting->setName($name);
             $setting->setValue($value);
             // Inform Entity Manager to manage this Entity
-            $em->persist($setting);
-            $em->flush();
+            $this->em->persist($setting);
+            $this->em->flush();
         }
 
         //add to cache

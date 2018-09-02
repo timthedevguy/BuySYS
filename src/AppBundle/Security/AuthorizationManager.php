@@ -15,6 +15,7 @@ use AppBundle\Entity\UserEntity;
 use AppBundle\Helper\Helper;
 use AppBundle\Utilities\ESI;
 use AppBundle\Utilities\XML;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Doctrine\ORM\EntityManager;
 
@@ -27,7 +28,7 @@ class AuthorizationManager
     private $ESI;
     private $xmlApi;
 
-    public function __construct(EntityManager $em, ESI $ESI) {
+    public function __construct(EntityManagerInterface $em, ESI $ESI) {
         $this->em = $em;
         $this->ESI = $ESI;
         //$this->xmlApi = $xmlApi;

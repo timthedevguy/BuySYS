@@ -3,6 +3,7 @@
 namespace AppBundle\Helper;
 
 use AppBundle\Helper\Helper;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Handles Cache functions
@@ -11,25 +12,23 @@ class Cache extends Helper {
 
 	private $market;
 
-	public function __construct($doctrine, Market $market)
+	public function __construct(EntityManagerInterface $em, Market $market)
 	{
-		$this->doctrine = $doctrine;
+		$this->em = $em;
 		$this->market = $market;
 	}
 
 	public function ClearCache()
 	{
 		// Dump all cache entries
-		$em = $this->doctrine->getManager();
-		$cache = $this->doctrine->getRepository('AppBundle:CacheEntity', 'default')->findAll();
+		$cache = $this->em->getRepository('AppBundle:CacheEntity')->findAll();
 
 		foreach ($cache as $item)
 		{
-
-			$em->remove($item);
+			$this->em->remove($item);
 		}
 
-		$em->flush();
+		$this->em->flush();
 	}
 
 	public function UpdateCache()

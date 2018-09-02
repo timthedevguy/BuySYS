@@ -3,7 +3,8 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 class SecurityController extends Controller
@@ -30,8 +31,8 @@ class SecurityController extends Controller
                 $request->getSession()->set('oauth', $oauth);
 
                 $clientID = $this->container->getParameter('sso_client_id');
-				$scopes = $this->container->getParameter('sso_scopes');
-                $callbackURL = $this->generateUrl('sso_callback', array(), true);
+				//$scopes = $this->container->getParameter('sso_scopes');
+                $callbackURL = $this->generateUrl('sso_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL);
 
                 // build SSO URL
                 $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID;
