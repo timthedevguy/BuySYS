@@ -19,10 +19,10 @@ class AddMarketGroupRuleForm extends AbstractType
                 'route' => 'ajax_market_list', 'attr' => array('placeholder' => 'Market Group Name...')))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(
-                    'tax' => 'Tax Percent',
-                    'price' => 'Set Price',
-                    'refined' => 'Is Refined',
-                    'canbuy' => 'Can Buy'
+					'Tax Percent' => 'tax',
+					'Set Price' => 'price',
+					'Is Refined' => 'isrefined',
+					'Can Buy' => 'canbuy'
                 )
             ))
             ->add('value', TextType::class)

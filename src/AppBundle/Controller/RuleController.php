@@ -28,7 +28,7 @@ class RuleController extends Controller
     public function action(Request $request, string $ruleType)
     {
         $results = null;
-
+		dump($request);
         // Create Forms for the Page
         $roleForm = $this->createForm(AddRoleRuleForm::class);
         $groupForm = $this->createForm(AddGroupRuleForm::class);
@@ -88,7 +88,8 @@ class RuleController extends Controller
                 $rule->setAttribute($form_results['attribute']);
 
                 $isValid = false;
-
+				dump($rule);
+				dump($form_results['value']);
                 if ($rule->getAttribute() == 'canbuy' | $rule->getAttribute() == 'isrefined')
                 {
                     if (preg_match('/^yes$|^true$/mi', $form_results['value']))
@@ -123,7 +124,8 @@ class RuleController extends Controller
                         $this->addFlash('error', 'Value has to be +/- ##.  For example, +10, -10');
                     }
                 }
-
+				dump($rule);
+                dump($isValid);
                 if ($isValid)
                 {
                     $this->addFlash('success', 'Rule added successfully!');
@@ -133,7 +135,7 @@ class RuleController extends Controller
             }
         }
 
-        $rules = $em->getRepository('AppBundle:RuleEntity', 'default')->findAllSortedBySort($ruleType);
+        $rules = $em->getRepository('AppBundle:RuleEntity')->findAllSortedBySort($ruleType);
 
         // Create built in rules
         $builtIn = array();

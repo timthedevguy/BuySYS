@@ -19,10 +19,10 @@ class AddTypeRuleForm extends AbstractType
                 'route' => 'ajax_type_list', 'attr' => array('placeholder' => 'Item Name...')))
             ->add('attribute', ChoiceType::class, array(
                 'choices' => array(
-                    'tax' => 'Tax Percent',
-                    'price' => 'Set Price',
-                    'isrefined' => 'Is Refined',
-                    'canbuy' => 'Can Buy'
+                    'Tax Percent' => 'tax',
+                    'Set Price' => 'price',
+                    'Is Refined' => 'isrefined',
+                    'Can Buy' => 'canbuy'
                 )
             ))
             ->add('value', TextType::class)
