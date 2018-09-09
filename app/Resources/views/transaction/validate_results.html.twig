@@ -1,0 +1,159 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            {% if contractValid == true %}
+                Contract is Valid
+                <small>This contract can be accepted</small>
+            {% else %}
+                Contact Invalid!!!
+                <small>This contract should be declined</small>
+            {% endif %}
+        </h1>
+    </section>
+
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-9">
+                <div class="box {{ (contractValid) ? 'box-success' : 'box-danger' }}">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Contract Details</h3>
+                    </div>
+                    <div class="box-body">
+                        <div id="raw-contract-details">
+                            {{ details|raw }}
+                        </div>
+                        <hr/>
+                        {% if contractValid == true %}
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th style="width:20%;">Quantity</th>
+                                    <th>Item</th>
+                                    <th style="width:20%;text-align:right;">Net Price</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in transaction.lineitems %}
+                                    <tr>
+                                        <td>{{ item.quantity|number_format(0,'.',',') }}</td>
+                                        <td><img src="https://image.eveonline.com/Type/{{item.typeid}}_32.png" style="max-width:16px;"/> {{ item.name }}</td>
+
+                                        <td style="width:20%;text-align:right;">{{ item.netPrice|number_format(2,'.',',') }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <h3>Missing Items</h3>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th style="width:20%;">Quantity</th>
+                                    <th>Item</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in missing %}
+                                    <tr>
+                                        <td>{{ item.quantity|number_format(0,'.',',') }}</td>
+                                        <td><img src="https://image.eveonline.com/Type/{{item.typeid}}_32.png" style="max-width:16px;"/> {{ item.name }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <hr/>
+                            <h3>Extra Items</h3>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th style="width:20%;">Quantity</th>
+                                    <th>Item</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in items %}
+                                    <tr>
+                                        <td>{{ item.quantity|number_format(0,'.',',') }}</td>
+                                        <td><img src="https://image.eveonline.com/Type/{{item.typeid}}_32.png" style="max-width:16px;"/> {{ item.name }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="box {{ (contractValid) ? 'box-success' : 'box-danger' }}">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Payout</h3>
+                    </div>
+                    <div class="box-body">
+                        <p class="offer {{ (contractValid) ? 'text-success' : 'text-danger' }}" style="font-weight: 700;font-size: 22px;text-align:center;{{ (contractValid) ? '' : 'text-decoration: line-through;' }}">{{ transaction.net|number_format(2,'.',',') }} <small>ISK</small></p>
+                        {% if contractValid == true %}
+                            <p>Verify the above payout amount matches the contract.</p>
+                        {% else %}
+                            <p>This contract should not be accepted!</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div class="box-body">
+                        {% if contractValid == true %}
+                            <button class="form-control btn-block btn-success special-button" data-accept="1">Accept Contract</button>
+                            <button class="form-control btn-block btn-danger special-button" data-double="true" data-accept="0">Reject Contract</button>
+                        {% else %}
+                            <button class="form-control btn-block btn-danger special-button" data-accept="0">Reject Contract</button>
+                            <button class="form-control btn-block btn-success special-button" data-double="true" data-accept="1">Accept Contract</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="estimate-modal">
+        <div class="modal-dialog">
+            <div class="modal-content" id="estimate-modal-content">
+                <div class="modal-loading">
+                    <i class="fa fa-refresh fa-spin"></i>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            $('.special-button').click(function() {
+
+                if($(this).attr('data-double') == 'true'){
+
+                    $(this).html('Click to Confirm');
+                    $(this).attr('data-double','false');
+                }
+                else
+                {
+                    if($(this).attr('data-accept') == "1")
+                    {
+                        window.location = '{{ path('admin_validate_accept', {id: transaction.id}) }}';
+                    } else {
+                        window.location = '{{ path('admin_validate_reject', {id: transaction.id}) }}';
+                    }
+                }
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

@@ -129,8 +129,8 @@ class BuybackController extends Controller {
 				$transaction->setOrderId($transaction->getType() . uniqid());
 				$transaction->setStatus('Pending');
 				$transaction->setCreated(new \DateTime("now"));
-				$transaction->setNet(0);
-				$transaction->setGross(0);
+				$transaction->setNet(0.0);
+				$transaction->setGross(0.0);
 
 				$this->getDoctrine()->getManager('default')->persist($transaction);
 
@@ -297,7 +297,7 @@ class BuybackController extends Controller {
 		return $this->action($request, 'P', 'Sell Orders', 'Sell your stuff!');
 	}
 
-	private function action(Request &$request, string $transactionType, string $pageName = 'Market Orders', string $subText = 'Create an Order!')
+	private function action(Request &$request, $transactionType, $pageName = 'Market Orders', $subText = 'Create an Order!')
 	{
 		$form = $this->createForm(AllianceMarketForm::class, new MarketRequestModel());
 		$form->handleRequest($request);

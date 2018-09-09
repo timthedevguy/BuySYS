@@ -51,6 +51,7 @@
                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin</a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="{{ path('admin_sell_order_transactions') }}">Contract Queue</a></li>
+                            <li><a href="{{ path('admin_validate_contract') }}">Contract Validation</a></li>
                             <li class="{{ (route == 'admin_buyback_rules') ? 'active' : '' }}"><a href="{{ path('admin_users') }}">Users</a></li>
                             <li class="divider"></li>
                             <li class="{{ (route == 'settings') ? 'active' : '' }}"><a href="{{ path('admin_settings_buyback') }}">System Settings</a></li>

@@ -371,3 +371,7 @@ TD .label
 	color: white;
 	overflow: hidden;
 }
+
+#raw-contract-details B {
+	margin-right: 20px;
+}
