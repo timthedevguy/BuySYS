@@ -1,0 +1,174 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Processing Transaction</h4>
+    <!-- /.box-tools -->
+</div>
+<div class="modal-body" >
+    <div class="buyback-results-container">
+        <div>
+            <div class="col-md-6">
+                <p>This transaction type requires that a Contract be accepted from a player.  If no contract is present then DO NOT PAY THEM!</p>
+                <p>The Contract details are to the right, verify they match before accepting.  The contents of the contract are listed below</p>
+                <p><strong>Note:</strong> To assist in ensuring the contract contents are correct you can click on the items below to flag them as present.</p>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Order Id:</th>
+                        <td>{{ transaction.orderid }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>{{ transaction.status }}</td>
+                    </tr>
+                    <tr>
+                        <th>Type:</th>
+                        <td>Accept Contract</td>
+                    </tr>
+                    <tr>
+                        <th>From:</th>
+                        {% if transaction.user == null %} <!-- no more guests. This is here for legacy apps-->
+                            <td>Guest</td>
+                        {% else %}
+                            <td>{{ transaction.user.username }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Amount:</th>
+                        <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
+                    </tr>
+                </table>
+            </div>
+            <br />
+
+            <div>
+                <table class="table table-striped images-table">
+                    <tr>
+                        <th style="width:100px;">Quantity</th>
+                        <th>Item</th>
+                        <th>Unit Price</th>
+                        <th>Net Price</th>
+                    </tr>
+                    {% for item in transaction.lineitems %}
+                        <tr class="mark_off">
+                            <td>{{ item.quantity|number_format(0, '.', ',') }}</td>
+                            <td><img src="https://image.eveonline.com/Type/{{item.TypeId}}_32.png" /><span data-toggle="tooltip" data-placement="right" title="Id: {{item.typeid}}">{{ item.name }}</span></td>
+                            <td>{{ item.marketprice|number_format(0,'.',',') }}</td>
+                            <td>{{ item.netprice|number_format(0,'.',',') }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    {% if not transaction.iscomplete %}
+        <button type="button" id="processDecline-button" class="btn btn-danger" data-dismiss="modal">Decline</button>
+        <button type="button" id="processAccept-button" class="btn btn-success" data-dismiss="modal">Accept and Process</button>
+    {% else %}
+        <button type="button" id="processReopen-button" class="btn btn-warning" data-dismiss="modal">Reopen Transaction</button>
+        <button type="button" id="processClose-button" class="btn btn-default" data-dismiss="modal">Close</button>
+    {% endif %}
+</div>
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $("#processAccept-button").click(function (e) {
+                $.post('{{path('ajax_close_transaction')}}', {id: "{{ transaction.orderid }}"},
+                    function(response)
+                    {
+                        //update transaction row
+                        $("#row-{{transaction.orderid}}").removeClass('success')
+                            .addClass('bg-gray');
+                        $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success')
+                            .addClass('label-grey')
+                            .html('Complete');
+                        //update info boxes
+                        updateInfoBox($("#netPending"), {{transaction.net * -1}});
+                        updateInfoBox($("#transactionPending"), -1);
+                        updateInfoBox($("#profitPending"), {{(transaction.gross - transaction.net) * -1}});
+                        updateInfoBox($("#totalExpense"), {{transaction.net}});
+                        updateInfoBox($("#totalAccepted"), 1);
+                        updateInfoBox($("#totalProfit"), {{transaction.gross - transaction.net}});
+                        //update badging
+                        updatePurchaseQueueBadge(-1);
+                    }
+                    , "html");
+            });
+            $("#processDecline-button").click(function (e) {
+                $.post('{{path('ajax_decline_transaction')}}', {id: "{{ transaction.orderid }}"},
+                    function(response)
+                    {
+                        $("#row-{{transaction.orderid}}").removeClass('success')
+                            .addClass('danger');
+                        $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-success')
+                            .addClass('label-danger')
+                            .html('Cancelled');
+                        //update info boxes
+                        updateInfoBox($("#netPending"), {{transaction.net * -1}});
+                        updateInfoBox($("#transactionPending"), -1);
+                        updateInfoBox($("#profitPending"), {{(transaction.gross - transaction.net) * -1}});
+                        //update badging
+                        updatePurchaseQueueBadge(-1);
+                    }
+                    , "html");
+            });
+            $("#processReopen-button").click(function (e) {
+                $.post('{{path('ajax_reopen_transaction')}}', {id: "{{ transaction.orderid }}"},
+                    function(response)
+                    {
+                        var status = $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").html();
+                        $("#row-{{transaction.orderid}}").removeClass('label-grey')
+                            .removeClass('danger')
+                            .addClass('success');
+                        $("#row-{{transaction.orderid}} TD:nth-child(7) SPAN").removeClass('label-grey')
+                            .removeClass('label-danger')
+                            .addClass('label-success')
+                            .html('Pending');
+                        //update info boxes
+                        updateInfoBox($("#netPending"), {{transaction.net}});
+                        updateInfoBox($("#transactionPending"), 1);
+                        updateInfoBox($("#profitPending"), {{transaction.gross - transaction.net}});
+                        if (status === 'Complete') {
+                            updateInfoBox($("#totalExpense"), {{ transaction.net * -1 }});
+                            updateInfoBox($("#totalAccepted"), -1);
+                            updateInfoBox($("#totalProfit"), {{ ( transaction.gross - transaction.net ) * -1 }});
+                        }
+                        //update badging
+                        updatePurchaseQueueBadge(1);
+                    }
+                    , "html");
+            });
+            $(".mark_off").click(function(e)
+            {
+                if(!$(this).hasClass('success')) {
+                    $(this).addClass("success");
+                } else {
+                    $(this).removeClass("success");
+                }
+            });
+        });
+        function validateContract() {
+            $('#auto_verify_results').html('<div class="modal-loading"><i class="fa fa-refresh fa-spin"></i></div>');
+            //ajax form
+            var $formInput = $('#alliance_market_form_items').val();
+            var $orderId = $('#orderId').val();
+            console.log($formInput);
+            $.post('{{ path('ajax_validate_transaction') }}', {formInput: $formInput, orderId: $orderId},
+                function(response)
+                {
+                    processValidationResponse(response);
+                }
+                , "html");
+            //clear form
+            $('#alliance_market_form_items').val('');
+        }
+        function processValidationResponse(response) {
+            $('#auto_verify_results').html(response);
+        }
+    </script>
+
+{% endblock %}

@@ -41,7 +41,7 @@
                     <div class="info-box-content">
                         <span class="info-box-text">Pending {{ firstMetric }}</span>
                         <span class="info-box-number"
-                              id="netPending">{{ last500Summary.totalNetPending|number_format(0, '.', ',') }}</span>
+                              id="netPending">{{ last500Summary.totalNetPending|number_format(2, '.', ',') }}</span>
                         <span class="text-muted"></span>
                     </div><!-- /.info-box-content -->
                 </div>
@@ -52,7 +52,7 @@
                     <div class="info-box-content">
                         <span class="info-box-text">Pending {{ centerMetric }}</span>
                         <span class="info-box-number"
-                              id="transactionPending">{{ last500Summary.totalTransactionPending|number_format(0, '.', ',') }}</span>
+                              id="transactionPending">{{ last500Summary.totalTransactionPending|number_format(2, '.', ',') }}</span>
                         <span class="text-muted"></span>
                     </div><!-- /.info-box-content -->
                 </div>
@@ -63,7 +63,7 @@
                     <div class="info-box-content">
                         <span class="info-box-text">Pending {{ lastMetric }}</span>
                         <span class="info-box-number"
-                              id="profitPending">{{ last500Summary.totalProfitPending|number_format(0, '.', ',') }}</span>
+                              id="profitPending">{{ last500Summary.totalProfitPending|number_format(2, '.', ',') }}</span>
                         <span class="text-muted"></span>
                     </div><!-- /.info-box-content -->
                 </div>
@@ -110,9 +110,9 @@
                                 {% else %}
                                     <td>{{ transaction.user.username }}</td>
                                 {% endif %}
-                                <td>{{ transaction.gross|number_format(0, '.', ',') }}</td>
-                                <td>{{ transaction.net|number_format(0, '.', ',') }}</td>
-                                <td>{{ (transaction.gross - transaction.net)|number_format(0, '.', ',') }}</td>
+                                <td>{{ transaction.gross|number_format(2, '.', ',') }}</td>
+                                <td>{{ transaction.net|number_format(2, '.', ',') }}</td>
+                                <td>{{ (transaction.gross - transaction.net)|number_format(2, '.', ',') }}</td>
                                 <td>
                                     {% if transaction.status == 'Pending' %}
                                         <span class="label label-success pull-right">{{ transaction.status }}</span>

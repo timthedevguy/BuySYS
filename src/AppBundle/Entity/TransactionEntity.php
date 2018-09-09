@@ -184,7 +184,7 @@ class TransactionEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="float")
      */
     protected $gross;
 
@@ -201,7 +201,7 @@ class TransactionEntity
     }
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="float")
      */
     protected $net;
 
