@@ -37,7 +37,6 @@ class AuthorizationManager
     private static $rolesArray = Array(
         'ROLE_SYSTEM_ADMIN',
         'ROLE_TRANSACTION_ADMIN',
-        'ROLE_BUYBACK_ADMIN',
         'ROLE_MEMBER',
         'ROLE_ALLY',
         'ROLE_GUEST',

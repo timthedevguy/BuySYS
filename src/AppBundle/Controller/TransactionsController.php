@@ -19,7 +19,7 @@ use AppBundle\Entity\TrasnactionEntity;
 class TransactionsController extends Controller {
 
 	/**
-	 * @Route("/admin/contract/validate", name="admin_validate_contract")
+	 * @Route("/admin/contracts/validate", name="admin_validate_contract")
 	 */
 	public function adminValidateContractAction(Request $request)
 	{
@@ -125,7 +125,7 @@ class TransactionsController extends Controller {
 	//MAIN PAGE ACTIONS
 
 	/**
-	 * @Route("/admin/sellorder/transactions", name="admin_sell_order_transactions")
+	 * @Route("/admin/contracts", name="admin_sell_order_transactions")
 	 */
 	public function sellOrderAction(Request $request)
 	{
@@ -166,7 +166,7 @@ class TransactionsController extends Controller {
 	//MODIFY TRANSACTION ACTIONS
 
 	/**
-	 * @Route("/admin/transaction/close", name="ajax_close_transaction")
+	 * @Route("/admin/contracts/close", name="ajax_close_transaction")
 	 */
 	public function ajax_CloseAction(Request $request)
 	{
@@ -187,7 +187,7 @@ class TransactionsController extends Controller {
 	}
 
 	/**
-	 * @Route("/transaction/decline", name="ajax_decline_transaction")
+	 * @Route("/admin/contracts/decline", name="ajax_decline_transaction")
 	 */
 	public function ajax_DeclineAction(Request $request)
 	{
@@ -197,7 +197,7 @@ class TransactionsController extends Controller {
 	}
 
 	/**
-	 * @Route("/admin/transaction/reopen", name="ajax_reopen_transaction")
+	 * @Route("/admin/contracts/reopen", name="ajax_reopen_transaction")
 	 */
 	public function ajax_ReopenAction(Request $request)
 	{
@@ -210,7 +210,7 @@ class TransactionsController extends Controller {
 	//VIEW TRANSACTION ACTIONS
 
 	/**
-	 * @Route("/admin/transaction/process", name="ajax_process_transaction")
+	 * @Route("/admin/contracts/process", name="ajax_process_transaction")
 	 */
 	public function ajax_ProcessAction(Request $request)
 	{
