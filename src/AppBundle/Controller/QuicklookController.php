@@ -158,7 +158,7 @@ class QuicklookController extends Controller {
 	{
 
 		$results = array();
-		$marketPrices = $this->get("market")->getBuybackPricesForTypes($typeIds, 'P');
+		$marketPrices = $this->get("market")->getBuybackPricesForTypes($typeIds);
 
 		foreach ($typeIds as $typeId)
 		{

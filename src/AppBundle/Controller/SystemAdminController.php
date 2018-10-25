@@ -63,7 +63,7 @@ class SystemAdminController extends Controller
     }
 
     /**
-     * @Route("/system/admin/tools", name="admin_tools")
+     * @Route("/admin/tools", name="admin_tools")
      */
     public function toolsAction(Request $request)
     {
@@ -71,7 +71,7 @@ class SystemAdminController extends Controller
     }
 
     /**
-     * @Route("/system/admin/clearcache", name="admin_clearcache")
+     * @Route("/admin/clearcache", name="admin_clearcache")
      */
     public function clearCacheAction(Request $request)
     {
@@ -81,7 +81,7 @@ class SystemAdminController extends Controller
     }
 
     /**
-     * @Route("/system/admin/updatecache", name="admin_updatecache")
+     * @Route("/admin/updatecache", name="admin_updatecache")
      */
     public function updateCacheAction(Request $request)
     {

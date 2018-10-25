@@ -11,7 +11,7 @@ class UserController extends Controller
 {
 
     /**
-     * @Route("/system/admin/users", name="admin_users")
+     * @Route("/admin/users", name="admin_users")
      */
     public function indexAction(Request $request)
     {
@@ -25,7 +25,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/system/admin/users/disable", name="ajax_disable_user")
+     * @Route("/admin/users/disable", name="ajax_disable_user")
      */
     public function ajax_DisableAction(Request $request)
     {
@@ -42,7 +42,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/system/admin/users/enable", name="ajax_enable_user")
+     * @Route("/admin/users/enable", name="ajax_enable_user")
      */
     public function ajax_EnableAction(Request $request)
     {
@@ -59,7 +59,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/system/admin/users/updateOverrideRole", name="ajax_update_user_override_role")
+     * @Route("/admin/users/updateOverrideRole", name="ajax_update_user_override_role")
      */
     public function ajax_UpdateOverrideRole(Request $request)
     {
@@ -77,7 +77,7 @@ class UserController extends Controller
     }
 
     /**
-     * @Route("/system/admin/users/updateOverrideEntitlement", name="ajax_update_user_override_entitlement")
+     * @Route("/admin/users/updateOverrideEntitlement", name="ajax_update_user_override_entitlement")
      */
     public function ajax_UpdateOverrideEntitlement(Request $request)
     {

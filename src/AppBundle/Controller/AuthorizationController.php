@@ -34,7 +34,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/authorization", name="admin_authorization")
+     * @Route("/admin/authorization", name="admin_authorization")
      */
     public function authorizationAction(Request $request)
     {
@@ -66,7 +66,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/authorization/ajax_CorpSearch", name="ajax_CorpSearch")
+     * @Route("/admin/authorization/ajax_CorpSearch", name="ajax_CorpSearch")
      */
     public function ajax_CorpSearchAction(Request $request)
     {
@@ -92,7 +92,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/authorization/insert/manual", name="ajax_AddManualAuthorization")
+     * @Route("/admin/authorization/insert/manual", name="ajax_AddManualAuthorization")
      */
     public function ajax_AddManualAuthorizationAction(Request $request)
     {
@@ -119,7 +119,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/authorization/delete/{id}", name="admin_authorization_delete")
+     * @Route("/admin/authorization/delete/{id}", name="admin_authorization_delete")
      */
     public function authorizationDeleteAction(Request $request, AuthorizationEntity $item)
     {
@@ -131,7 +131,7 @@ class AuthorizationController extends Controller
     }
 
     /**
-     * @Route("/system/admin/authorization/update/", name="ajax_update_auth_role")
+     * @Route("/admin/authorization/update/", name="ajax_update_auth_role")
      */
     public function ajax_UpdateAuthorizationRole(Request $request)
     {
@@ -167,7 +167,7 @@ class AuthorizationController extends Controller
 
 
     /**
-     * @Route("/system/admin/authorization/update/entitlements", name="ajax_update_auth_entitlements")
+     * @Route("/admin/authorization/update/entitlements", name="ajax_update_auth_entitlements")
      */
     public function ajax_UpdateAuthorizationEntitlements(Request $request)
     {
@@ -204,7 +204,7 @@ class AuthorizationController extends Controller
 
 
     /**
-     * @Route("/system/admin/authorization/insert/contact", name="ajax_update_contacts")
+     * @Route("/admin/authorization/insert/contact", name="ajax_update_contacts")
      */
     public function ajax_UpdateContacts(Request $request)
     {
