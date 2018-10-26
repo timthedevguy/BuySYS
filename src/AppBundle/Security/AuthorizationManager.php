@@ -38,6 +38,7 @@ class AuthorizationManager
         'ROLE_SYSTEM_ADMIN',
         'ROLE_TRANSACTION_ADMIN',
         'ROLE_MEMBER',
+        'ROLE_FRIEND',
         'ROLE_ALLY',
         'ROLE_GUEST',
         'ROLE_DENIED',
