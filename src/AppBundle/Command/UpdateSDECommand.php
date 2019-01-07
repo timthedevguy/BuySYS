@@ -135,7 +135,7 @@ class UpdateSDECommand extends ContainerAwareCommand
 
             $bar->finish();
 			
-			/*$prices = json_decode(file_get_contents("https://esi.tech.ccp.is/latest/insurance/prices/?datasource=tranquility&language=en-us"), true);
+			/*$prices = json_decode(file_get_contents("https://esi.evetech.net/latest/insurance/prices/?datasource=tranquility&language=en-us"), true);
 			if(isset($prices[0]['levels'])) {
 				
 				$database = $this->getContainer()->getParameter('database_name');

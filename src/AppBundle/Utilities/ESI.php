@@ -13,7 +13,7 @@ use AppBundle\Model\Character;
 
 class ESI
 {
-    private static $ESI_URI = 'https://esi.tech.ccp.is';
+    private static $ESI_URI = 'https://esi.evetech.net';
     private static $defaultTimeout = 10.0;
 
 
