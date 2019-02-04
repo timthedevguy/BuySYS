@@ -98,4 +98,19 @@ class SystemAdminController extends Controller
         return $this->redirectToRoute('admin_tools');
     }
 
+	/**
+	 * @Route("/admin/monthly", name="admin_monthly")
+	 */
+	public function adminMonthlyAction(Request $request)
+	{
+		$evedataConnection = $this->getDoctrine()->getManager()->getConnection();
+		$sqlQuery = 'SELECT COUNT(*) as `count`,SUM(gross) as gross_total,sum(net) as net_total, YEAR(created) as year, MONTHNAME(created) as month from transactions WHERE status = \'Complete\' and is_complete = true GROUP BY YEAR(created), MONTH(created);';
+
+		// Run the SQL Statement
+		$transactions = $evedataConnection->fetchAll($sqlQuery);
+
+		return $this->render('admin/monthly.html.twig', array(
+			'transactions' => $transactions
+		));
+	}
 }

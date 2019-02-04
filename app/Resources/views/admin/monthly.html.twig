@@ -1,0 +1,67 @@
+{% extends 'secure_base.html.twig' %}
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            Monthly Reports
+            <small>Shows data for all months/years</small>
+        </h1>
+    </section>
+
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            Monthly Data
+                        </h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Quantity</th>
+                                    <th>Gross</th>
+                                    <th>Net</th>
+                                    <th>Profit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for trans in transactions %}
+                                <tr>
+                                    <td>{{ trans.year }}</td>
+                                    <td>{{ trans.month }}</td>
+                                    <td>{{ trans.count }}</td>
+                                    <td>{{ trans.gross_total|number_format(2, '.', ',') }}</td>
+                                    <td>{{ trans.net_total|number_format(2, '.', ',') }}</td>
+                                    <td class="text-success"><strong>{{ (trans.gross_total - trans.net_total)|number_format(2, '.', ',') }}</strong></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <!--<div class="box-footer">
+                        The footer of the box
+                    </div>--><!-- box-footer -->
+                </div><!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+
+
+    </script>
+
+{% endblock %}
