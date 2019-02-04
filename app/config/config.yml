@@ -64,6 +64,9 @@ doctrine:
                 user:     "%database_user%"
                 password: "%database_password%"
                 charset:  UTF8
+                options:
+                    # PDO::MYSQL_ATTR_INIT_COMMAND
+                    1002: "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
 
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
