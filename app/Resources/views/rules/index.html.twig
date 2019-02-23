@@ -142,11 +142,11 @@
                                 <tr>
                                     <td>{{ item.sort }}</td>
                                     {% if item.target == 'group' %}
-                                        <td>Group Rule</td>
-                                    {% elseif item.target == 'role' %}
-                                        <td>Role Rule</td>
+                                        <td>Group</td>
+                                    {% elseif item.target == 'marketgroup' %}
+                                        <td>Market Group</td>
                                     {% else %}
-                                        <td>Item Rule</td>
+                                        <td>Item</td>
                                     {% endif %}
                                     <td>{{ item.targetname }}</td>
                                     <td>{{ item.attribute }}</td>
