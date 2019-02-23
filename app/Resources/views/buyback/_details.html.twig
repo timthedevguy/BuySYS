@@ -121,7 +121,7 @@
                                     {% for mat in details.data.materials %}
                                         <tr>
                                             <td><img src="https://image.eveonline.com/Type/{{mat.typeid}}_32.png" style="max-width:16px;margin-right:10px;"/>{{ mat.name }}</td>
-                                            <td>{{ (mat.base/100)*item.quantity|number_format(0,'.',',') }}</td>
+                                            <td>{{ ((mat.base/100)*item.quantity)|number_format(0,'.',',') }}</td>
                                             <td>{{ mat.adjusted|number_format(2,'.',',') }}</td>
                                             <td>{{ mat.price|number_format(2,'.',',') }}</td>
                                             {% set value = mat.price * mat.adjusted %}
