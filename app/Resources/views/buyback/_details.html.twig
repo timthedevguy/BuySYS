@@ -124,7 +124,7 @@
                                             <td>{{ ((mat.base/details.data.options.portionSize)*item.quantity)|number_format(0,'.',',') }}</td>
                                             <td>{{ ((mat.adjusted/details.data.options.portionSize)*item.quantity)|number_format(0,'.',',') }}</td>
                                             <td>{{ mat.price|number_format(2,'.',',') }}</td>
-                                            {% set value = mat.price * mat.adjusted %}
+                                            {% set value = mat.price * ((mat.adjusted/details.data.options.portionSize)*item.quantity) %}
                                             {% set total = total + value %}
                                             <td>{{ value|number_format(2,'.',',') }}</td>
                                         </tr>
