@@ -62,7 +62,7 @@ class ApiController extends Controller {
 						$this->getDoctrine()->getManager()->persist($rule);
 					}
 
-					if ($value > 0)
+					if ($value >= 0)
 					{
 
 						$rule->setValue($value);
