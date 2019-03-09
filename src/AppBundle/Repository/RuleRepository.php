@@ -72,7 +72,7 @@ class RuleRepository extends EntityRepository
                 )
             ))
             ->setParameter('typeid', $type)
-            ->setParameter('typegroup', 'type')
+            ->setParameter('typegroup', 'item')
             ->setParameter('marketgroupid', $marketgroup)
             ->setParameter('marketgroup', 'marketgroup')
             ->setParameter('groupid', $group)

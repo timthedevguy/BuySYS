@@ -113,18 +113,23 @@
                                         <th>Base</th>
                                         <th>Refined</th>
                                         <th>Market</th>
+                                        <th>Modifier</th>
+                                        <th>Mod Market</th>
                                         <th>Value</th>
                                     </tr>
                                     </thead>
                                     {% set total = 0 %}
                                     <tbody>
+
                                     {% for mat in details.data.materials %}
                                         <tr>
                                             <td><img src="https://image.eveonline.com/Type/{{mat.typeid}}_32.png" style="max-width:16px;margin-right:10px;"/>{{ mat.name }}</td>
                                             <td>{{ ((mat.base/details.data.options.portionSize)*item.quantity)|number_format(0,'.',',') }}</td>
                                             <td>{{ ((mat.adjusted/details.data.options.portionSize)*item.quantity)|number_format(0,'.',',') }}</td>
-                                            <td>{{ mat.price|number_format(2,'.',',') }}</td>
-                                            {% set value = mat.price * ((mat.adjusted/details.data.options.portionSize)*item.quantity) %}
+                                            <td>{{ mat.market|number_format(2,'.',',') }}</td>
+                                            <td>{{ mat.modifier|number_format(0,'.',',') }}</td>
+                                            <td>{{ mat.modified|number_format(2,'.',',') }}</td>
+                                            {% set value = mat.modified * ((mat.adjusted/details.data.options.portionSize)*item.quantity) %}
                                             {% set total = total + value %}
                                             <td>{{ value|number_format(2,'.',',') }}</td>
                                         </tr>
@@ -132,7 +137,7 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td colspan="4" style="text-align:right;"><strong>Value:</strong></td>
+                                        <td colspan="6" style="text-align:right;"><strong>Value:</strong></td>
                                         <td><strong>{{ item.grossPrice|number_format(2,'.',',') }}</strong></td>
                                     </tr>
                                     </tfoot>

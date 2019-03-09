@@ -31,6 +31,7 @@ security:
 
     access_control:
         - {path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - {path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/sso, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - {path: ^/admin/contracts, roles: ROLE_TRANSACTION_ADMIN }
         - {path: ^/admin, roles: ROLE_ADMIN }

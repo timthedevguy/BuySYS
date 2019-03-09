@@ -20,4 +20,18 @@ class CacheRepository extends EntityRepository {
                 'DELETE FROM AppBundle:CacheEntity c WHERE c.lastPull < :expireTime'
             )->setParameter('expireTime', new \DateTime('-'. $minutes .' minutes'))->execute();
     }
+
+	public function deleteTypeIds($typdIds)
+	{
+		return $this->getEntityManager()
+			->createQuery(
+				'DELETE FROM AppBundle:CacheEntity c WHERE c.typeID IN (:types)'
+			)->setParameter('types', $typdIds)->execute();
+	}
+
+	public function deleteAll()
+	{
+		return $this->getEntityManager()
+			->createQuery('DELETE FROM AppBundle:CacheEntity'	)->execute();
+	}
 }

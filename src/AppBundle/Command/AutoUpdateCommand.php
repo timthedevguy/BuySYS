@@ -27,9 +27,6 @@ class AutoUpdateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $token = new AnonymousToken('service', 'service', ['ROLE_SYSTEM_ADMIN']);
-        $this->getContainer()->get('security.token_storage')->setToken($token);
-
         $output->writeln('');
         $output->writeln('<info>Updating cache...this can take a minute or two!!!</info>');
         $cache = $this->getContainer()->get('cache');

@@ -3,6 +3,8 @@ namespace AppBundle\Command;
 
 use AppBundle\Helper\Market;
 use AppBundle\Controller\AuthorizationController;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,6 +13,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TestCommand extends ContainerAwareCommand
 {
+	protected $market;
+	protected $em;
+
+	/**
+	 * SetupCommand constructor.
+	 */
+	public function __construct(Market $market, EntityManagerInterface $em)
+	{
+		$this->market = $market;
+		$this->em = $em;
+		parent::__construct();
+	}
+
     protected function configure()
     {
         $this
@@ -28,11 +43,7 @@ class TestCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var Market $market */
-        $market = $this->getContainer()->get('market');
-        $typeids = array('17843', '621', '17715', '1228');
-
-        dump($market->getMergedBuybackRuleForType(16269));
-        dump($market->getBuybackPricesForTypes(array('16269')));
+        dump($this->market->getMergedBuybackRuleForType(34));
+        dump($this->market->getBuybackPricesForTypes(array('19')));
     }
 }

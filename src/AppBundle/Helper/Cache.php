@@ -83,8 +83,14 @@ class Cache extends Helper {
 			$iceMinerals
 		);
 
-		$this->market->getBuybackPricesForTypes($masterArray);
+		$this->market->getUpdatedCacheItems($masterArray);
 
 		return true;
+	}
+
+	public function rebootCache()
+	{
+		$this->em->getRepository('AppBundle:CacheEntity')->deleteAll();
+		$this->UpdateCache();
 	}
 }
