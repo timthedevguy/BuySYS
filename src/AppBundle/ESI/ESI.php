@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class ESI
 {
     const ESI_URL = 'https://esi.evetech.net';
-    const SEARCH = '/v1/search/';
+    const SEARCH = '/v2/search/';
     const ALLIANCE_NAMES = '/v2/universe/names/';
     const CORPORATION_NAMES = '/v2/universe/names/';
 	const API_NAMESPACES = [
