@@ -78,7 +78,7 @@ class ParserUtils
             if(count($item) == 3) //Remote View Can in Station
             {
                 $oParser = new RemoteViewCanParser();
-            } elseif(count($item) >= 4) { //Inventory or Contract
+            } elseif(count($item) >= 4 or count($item) == 2) { //Inventory or Contract
                 $oParser = new InventoryParser();
             }
 
