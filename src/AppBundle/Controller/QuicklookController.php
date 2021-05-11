@@ -1,5 +1,8 @@
 <?php
 
+// Moon Ore Update provided by 4tt1c
+// https://github.com/timthedevguy/BuySYS/issues/31
+
 namespace AppBundle\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,6 +16,7 @@ use AppBundle\Entity\SDE\TypeEntity;
 class QuicklookController extends Controller {
 
 	private $ore_high = array('1230', '17470', '17471', '1228', '17463', '17464', '1224', '17459', '17460', '20', '17452', '17453', '46689', '46686', '46687', '46683');
+    private $moon_ore = array('45492', '45502', '45502', '45502', '45494', '45493', '45495', '45512', '45511', '45498', '45504', '45497', '45499', '45491', '45496', '45500', '45510', '45513', '45490', '45503');
 	private $compressed_ore_high = array('28430', '28431', '28432', '46705', '28424', '28425', '28426', '46702', '28427', '28428', '28429', '46703', '28409', '28410', '28411');
 	private $ore_other = array('18', '17455', '17456', '1227', '17867', '17868', '46685', '46684');
 	private $compressed_ore_other = array('28421', '28422', '28423', '46701', '28415', '28416', '28417', '46700');
@@ -83,8 +87,13 @@ class QuicklookController extends Controller {
 				$subText = "Compressed Null Sec Ores";
 				break;
 
+            case "moon_ore":
+                $results = $this->getQuickReview($this->moon_ore);
+                $subText = "Moon Ores";
+                break;
+
 			case "all":
-				$results = $this->getQuickReview(array_merge($this->ore_high, $this->ore_other, $this->ore_low, $this->ore_null));
+				$results = $this->getQuickReview(array_merge($this->ore_high, $this->ore_other, $this->ore_low, $this->ore_null, $this->moon_ore));
 				$subText = "All Ores";
 				break;
 
