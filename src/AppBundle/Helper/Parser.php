@@ -105,8 +105,13 @@ abstract class TabbedParser implements IParser
 		
         $lineItem = null;
 
+        // Fix German localization putting in random *
+        // Thanks to 4tt1c (https://github.com/timthedevguy/BuySYS/issues/30)
+        $replaceStar = null;
+        $replaceStar = preg_replace('/\*/', '', $line);
+
         // Split by TAB
-        $item = explode("\t", $line);
+        $item = explode("\t", $replaceStar);
 
         // Create result entry
         $lineItem = array(); //new LineItemEntity();
