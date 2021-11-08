@@ -30,7 +30,7 @@ class ESI
             ]
         ]);
 
-        $response = $client->get('/v4/characters/' . $characterId);
+        $response = $client->get('/v5/characters/' . $characterId);
         $responseJson = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 
         //build model

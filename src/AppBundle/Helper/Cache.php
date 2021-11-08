@@ -66,7 +66,7 @@ class Cache extends Helper {
 		$masterArray = array_merge( //faster as 1 array
 			$mineralOres,
 			$highSecOres,
-			$compressedOtherHighSecOres,
+			$compressedHighSecOres,
 			$otherHighSecOres,
 			$compressedOtherHighSecOres,
 			$lowSecOres,
@@ -80,7 +80,7 @@ class Cache extends Helper {
 			$p3Ores,
 			$p4Ores,
 			$iceMinerals,
-			$iceMinerals
+			$iceOres
 		);
 
 		$this->market->getBuybackPricesForTypes($masterArray);
