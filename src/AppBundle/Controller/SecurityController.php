@@ -35,7 +35,7 @@ class SecurityController extends Controller
                 $callbackURL = $this->generateUrl('sso_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL);
 
                 // build SSO URL
-                $login_url =  'https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID;
+                $login_url =  'https://login.eveonline.com/v2/oauth/authorize?response_type=code&redirect_uri='.$callbackURL.'&client_id='.$clientID;
 				$login_url .= '&state='.$oauth;
 
                 return $this->render('security/login.html.twig', array('error' => $error, 'login_url' => $login_url));

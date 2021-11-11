@@ -55,8 +55,8 @@ class SSO
             ]);
 
             // Create our Response Object to get Access Token
-            $response = $client->post('/oauth/token', [
-                'query' => [
+            $response = $client->post('/v2/oauth/token', [
+                'form_params' => [
                     'grant_type' => 'authorization_code',
                     'code' => $authCode
                 ]
@@ -97,8 +97,8 @@ class SSO
             ]);
 
             // Create our Response Object to get Access Token
-            $response = $client->post('/oauth/token', [
-                'query' => [
+            $response = $client->post('/v2/oauth/token', [
+                'form_params' => [
                     'grant_type' => 'refresh_token',
                     'refresh_token' => $refreshToken
                 ]
