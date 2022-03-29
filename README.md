@@ -1,3 +1,6 @@
+**NO LONGER MAINTAINED**
+BuySYS is no longer maintained, I have lied to myself for over a year in that I would rewrite BuySYS in Python.  The fact is I haven't played Eve Online in almost three years and I don't see myself having enough time to dedicate to it or this project moving forward.
+
 BuySYS
 =====
 BuySYS is an Eve Alliance/Corporation Buyback system.  The system is an offshoot of AmSYS https://github.com/binarygod/AmSYS.  I branched off and created BuySYS the idea of do one thing and do it well.  AmSYS grew to be very complicated and I wanted BuySYS to go back to the roots of a simple Buyback system.
